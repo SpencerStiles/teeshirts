@@ -1,0 +1,15 @@
+{
+  "name": "SGT Major Says Shop",
+  "short_name": "SGT Shop",
+  "start_url": "/shop",
+  "display": "standalone",
+  "background_color": "#1A202C",
+  "theme_color": "#1A202C",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
