@@ -1,50 +1,148 @@
-import { useMemo, useState } from 'react';
-import { Box, Heading, HStack, Select, Spacer, Button, useColorMode, VStack, Text } from '@chakra-ui/react';
-import StoreEmbed from '@/components/StoreEmbed';
-import FeaturedRow from '@/components/FeaturedRow';
+import { useMemo, useState } from "react";
+import {
+  Box,
+  Heading,
+  HStack,
+  Select,
+  Spacer,
+  Button,
+  useColorMode,
+  VStack,
+  Text,
+  SimpleGrid,
+  LinkBox,
+  LinkOverlay,
+  useColorModeValue,
+  Input,
+  Stack,
+} from "@chakra-ui/react";
+import StoreEmbed from "@/components/StoreEmbed";
+import FeaturedRow from "@/components/FeaturedRow";
 
 export default function ShopPage() {
   const { colorMode, toggleColorMode } = useColorMode();
   const [per, setPer] = useState(24);
   const [page, setPage] = useState(1);
-  const [layout, setLayout] = useState<'grid-sm-4' | 'grid-sm-3' | 'grid-sm-2'>('grid-sm-4');
+  const [layout, setLayout] = useState<"grid-sm-4" | "grid-sm-3" | "grid-sm-2">(
+    "grid-sm-4"
+  );
 
-  const themeParam = colorMode === 'dark' ? 'dark' : 'light';
+  const themeParam = colorMode === "dark" ? "dark" : "light";
 
   const src = useMemo(() => {
-    const url = new URL('https://embed.creator-spring.com/widget');
-    url.searchParams.set('slug', 'sgt-major-says');
-    url.searchParams.set('per', String(per));
-    url.searchParams.set('page', String(page));
-    url.searchParams.set('layout', layout);
-    url.searchParams.set('theme', themeParam);
+    const url = new URL("https://embed.creator-spring.com/widget");
+    url.searchParams.set("slug", "sgt-major-says");
+    url.searchParams.set("per", String(per));
+    url.searchParams.set("page", String(page));
+    url.searchParams.set("layout", layout);
+    url.searchParams.set("theme", themeParam);
     // leave currency empty so Spring auto-detects
-    url.searchParams.set('currency', '');
+    url.searchParams.set("currency", "");
     return url.toString();
   }, [per, page, layout, themeParam]);
 
+  const heroBg = useColorModeValue(
+    `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDJStksEtGhq98yefXs1KCCKD5YIPs74URQXVu9gpiTpC2TA8JPUD61LXn6x76ZrnduNmFwPBGti_76wTZSslBiATJPbh8FbtLZ7awQkA6vo34qpgKVxtyUAlfBSiw6RpstwMJj1MaXxWoczOuBHdTNKWSX-_00ttFzfvxUdQ3WPTXcBW8-gc_4DaH_p_CEEU7muJ0Bj7b17jnAg9zQmipOvUoLq1OLt7C5Np683rmtafvDm_dKXG2tztwREW9sg5ArFH1lUxdqoZ0")`,
+    `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDJStksEtGhq98yefXs1KCCKD5YIPs74URQXVu9gpiTpC2TA8JPUD61LXn6x76ZrnduNmFwPBGti_76wTZSslBiATJPbh8FbtLZ7awQkA6vo34qpgKVxtyUAlfBSiw6RpstwMJj1MaXxWoczOuBHdTNKWSX-_00ttFzfvxUdQ3WPTXcBW8-gc_4DaH_p_CEEU7muJ0Bj7b17jnAg9zQmipOvUoLq1OLt7C5Np683rmtafvDm_dKXG2tztwREW9sg5ArFH1lUxdqoZ0")`
+  );
+
+  const cardBg = useColorModeValue("background.light", "blackAlpha.600");
+
   return (
     <VStack align="stretch" spacing={10}>
-      <Box>
-        <Heading size="2xl" mb={2}>SGT Major Says Shop</Heading>
-        <Text color="gray.500">Browse official merch. Featured picks below, full catalog follows.</Text>
+      {/* Hero */}
+      <Box
+        className="distressed-texture"
+        position="relative"
+        minH={{ base: "60vh" }}
+        rounded="xl"
+        bgImage={heroBg}
+        bgSize="cover"
+        bgPos="center"
+        color="white"
+        textAlign="center"
+        px={8}
+        py={16}
+        shadow="2xl"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <VStack zIndex={1} spacing={6}>
+          <Heading
+            textTransform="uppercase"
+            letterSpacing="widest"
+            fontWeight="bold"
+            size={{ base: "2xl", sm: "3xl", lg: "4xl" }}
+            lineHeight="1.1"
+            textShadow="0 2px 8px rgba(0,0,0,0.5)"
+          >
+            Gear Up. Survive.
+          </Heading>
+          <Text
+            maxW="2xl"
+            mx="auto"
+            fontSize="lg"
+            color="gray.300"
+            textShadow="0 1px 3px rgba(0,0,0,0.4)"
+          >
+            Equip yourself with the best tactical and survival gear for any
+            challenge.
+          </Text>
+          <Button
+            as="a"
+            href="#catalog"
+            rounded="full"
+            bg="primary"
+            color="white"
+            px={8}
+            py={3}
+            fontWeight="bold"
+            textTransform="uppercase"
+            letterSpacing="wider"
+            size="md"
+            _hover={{ transform: "scale(1.03)" }}
+            transition="transform 0.15s ease"
+          >
+            Shop Now
+          </Button>
+        </VStack>
       </Box>
 
-      <FeaturedRow />
-
+      {/* Featured (existing) */}
       <Box>
+        <HStack mb={4}>
+          <Heading size="lg" textTransform="uppercase" letterSpacing="wider">
+            Featured Gear
+          </Heading>
+        </HStack>
+        <FeaturedRow />
+      </Box>
+
+      {/* Controls + Embed */}
+      <Box id="catalog">
         <HStack spacing={4} mb={4}>
           <HStack>
             <Text fontWeight="semibold">Items per page</Text>
-            <Select w="auto" value={per} onChange={(e) => setPer(Number(e.target.value))}>
+            <Select
+              w="auto"
+              value={per}
+              onChange={(e) => setPer(Number(e.target.value))}
+            >
               {[12, 24, 30, 48].map((n) => (
-                <option key={n} value={n}>{n}</option>
+                <option key={n} value={n}>
+                  {n}
+                </option>
               ))}
             </Select>
           </HStack>
           <HStack>
             <Text fontWeight="semibold">Layout</Text>
-            <Select w="auto" value={layout} onChange={(e) => setLayout(e.target.value as any)}>
+            <Select
+              w="auto"
+              value={layout}
+              onChange={(e) => setLayout(e.target.value as any)}
+            >
               <option value="grid-sm-2">2 cols</option>
               <option value="grid-sm-3">3 cols</option>
               <option value="grid-sm-4">4 cols</option>
@@ -52,10 +150,140 @@ export default function ShopPage() {
           </HStack>
           <Spacer />
           <Button onClick={toggleColorMode} variant="outline">
-            {colorMode === 'dark' ? 'Light mode' : 'Dark mode'}
+            {colorMode === "dark" ? "Light mode" : "Dark mode"}
           </Button>
         </HStack>
         <StoreEmbed src={src} />
+      </Box>
+
+      {/* Categories */}
+      <Box>
+        <Heading
+          mb={8}
+          textAlign="center"
+          size="lg"
+          textTransform="uppercase"
+          letterSpacing="wider"
+        >
+          Shop by Category
+        </Heading>
+        <SimpleGrid
+          columns={{ base: 2, sm: 3, lg: 5 }}
+          gap={{ base: 4, md: 6 }}
+        >
+          {[
+            {
+              label: "Survival",
+              img: "https://lh3.googleusercontent.com/aida-public/AB6AXuA20Xnm_TeXwxomyoxvujl70S6k91z2VZEgO8Agah7mzTOsQfocaTfMt2oMXxlg7p_pTY0nN_2yxUnlFC_IOJejLqOx-38bgdQAp1iwOEYpDSYo4zK6nClmy0LrVJtQXB_UKXKnGN9z9Zc2krS5WEjskJj1U6DgmXaDi0Tcpoqo2BJCVHE9TZi_qWYNEJBIq9jhT3oGOagK1pPOuNlJ7xNIvycdkCuXyLP2glb3IKIja1ZOonoFJ8j3UpeyVxKOrb5yajPGNhNz1T8",
+            },
+            {
+              label: "Camping",
+              img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDeY3nKiVtOjCF2CyuWrjMH2heyDx9o7XHMjv-zD8yCq7l0XvY14YwwPvdt61FzikqO9Zl5rM4Z9iP7zR6obfWmqQV14pzvfh0NjXLF7rBPZid9aDkUaPzAeojL4C28wZSyFrm2UlgTVDXY9HJHi3TyYgPHX4014RbbYKXpp1dKPxg4ZNstxELDFADgSPno8qyb17he9M2yFOJ0NpBKg5CZw5cwWhXvfCcl1n4s-s2pSyXQGS9ZjPAYIdia5xpHk4esOLV3tljWD6E",
+            },
+            {
+              label: "Self-Defense",
+              img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBBG9FG0rvVHUUH_nq8ftOYh5C-j0o2lVNPzR6EPhj1d9ZXZKi-GKQ2PYwdKuFroUPGh-oTCJnU-1R0CK_tNq5OT9s178lY_IXG9z4mIcrN5Q5w3MVqDbNPoICgWqmIO1R3POLTrtqJc64V6JtXA6Rm6loUwa7VRo6QIA36FJIlxYCYCpOpSD84tizykAAVmg_aq5w-yeZCq0IFObOE5YwEg1PCwRruz0W1HXZjLjKdVZZixpRgbvhip8sgvu3_gfgyXPtsqKxc9zo",
+            },
+            {
+              label: "Apparel",
+              img: "https://lh3.googleusercontent.com/aida-public/AB6AXuChkrZhDvFh1UNZA-CJCzRRJIFnQI7-oRE4RBTE7cVmgumQB1eYF9IYMdFNliSZIKYse4U54CVRyEPux-fjj9IKUoIdC_RaicX2otpo_Yyzh_E9edLuJMUAgSCK7cPjcSHu_ZaVEBxd9lWqBBw6JMe8rxknwfbgP13T-XCjpJcPA2oLpb_WaRHNk8V97pr7JHVmlCFKfGn_vyy1ch4fy88fVru2B9G0W9nZ82p1WaQOE3cKhH2hAMZErcs6sBL-MJeY6UxtAGuJPsk",
+            },
+            {
+              label: "Accessories",
+              img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAWmXibPm7KsGCkKYAdpwFenQs15wJ8D_OslI_QYpfqdd9BrFLRA5Wuwfsaz0l19oj76PhoQGtXlKlIYSo2TzqAhHl-CXetO9mnvldT-qi9WqnP0wxne7oiVB7k-KWzafvK5_c7jNP2TSxVZ0SF3HqdvDKosM7qz7J3RiTuH4wwNlNWWE-LuoARPY2b30bA6SGXsN5ny5nx6zoAEZR2s4P3P8yqUSUbSaYYeKu6DZgeyJb0FrGa-j34pzP1-sNDUu6aJQoqm08Lu0E",
+            },
+          ].map((c) => (
+            <LinkBox
+              key={c.label}
+              position="relative"
+              overflow="hidden"
+              rounded="lg"
+              role="group"
+            >
+              <Box
+                h="48"
+                w="full"
+                bgImage={`url('${c.img}')`}
+                bgSize="cover"
+                bgPos="center"
+                transition="transform 0.3s"
+                _groupHover={{ transform: "scale(1.05)" }}
+              />
+              <Box
+                position="absolute"
+                inset={0}
+                bg="blackAlpha.500"
+                _groupHover={{ bg: "blackAlpha.700" }}
+              />
+              <Heading
+                position="absolute"
+                bottom={4}
+                left={4}
+                size="md"
+                color="white"
+              >
+                <LinkOverlay href="#">{c.label}</LinkOverlay>
+              </Heading>
+            </LinkBox>
+          ))}
+        </SimpleGrid>
+      </Box>
+
+      {/* Newsletter callout */}
+      <Box
+        className="distressed-texture"
+        position="relative"
+        overflow="hidden"
+        rounded="xl"
+        p={{ base: 8, sm: 12, lg: 16 }}
+        textAlign="center"
+        bg={useColorModeValue("gray.200", "blackAlpha.500")}
+      >
+        <VStack spacing={4}>
+          <Heading size="lg" textTransform="uppercase" letterSpacing="wider">
+            Stay Prepared
+          </Heading>
+          <Text
+            maxW="2xl"
+            mx="auto"
+            color={useColorModeValue("gray.700", "gray.300")}
+          >
+            Sign up for our newsletter to get the latest gear updates and
+            survival tips.
+          </Text>
+          <Stack
+            direction={{ base: "column", sm: "row" }}
+            maxW="md"
+            w="full"
+            mt={2}
+            spacing={2}
+          >
+            <Input
+              type="email"
+              placeholder="Enter your email"
+              rounded="full"
+              bg={useColorModeValue("background.light", "background.dark")}
+              borderColor="primary"
+              _focusVisible={{
+                borderColor: "primary",
+                boxShadow: "0 0 0 1px var(--chakra-colors-primary)",
+              }}
+            />
+            <Button
+              type="submit"
+              rounded="full"
+              bg="primary"
+              color="white"
+              px={8}
+              py={3}
+              fontWeight="bold"
+              textTransform="uppercase"
+              letterSpacing="wider"
+            >
+              Subscribe
+            </Button>
+          </Stack>
+        </VStack>
       </Box>
     </VStack>
   );
