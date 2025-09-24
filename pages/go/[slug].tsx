@@ -1,25 +1,24 @@
 import { GetServerSideProps } from 'next';
-import { products } from '@/data/products';
+import { fetchSpringProductBySlug } from '@/lib/spring';
+import { products as fallbackProducts } from '@/data/products';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const slug = ctx.params?.slug as string | undefined;
-  const product = products.find((p) => p.slug === slug);
-
-  if (!product) {
-    return {
-      redirect: {
-        destination: '/shop',
-        permanent: false,
-      },
-    };
+  if (!slug) {
+    return { redirect: { destination: '/shop', permanent: false } };
   }
 
-  return {
-    redirect: {
-      destination: product.springUrl,
-      permanent: false,
-    },
-  };
+  // Try dynamic lookup first
+  try {
+    const p = await fetchSpringProductBySlug(slug);
+    if (p) return { redirect: { destination: p.springUrl, permanent: false } };
+  } catch {}
+
+  // Fallback to local products map
+  const fallback = fallbackProducts.find((p) => p.slug === slug);
+  if (fallback) return { redirect: { destination: fallback.springUrl, permanent: false } };
+
+  return { redirect: { destination: '/shop', permanent: false } };
 };
 
 // This page renders nothing; it only redirects on the server.

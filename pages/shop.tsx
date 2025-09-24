@@ -14,11 +14,14 @@ import {
   Input,
   useColorModeValue,
 } from "@chakra-ui/react";
+import type { GetServerSideProps } from "next";
 import FeaturedRow from "@/components/FeaturedRow";
 import ProductCard from "@/components/ProductCard";
-import { products, type Product } from "@/data/products";
+import { fetchSpringProducts, type SpringProduct } from "@/lib/spring";
 
-export default function ShopPage() {
+type Props = { items: SpringProduct[] };
+
+export default function ShopPage({ items }: Props) {
   const { colorMode, toggleColorMode } = useColorMode();
   // Deprecated Spring embed controls removed in favor of native grid
 
@@ -28,6 +31,12 @@ export default function ShopPage() {
   );
 
   const cardBg = useColorModeValue("background.light", "blackAlpha.600");
+
+  // Pick first 3 items with images for Featured section
+  const featuredItems = items
+    .filter((p) => !!p.image)
+    .slice(0, 3)
+    .map((p) => ({ slug: p.slug, title: p.title, image: p.image }));
 
   return (
     <VStack align="stretch" spacing={10}>
@@ -90,14 +99,14 @@ export default function ShopPage() {
         </VStack>
       </Box>
 
-      {/* Featured (existing) */}
+      {/* Featured (dynamic) */}
       <Box>
         <HStack mb={4}>
           <Heading size="lg" textTransform="uppercase" letterSpacing="wider">
             Featured Gear
           </Heading>
         </HStack>
-        <FeaturedRow />
+        <FeaturedRow items={featuredItems} />
       </Box>
 
       {/* Native Catalog Grid */}
@@ -112,8 +121,16 @@ export default function ShopPage() {
           </Button>
         </HStack>
         <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} spacing={6}>
-          {products.map((p: Product) => (
-            <ProductCard key={p.slug} product={p} />
+          {items.map((p) => (
+            <ProductCard
+              key={p.slug}
+              product={{
+                slug: p.slug,
+                title: p.title,
+                image: p.image,
+                price: p.price,
+              }}
+            />
           ))}
         </SimpleGrid>
       </Box>
@@ -250,3 +267,13 @@ export default function ShopPage() {
     </VStack>
   );
 }
+
+export const getServerSideProps: GetServerSideProps<Props> = async () => {
+  try {
+    const items = await fetchSpringProducts(3);
+    return { props: { items } };
+  } catch (e) {
+    // Fail gracefully by returning an empty list
+    return { props: { items: [] } };
+  }
+};

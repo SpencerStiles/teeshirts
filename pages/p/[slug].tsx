@@ -1,10 +1,11 @@
-import { GetStaticPaths, GetStaticProps } from 'next';
+import { GetServerSideProps } from 'next';
 import { Box, Button, Container, Heading, Image, Stack, Text, VStack } from '@chakra-ui/react';
 import Link from 'next/link';
-import { products, type Product } from '@/data/products';
+import { fetchSpringProductBySlug, type SpringProduct } from '@/lib/spring';
+import { products as fallbackProducts } from '@/data/products';
 
 interface Props {
-  product: Product | null;
+  product: { slug: string; title: string; image: string; price?: string } | null;
 }
 
 export default function ProductPage({ product }: Props) {
@@ -39,15 +40,16 @@ export default function ProductPage({ product }: Props) {
   );
 }
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  return {
-    paths: products.map((p) => ({ params: { slug: p.slug } })),
-    fallback: false,
-  };
-};
-
-export const getStaticProps: GetStaticProps<Props> = async (ctx) => {
+export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   const slug = ctx.params?.slug as string | undefined;
-  const product = products.find((p) => p.slug === slug) || null;
-  return { props: { product } };
+  if (!slug) return { props: { product: null } };
+
+  try {
+    const dynamic = await fetchSpringProductBySlug(slug);
+    if (dynamic) return { props: { product: { slug: dynamic.slug, title: dynamic.title, image: dynamic.image } } };
+  } catch {}
+
+  const fallback = fallbackProducts.find((p) => p.slug === slug);
+  if (fallback) return { props: { product: { slug: fallback.slug, title: fallback.title, image: fallback.image, price: fallback.price } } };
+  return { props: { product: null } };
 };

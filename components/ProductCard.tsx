@@ -1,9 +1,13 @@
 import { Box, Image, Heading, Text, Button, LinkBox, LinkOverlay, VStack } from '@chakra-ui/react';
 import Link from 'next/link';
-import type { Product } from '@/data/products';
 
 interface Props {
-  product: Product;
+  product: {
+    slug: string;
+    title: string;
+    image: string;
+    price?: string;
+  };
 }
 
 export default function ProductCard({ product }: Props) {
