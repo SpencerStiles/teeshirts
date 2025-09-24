@@ -1,9 +1,7 @@
-import { useMemo, useState } from "react";
 import {
   Box,
   Heading,
   HStack,
-  Select,
   Spacer,
   Button,
   useColorMode,
@@ -12,34 +10,17 @@ import {
   SimpleGrid,
   LinkBox,
   LinkOverlay,
-  useColorModeValue,
-  Input,
   Stack,
+  Input,
+  useColorModeValue,
 } from "@chakra-ui/react";
-import StoreEmbed from "@/components/StoreEmbed";
 import FeaturedRow from "@/components/FeaturedRow";
+import ProductCard from "@/components/ProductCard";
+import { products, type Product } from "@/data/products";
 
 export default function ShopPage() {
   const { colorMode, toggleColorMode } = useColorMode();
-  const [per, setPer] = useState(24);
-  const [page, setPage] = useState(1);
-  const [layout, setLayout] = useState<"grid-sm-4" | "grid-sm-3" | "grid-sm-2">(
-    "grid-sm-4"
-  );
-
-  const themeParam = colorMode === "dark" ? "dark" : "light";
-
-  const src = useMemo(() => {
-    const url = new URL("https://embed.creator-spring.com/widget");
-    url.searchParams.set("slug", "sgt-major-says");
-    url.searchParams.set("per", String(per));
-    url.searchParams.set("page", String(page));
-    url.searchParams.set("layout", layout);
-    url.searchParams.set("theme", themeParam);
-    // leave currency empty so Spring auto-detects
-    url.searchParams.set("currency", "");
-    return url.toString();
-  }, [per, page, layout, themeParam]);
+  // Deprecated Spring embed controls removed in favor of native grid
 
   const heroBg = useColorModeValue(
     `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDJStksEtGhq98yefXs1KCCKD5YIPs74URQXVu9gpiTpC2TA8JPUD61LXn6x76ZrnduNmFwPBGti_76wTZSslBiATJPbh8FbtLZ7awQkA6vo34qpgKVxtyUAlfBSiw6RpstwMJj1MaXxWoczOuBHdTNKWSX-_00ttFzfvxUdQ3WPTXcBW8-gc_4DaH_p_CEEU7muJ0Bj7b17jnAg9zQmipOvUoLq1OLt7C5Np683rmtafvDm_dKXG2tztwREW9sg5ArFH1lUxdqoZ0")`,
@@ -119,41 +100,22 @@ export default function ShopPage() {
         <FeaturedRow />
       </Box>
 
-      {/* Controls + Embed */}
+      {/* Native Catalog Grid */}
       <Box id="catalog">
-        <HStack spacing={4} mb={4}>
-          <HStack>
-            <Text fontWeight="semibold">Items per page</Text>
-            <Select
-              w="auto"
-              value={per}
-              onChange={(e) => setPer(Number(e.target.value))}
-            >
-              {[12, 24, 30, 48].map((n) => (
-                <option key={n} value={n}>
-                  {n}
-                </option>
-              ))}
-            </Select>
-          </HStack>
-          <HStack>
-            <Text fontWeight="semibold">Layout</Text>
-            <Select
-              w="auto"
-              value={layout}
-              onChange={(e) => setLayout(e.target.value as any)}
-            >
-              <option value="grid-sm-2">2 cols</option>
-              <option value="grid-sm-3">3 cols</option>
-              <option value="grid-sm-4">4 cols</option>
-            </Select>
-          </HStack>
+        <HStack mb={4}>
+          <Heading size="lg" textTransform="uppercase" letterSpacing="wider">
+            All Products
+          </Heading>
           <Spacer />
           <Button onClick={toggleColorMode} variant="outline">
             {colorMode === "dark" ? "Light mode" : "Dark mode"}
           </Button>
         </HStack>
-        <StoreEmbed src={src} />
+        <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} spacing={6}>
+          {products.map((p: Product) => (
+            <ProductCard key={p.slug} product={p} />
+          ))}
+        </SimpleGrid>
       </Box>
 
       {/* Categories */}

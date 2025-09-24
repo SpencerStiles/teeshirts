@@ -9,17 +9,17 @@ type FeaturedItem = {
 const featured: FeaturedItem[] = [
   {
     title: 'SGMSAYS Classic Tee',
-    href: 'https://sgt-major-says.creator-spring.com/listing/get-sgmsays?product=14',
+    href: '/p/sgmsays-classic-tee',
     image: '/featured1.svg',
   },
   {
     title: 'SGMSAYS Hoodie',
-    href: 'https://sgt-major-says.creator-spring.com/listing/get-sgmsays?product=1912',
+    href: '/p/sgmsays-hoodie',
     image: '/featured2.svg',
   },
   {
     title: 'SGMSAYS Mug',
-    href: 'https://sgt-major-says.creator-spring.com/listing/new-sgmsays?product=1896',
+    href: '/p/sgmsays-mug',
     image: '/featured3.svg',
   },
 ];
@@ -37,15 +37,15 @@ export default function FeaturedRow() {
             <Image src={item.image} alt={item.title} w="100%" h="220px" objectFit="cover" />
             <Box p={4}>
               <Heading size="md" noOfLines={1}>
-                <LinkOverlay href={item.href} target="_blank" rel="noopener noreferrer">
+                <LinkOverlay href={item.href}>
                   {item.title}
                 </LinkOverlay>
               </Heading>
               <Text color="gray.500" mt={1} noOfLines={2}>
-                View on Spring
+                View details
               </Text>
-              <Button as="a" href={item.href} target="_blank" rel="noopener noreferrer" mt={3} colorScheme="teal">
-                Buy on Spring
+              <Button as="a" href={item.href} mt={3} colorScheme="teal">
+                View Product
               </Button>
             </Box>
           </LinkBox>
