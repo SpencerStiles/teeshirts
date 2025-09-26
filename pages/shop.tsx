@@ -17,11 +17,11 @@ import {
 import type { GetServerSideProps } from "next";
 import FeaturedRow from "@/components/FeaturedRow";
 import ProductCard from "@/components/ProductCard";
-import { fetchSpringProducts, type SpringProduct } from "@/lib/spring";
+import { fetchSpringProductsPage, type SpringProduct } from "@/lib/spring";
 
-type Props = { items: SpringProduct[] };
+type Props = { items: SpringProduct[]; page: number; hasNext: boolean; totalPages: number };
 
-export default function ShopPage({ items }: Props) {
+export default function ShopPage({ items, page, hasNext, totalPages }: Props) {
   const { colorMode, toggleColorMode } = useColorMode();
   // Deprecated Spring embed controls removed in favor of native grid
 
@@ -120,7 +120,7 @@ export default function ShopPage({ items }: Props) {
             {colorMode === "dark" ? "Light mode" : "Dark mode"}
           </Button>
         </HStack>
-        <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} spacing={6}>
+        <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} spacing={6}>
           {items.map((p) => (
             <ProductCard
               key={p.slug}
@@ -133,6 +133,41 @@ export default function ShopPage({ items }: Props) {
             />
           ))}
         </SimpleGrid>
+        {/* Pagination controls */}
+        <HStack mt={6} justify="space-between" align="center" wrap="wrap" gap={2}>
+          <Button as="a" href={`/shop?page=${Math.max(1, page - 1)}`} isDisabled={page <= 1} variant="outline">
+            Prev
+          </Button>
+          <HStack>
+            {(() => {
+              const buttons: JSX.Element[] = [];
+              const maxButtons = 9; // window size
+              let start = Math.max(1, page - Math.floor(maxButtons / 2));
+              let end = Math.min(totalPages, start + maxButtons - 1);
+              if (end - start + 1 < maxButtons) start = Math.max(1, end - maxButtons + 1);
+              if (start > 1) buttons.push(<Text key="first">…</Text>);
+              for (let p = start; p <= end; p++) {
+                buttons.push(
+                  <Button
+                    key={p}
+                    as="a"
+                    href={`/shop?page=${p}`}
+                    size="sm"
+                    variant={p === page ? 'solid' : 'outline'}
+                    colorScheme={p === page ? 'teal' : undefined}
+                  >
+                    {p}
+                  </Button>
+                );
+              }
+              if (end < totalPages) buttons.push(<Text key="last">…</Text>);
+              return buttons;
+            })()}
+          </HStack>
+          <Button as="a" href={`/shop?page=${page + 1}`} isDisabled={!hasNext} variant="outline">
+            Next
+          </Button>
+        </HStack>
       </Box>
 
       {/* Categories */}
@@ -272,12 +307,21 @@ export default function ShopPage({ items }: Props) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps<Props> = async () => {
+export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
+  const pageParam = Array.isArray(ctx.query.page) ? ctx.query.page[0] : ctx.query.page;
+  const page = Math.max(1, parseInt(pageParam || '1', 10) || 1);
   try {
-    const items = await fetchSpringProducts(3);
-    return { props: { items } };
+    // Aggregate multiple Spring pages to show ~12 items per app page
+    const SPRING_PAGES_PER_VIEW = 4; // adjust if Spring changes per-page count
+    const start = (page - 1) * SPRING_PAGES_PER_VIEW + 1;
+    const promises = Array.from({ length: SPRING_PAGES_PER_VIEW }, (_, i) => fetchSpringProductsPage(start + i));
+    const results = await Promise.all(promises);
+    const items = results.flatMap(r => r.items);
+    const hasNext = results[results.length - 1]?.hasNext ?? false;
+    // totalPages from the last Spring page we loaded; multiply by our aggregation window if desired
+    const lastTotal = results[results.length - 1]?.totalPages ?? page;
+    return { props: { items, page, hasNext, totalPages: lastTotal } };
   } catch (e) {
-    // Fail gracefully by returning an empty list
-    return { props: { items: [] } };
+    return { props: { items: [], page, hasNext: false, totalPages: page } };
   }
 };

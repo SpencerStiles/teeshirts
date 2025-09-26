@@ -164,13 +164,97 @@ export async function fetchSpringProducts(maxPages = 3): Promise<SpringProduct[]
   return all;
 }
 
+// Fetch a single store page and indicate if a subsequent page likely exists
+export async function fetchSpringProductsPage(page: number): Promise<{ items: SpringProduct[]; hasNext: boolean; totalPages: number }>
+{
+  const p = Math.max(1, Number(page) || 1);
+  const res = await fetch(`${BASE_URL}/?page=${p}`, {
+    headers: {
+      'user-agent': 'Mozilla/5.0 (compatible; SGTMajorBot/1.0; +https://example.com)'
+    },
+  });
+  if (!res.ok) return { items: [], hasNext: false, totalPages: 1 };
+  const html = await res.text();
+  const $ = load(html);
+
+  const items = new Map<string, SpringProduct>();
+  $('a[href^="/listing/"]').each((_: number, el: any) => {
+    const href = $(el).attr('href') || '';
+    const springUrl = absoluteUrl(href);
+    const slug = deriveSlugFromHref(href);
+
+    let title = $(el).find('h2, h3, .title, .product-title, p').first().text().trim();
+    if (!title) title = $(el).attr('title') || slug;
+    title = normalizeTitle(title);
+
+    let img = $(el).find('img').first().attr('src') || $(el).find('img').first().attr('data-src') || '';
+    if (!img) {
+      const srcset = $(el).find('source').first().attr('srcset') || '';
+      if (srcset) img = srcset.split(',')[0]?.trim().split(' ')[0] || '';
+    }
+    const image = absoluteUrl(img);
+
+    items.set(slug, { slug, title, image, springUrl });
+  });
+
+  // Heuristic: if the page shows links to a higher page number, consider hasNext=true
+  const nextPage = p + 1;
+  const hasNext = $(`a[href*="?page=${nextPage}"]`).length > 0 || /page=\d+/.test(html);
+  // Determine total pages from pagination links, fallback to current or nextPage if unknown
+  let totalPages = 1;
+  try {
+    const nums = new Set<number>();
+    $(`a[href*="?page="]`).each((_: number, el: any) => {
+      const href = $(el).attr('href') || '';
+      const match = href.match(/[?&]page=(\d+)/i);
+      const n = match ? parseInt(match[1], 10) : NaN;
+      if (!isNaN(n)) nums.add(n);
+    });
+    if (nums.size > 0) totalPages = Math.max(...Array.from(nums.values()));
+    else if (hasNext) totalPages = nextPage; // minimum we know
+    else totalPages = p; // at least current
+  } catch { totalPages = hasNext ? nextPage : p; }
+
+  return { items: Array.from(items.values()), hasNext, totalPages };
+}
+
 export async function fetchSpringProductBySlug(slug: string): Promise<SpringProduct | null> {
   const list = await fetchSpringProducts();
   const exact = list.find((p) => p.slug === slug);
   if (exact) return exact;
-  // Fallback: partial match
+  // Fallback: partial match within currently cached pages
   const partial = list.find((p) => p.slug.includes(slug) || slug.includes(p.slug));
-  return partial || null;
+  if (partial) return partial;
+
+  // Deep fallback: fetch the listing page directly by slug to construct a minimal product
+  const candidates = [slug, `get-${slug}`, `buy-${slug}`];
+  for (const cand of candidates) {
+    const url = `${BASE_URL}/listing/${cand}`;
+    try {
+      const res = await fetch(url, {
+        headers: {
+          'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+          'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+        }
+      });
+      if (!res.ok) continue;
+      const html = await res.text();
+      const $ = load(html);
+      const rawTitle = (
+        $('meta[property="og:title"]').attr('content') ||
+        $('title').text() ||
+        $('h1').first().text()
+      ).trim();
+      const title = normalizeTitle(rawTitle || cand);
+      const ogImg = $('meta[property="og:image"]').attr('content') || '';
+      const firstImg = $('img').first().attr('src') || '';
+      const image = absoluteUrl(ogImg || firstImg || '');
+      if (image) return { slug: cand, title, image, springUrl: url };
+      // Even without image we can still return, but prefer when image present
+      return { slug: cand, title, image: image || `${BASE_URL}/favicon.ico`, springUrl: url };
+    } catch {}
+  }
+  return null;
 }
 
 export async function fetchSpringProductDetailBySlug(slug: string): Promise<SpringProduct | null> {
