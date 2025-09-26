@@ -77,6 +77,35 @@ function deriveSlugFromHref(href: string): string {
   }
 }
 
+function normalizeTitle(input: string): string {
+  if (!input) return input;
+  let s = String(input).trim();
+  // If looks like a slug or contains known noise, normalize
+  const looksSluggy = /-|_/g.test(s) || /^(buy|get)[-\s_]/i.test(s) || /sgmsays/i.test(s) || /-\d+$/i.test(s);
+  if (!looksSluggy) return s;
+
+  // Normalize separators and remove prefixes/suffixes
+  s = s.replace(/_/g, '-');
+  s = s.replace(/^(buy|get)[-\s_]+/i, ''); // leading buy/get-
+  s = s.replace(/\bsgmsays\b/gi, ''); // drop store tag
+  s = s.replace(/-?\d+$/i, ''); // trailing numeric suffixes like -7690
+  s = s.replace(/-{2,}/g, '-');
+  s = s.replace(/^-+|-+$/g, '');
+  // Replace hyphens with spaces
+  s = s.replace(/-/g, ' ');
+  s = s.replace(/\s{2,}/g, ' ').trim();
+
+  // Title case with small words preserved
+  const small = new Set(['a','an','and','as','at','but','by','for','in','nor','of','on','or','per','the','to','vs','via']);
+  const words = s.split(' ');
+  const titled = words.map((w, i) => {
+    const lw = w.toLowerCase();
+    if (i !== 0 && i !== words.length - 1 && small.has(lw)) return lw;
+    return lw.charAt(0).toUpperCase() + lw.slice(1);
+  }).join(' ');
+  return titled;
+}
+
 async function fetchPage(page: number): Promise<SpringProduct[]> {
   const res = await fetch(`${BASE_URL}/?page=${page}`, {
     headers: {
@@ -97,6 +126,7 @@ async function fetchPage(page: number): Promise<SpringProduct[]> {
     // Find title and image within the anchor or its container
     let title = $(el).find('h2, h3, .title, .product-title, p').first().text().trim();
     if (!title) title = $(el).attr('title') || slug;
+    title = normalizeTitle(title);
 
     // Image selection fallbacks
     let img = $(el).find('img').first().attr('src') || $(el).find('img').first().attr('data-src') || '';
