@@ -1,11 +1,13 @@
 import { GetServerSideProps } from 'next';
-import { Box, Button, Container, Heading, Image, Stack, Text, VStack } from '@chakra-ui/react';
+import { Box, Button, Container, Heading, Image, Stack, Text, VStack, HStack, IconButton } from '@chakra-ui/react';
+import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import Link from 'next/link';
-import { fetchSpringProductBySlug, type SpringProduct } from '@/lib/spring';
+import { fetchSpringProductDetailBySlug, type SpringProduct } from '@/lib/spring';
 import { products as fallbackProducts } from '@/data/products';
+import { useState } from 'react';
 
 interface Props {
-  product: { slug: string; title: string; image: string; price?: string } | null;
+  product: { slug: string; title: string; image: string; images?: string[]; price?: string } | null;
 }
 
 export default function ProductPage({ product }: Props) {
@@ -18,11 +20,72 @@ export default function ProductPage({ product }: Props) {
     );
   }
 
+  // Gallery state
+  const [current, setCurrent] = useState<string>(product.images?.[0] ?? product.image);
+  const imgs = (product.images && product.images.length > 0) ? product.images : [product.image];
+  const curIndex = Math.max(0, imgs.findIndex((u) => u === current));
+  const hasMultiple = imgs.length > 1;
+  const prev = () => {
+    if (!hasMultiple) return;
+    const i = (curIndex - 1 + imgs.length) % imgs.length;
+    setCurrent(imgs[i]);
+  };
+  const next = () => {
+    if (!hasMultiple) return;
+    const i = (curIndex + 1) % imgs.length;
+    setCurrent(imgs[i]);
+  };
+
   return (
     <Container maxW="6xl" py={10}>
       <Stack direction={{ base: 'column', md: 'row' }} spacing={8} align="flex-start">
-        <Box flex="1" overflow="hidden" borderRadius="xl" borderWidth="1px">
-          <Image src={product.image} alt={product.title} w="100%" h="100%" objectFit="cover" />
+        <Box flex="1" overflow="hidden" borderRadius="xl" borderWidth="1px" position="relative">
+          <Image src={current} alt={product.title} w="100%" h="100%" objectFit="cover" />
+          {hasMultiple && (
+            <>
+              <IconButton
+                aria-label="Previous image"
+                onClick={prev}
+                icon={<ChevronLeftIcon boxSize={6} />}
+                position="absolute"
+                top="50%"
+                left="3"
+                transform="translateY(-50%)"
+                variant="solid"
+                colorScheme="blackAlpha"
+                color="white"
+                rounded="full"
+                boxShadow="sm"
+                _hover={{ bg: 'blackAlpha.800' }}
+                _active={{ bg: 'blackAlpha.900' }}
+              />
+              <IconButton
+                aria-label="Next image"
+                onClick={next}
+                icon={<ChevronRightIcon boxSize={6} />}
+                position="absolute"
+                top="50%"
+                right="3"
+                transform="translateY(-50%)"
+                variant="solid"
+                colorScheme="blackAlpha"
+                color="white"
+                rounded="full"
+                boxShadow="sm"
+                _hover={{ bg: 'blackAlpha.800' }}
+                _active={{ bg: 'blackAlpha.900' }}
+              />
+            </>
+          )}
+          {hasMultiple && (
+            <HStack spacing={2} mt={3} p={3}>
+              {imgs.map((src) => (
+                <Box key={src} as="button" onClick={() => setCurrent(src)} borderWidth={current === src ? '2px' : '1px'} borderColor={current === src ? 'primary' : 'gray.200'} rounded="md" overflow="hidden">
+                  <Image src={src} alt="thumbnail" w="72px" h="72px" objectFit="cover" />
+                </Box>
+              ))}
+            </HStack>
+          )}
         </Box>
         <VStack align="stretch" spacing={4} flex="1">
           <Heading size="xl" textTransform="none">{product.title}</Heading>
@@ -45,11 +108,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   if (!slug) return { props: { product: null } };
 
   try {
-    const dynamic = await fetchSpringProductBySlug(slug);
-    if (dynamic) return { props: { product: { slug: dynamic.slug, title: dynamic.title, image: dynamic.image } } };
+    const dynamic = await fetchSpringProductDetailBySlug(slug);
+    if (dynamic) return { props: { product: { slug: dynamic.slug, title: dynamic.title, image: dynamic.image, images: dynamic.images } } };
   } catch {}
 
   const fallback = fallbackProducts.find((p) => p.slug === slug);
-  if (fallback) return { props: { product: { slug: fallback.slug, title: fallback.title, image: fallback.image, price: fallback.price } } };
+  if (fallback) return { props: { product: { slug: fallback.slug, title: fallback.title, image: fallback.image, images: [fallback.image], price: fallback.price } } };
   return { props: { product: null } };
 };
