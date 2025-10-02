@@ -1,6 +1,4 @@
-import { Box, Button, Heading, HStack, Image, LinkBox, LinkOverlay, SimpleGrid, Text, IconButton } from '@chakra-ui/react';
-import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
-import { useEffect, useState } from 'react';
+import { Box, Button, Heading, HStack, Image, LinkBox, LinkOverlay, SimpleGrid, Text } from '@chakra-ui/react';
 
 type FeaturedItem = {
   slug: string;
@@ -37,44 +35,21 @@ export default function FeaturedRow({ items }: Props) {
 }
 
 function FeaturedCard({ item }: { item: FeaturedItem }) {
-  const [images, setImages] = useState<string[]>([item.image]);
-  const [idx, setIdx] = useState(0);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const res = await fetch(`/api/product-images?slug=${encodeURIComponent(item.slug)}`);
-        if (!res.ok) return;
-        const data = await res.json();
-        if (!cancelled && Array.isArray(data.images) && data.images.length > 0) {
-          setImages(data.images);
-          setIdx(0);
-        }
-      } catch {}
-    })();
-    return () => { cancelled = true; };
-  }, [item.slug]);
-
-  const hasMultiple = images.length > 1;
-  const prev = (e?: React.MouseEvent) => { e?.preventDefault(); e?.stopPropagation(); setIdx((i) => (i - 1 + images.length) % images.length); };
-  const next = (e?: React.MouseEvent) => { e?.preventDefault(); e?.stopPropagation(); setIdx((i) => (i + 1) % images.length); };
-
+  // Don't fetch additional images - use the initial image from the category page
+  // This prevents the American flag placeholder issue
+  
   return (
     <LinkBox as="article" borderWidth="1px" borderRadius="lg" overflow="hidden" role="group">
-      <Box position="relative" h="220px" w="100%" overflow="hidden" onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
-        <Image src={images[idx] || item.image} alt={item.title} w="100%" h="100%" objectFit="cover" transition="transform 0.4s" _groupHover={{ transform: 'scale(1.02)' }} />
-        {hasMultiple && (
-          <>
-            <IconButton aria-label="Previous image" icon={<ChevronLeftIcon />} size="sm" variant="solid" colorScheme="blackAlpha" position="absolute" top="50%" left="2" transform="translateY(-50%)" zIndex={1} pointerEvents="auto" onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }} onClick={prev} />
-            <IconButton aria-label="Next image" icon={<ChevronRightIcon />} size="sm" variant="solid" colorScheme="blackAlpha" position="absolute" top="50%" right="2" transform="translateY(-50%)" zIndex={1} pointerEvents="auto" onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }} onClick={next} />
-            <Box position="absolute" bottom="2" left="50%" transform="translateX(-50%)" display="flex" gap={1} pointerEvents="none">
-              {images.map((_, i) => (
-                <Box key={i} w="8px" h="8px" rounded="full" bg={i === idx ? 'primary' : 'whiteAlpha.700'} borderWidth={i === idx ? '0px' : '1px'} borderColor="blackAlpha.400" />
-              ))}
-            </Box>
-          </>
-        )}
+      <Box position="relative" h="220px" w="100%" overflow="hidden">
+        <Image 
+          src={item.image} 
+          alt={item.title} 
+          w="100%" 
+          h="100%" 
+          objectFit="cover" 
+          transition="transform 0.4s" 
+          _groupHover={{ transform: 'scale(1.02)' }} 
+        />
       </Box>
       <Box p={4}>
         <Heading size="md" noOfLines={1}>

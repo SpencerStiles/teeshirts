@@ -20,16 +20,25 @@ import {
   TabPanel,
 } from "@chakra-ui/react";
 import type { GetServerSideProps } from "next";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import FeaturedRow from "@/components/FeaturedRow";
 import ProductCard from "@/components/ProductCard";
-import { fetchSpringProductsPage, type SpringProduct } from "@/lib/spring";
+import { fetchSpringProductsPage, fetchSpringProductsByCategory, type SpringProduct } from "@/lib/spring";
 
 type Props = { items: SpringProduct[]; page: number; hasNext: boolean; totalPages: number };
 
 export default function ShopPage({ items, page, hasNext, totalPages }: Props) {
   const { colorMode, toggleColorMode } = useColorMode();
-  const [activeCategory, setActiveCategory] = useState<string>('explore');
+  const router = useRouter();
+  const categoryFromUrl = (router.query.category as string) || 'explore';
+  const [activeCategory, setActiveCategory] = useState<string>(categoryFromUrl);
+  
+  // Update active category when URL changes
+  useEffect(() => {
+    setActiveCategory(categoryFromUrl);
+  }, [categoryFromUrl]);
+  
   // Deprecated Spring embed controls removed in favor of native grid
 
   const heroBg = useColorModeValue(
@@ -39,30 +48,17 @@ export default function ShopPage({ items, page, hasNext, totalPages }: Props) {
 
   const cardBg = useColorModeValue("background.light", "blackAlpha.600");
 
-  // Pick first 3 items with images for Featured section
-  const featuredItems = items
-    .filter((p) => !!p.image)
+  // Filter items by category using the category field from Spring
+  const filteredItems = activeCategory === 'explore' 
+    ? items 
+    : items.filter(p => p.category === activeCategory);
+
+  // Pick first 3 items with images for Featured section from the filtered items
+  // Using first 3 instead of random to avoid hydration errors (server/client mismatch)
+  const featuredItems = filteredItems
+    .filter((p) => !!p.image && p.image.length > 0)
     .slice(0, 3)
     .map((p) => ({ slug: p.slug, title: p.title, image: p.image }));
-
-  // Category filtering logic (basic keyword matching)
-  const filterByCategory = (products: SpringProduct[], category: string) => {
-    if (category === 'explore') return products;
-    
-    const keywords: Record<string, string[]> = {
-      apparel: ['shirt', 't-shirt', 'tee', 'hoodie', 'sweatshirt', 'tank', 'long sleeve', 'pants', 'athletic'],
-      accessories: ['hat', 'cap', 'bag', 'sticker', 'stationery', 'accessory'],
-      drinkware: ['mug', 'cup', 'bottle', 'tumbler', 'drinkware'],
-    };
-    
-    const categoryKeywords = keywords[category] || [];
-    return products.filter(p => {
-      const title = p.title.toLowerCase();
-      return categoryKeywords.some(keyword => title.includes(keyword));
-    });
-  };
-
-  const filteredItems = filterByCategory(items, activeCategory);
 
   return (
     <VStack align="stretch" spacing={10}>
@@ -150,9 +146,13 @@ export default function ShopPage({ items, page, hasNext, totalPages }: Props) {
         <Tabs 
           variant="soft-rounded" 
           colorScheme="red"
+          index={['explore', 'apparel', 'accessories', 'drinkware'].indexOf(activeCategory)}
           onChange={(index) => {
             const categories = ['explore', 'apparel', 'accessories', 'drinkware'];
-            setActiveCategory(categories[index]);
+            const newCategory = categories[index];
+            setActiveCategory(newCategory);
+            // Reset to page 1 when changing categories
+            router.push(`/shop?page=1&category=${newCategory}`);
           }}
         >
           <TabList mb={6} flexWrap="wrap" gap={2}>
@@ -199,7 +199,12 @@ export default function ShopPage({ items, page, hasNext, totalPages }: Props) {
         </Tabs>
         {/* Pagination controls */}
         <HStack mt={6} justify="space-between" align="center" wrap="wrap" gap={2}>
-          <Button as="a" href={`/shop?page=${Math.max(1, page - 1)}`} isDisabled={page <= 1} variant="outline">
+          <Button 
+            as="a" 
+            href={`/shop?page=${Math.max(1, page - 1)}&category=${activeCategory}`} 
+            isDisabled={page <= 1} 
+            variant="outline"
+          >
             Prev
           </Button>
           <HStack>
@@ -215,7 +220,7 @@ export default function ShopPage({ items, page, hasNext, totalPages }: Props) {
                   <Button
                     key={p}
                     as="a"
-                    href={`/shop?page=${p}`}
+                    href={`/shop?page=${p}&category=${activeCategory}`}
                     size="sm"
                     variant={p === page ? 'solid' : 'outline'}
                     colorScheme={p === page ? 'teal' : undefined}
@@ -228,7 +233,12 @@ export default function ShopPage({ items, page, hasNext, totalPages }: Props) {
               return buttons;
             })()}
           </HStack>
-          <Button as="a" href={`/shop?page=${page + 1}`} isDisabled={!hasNext} variant="outline">
+          <Button 
+            as="a" 
+            href={`/shop?page=${page + 1}&category=${activeCategory}`} 
+            isDisabled={!hasNext} 
+            variant="outline"
+          >
             Next
           </Button>
         </HStack>
@@ -373,19 +383,102 @@ export default function ShopPage({ items, page, hasNext, totalPages }: Props) {
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   const pageParam = Array.isArray(ctx.query.page) ? ctx.query.page[0] : ctx.query.page;
+  const categoryParam = Array.isArray(ctx.query.category) ? ctx.query.category[0] : ctx.query.category;
   const page = Math.max(1, parseInt(pageParam || '1', 10) || 1);
+  const category = categoryParam || 'explore';
+  const ITEMS_PER_PAGE = 16;
+  
   try {
-    // Aggregate multiple Spring pages to show ~12 items per app page
-    const SPRING_PAGES_PER_VIEW = 4; // adjust if Spring changes per-page count
-    const start = (page - 1) * SPRING_PAGES_PER_VIEW + 1;
-    const promises = Array.from({ length: SPRING_PAGES_PER_VIEW }, (_, i) => fetchSpringProductsPage(start + i));
-    const results = await Promise.all(promises);
-    const items = results.flatMap(r => r.items);
-    const hasNext = results[results.length - 1]?.hasNext ?? false;
-    // totalPages from the last Spring page we loaded; multiply by our aggregation window if desired
-    const lastTotal = results[results.length - 1]?.totalPages ?? page;
-    return { props: { items, page, hasNext, totalPages: lastTotal } };
+    let allItems: SpringProduct[] = [];
+    
+    if (category === 'explore') {
+      // For "Explore", fetch all categories from all their pages
+      const fetchAllPages = async (cat: 'apparel' | 'accessories' | 'drinkware') => {
+        const items: SpringProduct[] = [];
+        const seenSlugs = new Set<string>();
+        let currentPage = 1;
+        let hasMore = true;
+        
+        while (hasMore && currentPage <= 10) { // Limit to 10 pages per category to avoid infinite loops
+          const result = await fetchSpringProductsByCategory(cat, currentPage);
+          
+          // Check if we're getting new items or just duplicates
+          let newItemsCount = 0;
+          for (const item of result.items) {
+            if (!seenSlugs.has(item.slug)) {
+              seenSlugs.add(item.slug);
+              items.push(item);
+              newItemsCount++;
+            }
+          }
+          
+          // If we got no new items, stop fetching (pagination is just repeating)
+          if (newItemsCount === 0) {
+            break;
+          }
+          
+          hasMore = result.hasNext;
+          currentPage++;
+        }
+        return items;
+      };
+      
+      const [apparelItems, accessoriesItems, drinkwareItems] = await Promise.all([
+        fetchAllPages('apparel'),
+        fetchAllPages('accessories'),
+        fetchAllPages('drinkware'),
+      ]);
+
+      allItems = [...apparelItems, ...accessoriesItems, ...drinkwareItems];
+    } else {
+      // For specific category, fetch all pages from that category
+      const validCategory = ['apparel', 'accessories', 'drinkware'].includes(category) 
+        ? category as 'apparel' | 'accessories' | 'drinkware'
+        : 'apparel';
+      
+      const seenSlugs = new Set<string>();
+      let currentPage = 1;
+      let hasMore = true;
+      
+      while (hasMore && currentPage <= 10) { // Limit to 10 pages to avoid infinite loops
+        const result = await fetchSpringProductsByCategory(validCategory, currentPage);
+        
+        // Check if we're getting new items or just duplicates
+        let newItemsCount = 0;
+        for (const item of result.items) {
+          if (!seenSlugs.has(item.slug)) {
+            seenSlugs.add(item.slug);
+            allItems.push(item);
+            newItemsCount++;
+          }
+        }
+        
+        // If we got no new items, stop fetching (pagination is just repeating)
+        if (newItemsCount === 0) {
+          break;
+        }
+        
+        hasMore = result.hasNext;
+        currentPage++;
+      }
+    }
+    
+    // Now paginate the combined results into chunks of ITEMS_PER_PAGE
+    const totalPages = Math.ceil(allItems.length / ITEMS_PER_PAGE);
+    const startIndex = (page - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const paginatedItems = allItems.slice(startIndex, endIndex);
+    const hasNext = page < totalPages;
+    
+    return { 
+      props: { 
+        items: paginatedItems, 
+        page, 
+        hasNext, 
+        totalPages 
+      } 
+    };
   } catch (e) {
-    return { props: { items: [], page, hasNext: false, totalPages: page } };
+    return { props: { items: [], page, hasNext: false, totalPages: 1 } };
   }
 };

@@ -24,6 +24,7 @@ export type SpringProduct = {
   springUrl: string; // absolute URL
   price?: string;
   images?: string[]; // optional gallery
+  category?: 'apparel' | 'accessories' | 'drinkware'; // product category
 };
 
 const STORE_SLUG = 'sgt-major-says';
@@ -162,6 +163,73 @@ export async function fetchSpringProducts(maxPages = 3): Promise<SpringProduct[]
 
   cache = { products: all, expiresAt: now + 5 * 60 * 1000 };
   return all;
+}
+
+// Fetch products from a specific category endpoint
+export async function fetchSpringProductsByCategory(
+  category: 'apparel' | 'accessories' | 'drinkware',
+  page: number = 1
+): Promise<{ items: SpringProduct[]; hasNext: boolean; totalPages: number }> {
+  const categoryPaths: Record<string, string> = {
+    apparel: '/apparel',
+    accessories: '/accessories',
+    drinkware: '/Drinkware',
+  };
+
+  const p = Math.max(1, Number(page) || 1);
+  const categoryPath = categoryPaths[category] || '';
+  const url = `${BASE_URL}${categoryPath}${p > 1 ? `?page=${p}` : ''}`;
+  
+  const res = await fetch(url, {
+    headers: {
+      'user-agent': 'Mozilla/5.0 (compatible; SGTMajorBot/1.0; +https://example.com)'
+    },
+  });
+  if (!res.ok) return { items: [], hasNext: false, totalPages: 1 };
+  const html = await res.text();
+  const $ = load(html);
+
+  const items = new Map<string, SpringProduct>();
+  $('a[href^="/listing/"]').each((_: number, el: any) => {
+    const href = $(el).attr('href') || '';
+    const springUrl = absoluteUrl(href);
+    // Create unique slug that includes product ID to avoid duplicates
+    const urlObj = new URL(springUrl);
+    const productId = urlObj.searchParams.get('product') || '';
+    const basePath = urlObj.pathname.split('/').pop() || '';
+    const slug = productId ? `${basePath}-${productId}` : deriveSlugFromHref(href);
+
+    let title = $(el).find('h2, h3, .title, .product-title, p').first().text().trim();
+    if (!title) title = $(el).attr('title') || slug;
+    title = normalizeTitle(title);
+
+    let img = $(el).find('img').first().attr('src') || $(el).find('img').first().attr('data-src') || '';
+    if (!img) {
+      const srcset = $(el).find('source').first().attr('srcset') || '';
+      if (srcset) img = srcset.split(',')[0]?.trim().split(' ')[0] || '';
+    }
+    const image = absoluteUrl(img);
+
+    items.set(slug, { slug, title, image, springUrl, category });
+  });
+
+  const nextPage = p + 1;
+  const hasNext = $(`a[href*="?page=${nextPage}"]`).length > 0 || /page=\d+/.test(html);
+  let totalPages = 1;
+  try {
+    const nums = new Set<number>();
+    $(`a[href*="?page="]`).each((_: number, el: any) => {
+      const href = $(el).attr('href') || '';
+      const match = href.match(/[?&]page=(\d+)/i);
+      const n = match ? parseInt(match[1], 10) : NaN;
+      if (!isNaN(n)) nums.add(n);
+    });
+    if (nums.size > 0) totalPages = Math.max(...Array.from(nums.values()));
+    else if (hasNext) totalPages = nextPage;
+    else totalPages = p;
+  } catch { totalPages = hasNext ? nextPage : p; }
+
+  return { items: Array.from(items.values()), hasNext, totalPages };
 }
 
 // Fetch a single store page and indicate if a subsequent page likely exists

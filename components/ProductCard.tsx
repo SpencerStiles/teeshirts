@@ -26,18 +26,14 @@ export default function ProductCard({ product }: Props) {
   const borderColor = useColorModeValue('gray.200', 'gray.700');
 
   useEffect(() => {
+    // Only fetch additional images if we don't already have them
+    // Skip API call for now since slug format changed and may cause issues
+    // The initial product.image is already correct from the category page
     let cancelled = false;
-    async function loadImages() {
-      try {
-        const res = await fetch(`/api/product-images?slug=${encodeURIComponent(product.slug)}`);
-        if (!res.ok) return;
-        const data = await res.json();
-        if (!cancelled && Array.isArray(data.images) && data.images.length > 0) {
-          setImages(data.images);
-        }
-      } catch {}
-    }
-    loadImages();
+    
+    // Optionally load more images in the future when API is updated
+    // For now, just use the initial image
+    
     return () => { cancelled = true; };
   }, [product.slug]);
 
@@ -48,8 +44,9 @@ export default function ProductCard({ product }: Props) {
     { name: 'Gray', hex: '#718096' },
   ];
 
-  // Show front image by default, back image on hover
-  const displayImage = isHovered && images.length > 1 ? images[1] : images[0];
+  // Show front image by default, back image on hover (if available)
+  // Since we're not loading additional images right now, this will just show the main image
+  const displayImage = isHovered && images.length > 1 ? images[1] : images[0] || product.image;
 
   const handleColorClick = (e: React.MouseEvent, index: number) => {
     e.preventDefault();
