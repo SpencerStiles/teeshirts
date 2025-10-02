@@ -1,4 +1,5 @@
 import { Box, Button, Heading, HStack, Image, LinkBox, LinkOverlay, SimpleGrid, Text } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 
 type FeaturedItem = {
   slug: string;
@@ -35,19 +36,38 @@ export default function FeaturedRow({ items }: Props) {
 }
 
 function FeaturedCard({ item }: { item: FeaturedItem }) {
-  // Don't fetch additional images - use the initial image from the category page
-  // This prevents the American flag placeholder issue
+  const [images, setImages] = useState<string[]>([item.image]);
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    // Disable additional image fetching for now
+    // The API can't reliably match products with the new slug format
+    // Keep the initial item.image which is correct from the category page
+    let cancelled = false;
+    return () => { cancelled = true; };
+  }, [item.slug]);
+
+  // Show front image by default, back image on hover (if available)
+  const displayImage = isHovered && images.length > 1 ? images[1] : images[0] || item.image;
   
   return (
-    <LinkBox as="article" borderWidth="1px" borderRadius="lg" overflow="hidden" role="group">
+    <LinkBox 
+      as="article" 
+      borderWidth="1px" 
+      borderRadius="lg" 
+      overflow="hidden" 
+      role="group"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <Box position="relative" h="220px" w="100%" overflow="hidden">
         <Image 
-          src={item.image} 
+          src={displayImage} 
           alt={item.title} 
           w="100%" 
           h="100%" 
           objectFit="cover" 
-          transition="transform 0.4s" 
+          transition="opacity 0.3s ease-in-out" 
           _groupHover={{ transform: 'scale(1.02)' }} 
         />
       </Box>

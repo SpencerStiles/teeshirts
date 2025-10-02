@@ -82,13 +82,14 @@ function normalizeTitle(input: string): string {
   if (!input) return input;
   let s = String(input).trim();
   // If looks like a slug or contains known noise, normalize
-  const looksSluggy = /-|_/g.test(s) || /^(buy|get)[-\s_]/i.test(s) || /sgmsays/i.test(s) || /-\d+$/i.test(s);
+  const looksSluggy = /-|_/g.test(s) || /^(buy|get|new)[-\s_]/i.test(s) || /sgmsays/i.test(s) || /-\d+$/i.test(s);
   if (!looksSluggy) return s;
 
   // Normalize separators and remove prefixes/suffixes
   s = s.replace(/_/g, '-');
-  s = s.replace(/^(buy|get)[-\s_]+/i, ''); // leading buy/get-
+  s = s.replace(/^(buy|get|new)[-\s_]+/i, ''); // leading buy/get/new-
   s = s.replace(/\bsgmsays\b/gi, ''); // drop store tag
+  s = s.replace(/\bnew\b/gi, ''); // drop "new" keyword
   s = s.replace(/-?\d+$/i, ''); // trailing numeric suffixes like -7690
   s = s.replace(/-{2,}/g, '-');
   s = s.replace(/^-+|-+$/g, '');
@@ -294,10 +295,24 @@ export async function fetchSpringProductBySlug(slug: string): Promise<SpringProd
   const partial = list.find((p) => p.slug.includes(slug) || slug.includes(p.slug));
   if (partial) return partial;
 
+  // Handle new slug format: "listing-name-productId"
+  // Extract the base listing name (everything before the last hyphen and number)
+  const slugParts = slug.split('-');
+  let baseListing = slug;
+  let productId = '';
+  
+  // Check if last part is a number (product ID)
+  if (slugParts.length > 1 && /^\d+$/.test(slugParts[slugParts.length - 1])) {
+    productId = slugParts[slugParts.length - 1];
+    baseListing = slugParts.slice(0, -1).join('-');
+  }
+
   // Deep fallback: fetch the listing page directly by slug to construct a minimal product
-  const candidates = [slug, `get-${slug}`, `buy-${slug}`];
+  const candidates = [baseListing, slug, `get-${baseListing}`, `buy-${baseListing}`];
   for (const cand of candidates) {
-    const url = `${BASE_URL}/listing/${cand}`;
+    const url = productId 
+      ? `${BASE_URL}/listing/${cand}?product=${productId}`
+      : `${BASE_URL}/listing/${cand}`;
     try {
       const res = await fetch(url, {
         headers: {

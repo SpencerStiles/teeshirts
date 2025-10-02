@@ -1,11 +1,6 @@
-import { Box, Image, Heading, Text, LinkBox, LinkOverlay, VStack, HStack, useColorModeValue } from '@chakra-ui/react';
+import { Box, Image, Heading, Text, LinkBox, LinkOverlay, VStack, useColorModeValue } from '@chakra-ui/react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-
-interface ColorVariant {
-  name: string;
-  hex: string;
-}
 
 interface Props {
   product: {
@@ -13,46 +8,26 @@ interface Props {
     title: string;
     image: string;
     price?: string;
-    colors?: ColorVariant[];
   };
 }
 
 export default function ProductCard({ product }: Props) {
   const [images, setImages] = useState<string[]>([product.image]);
   const [isHovered, setIsHovered] = useState(false);
-  const [selectedColorIndex, setSelectedColorIndex] = useState(0);
 
   const cardBg = useColorModeValue('background.light', 'gray.900');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
 
   useEffect(() => {
-    // Only fetch additional images if we don't already have them
-    // Skip API call for now since slug format changed and may cause issues
-    // The initial product.image is already correct from the category page
+    // Disable additional image fetching for now
+    // The API can't reliably match products with the new slug format
+    // Keep the initial product.image which is correct from the category page
     let cancelled = false;
-    
-    // Optionally load more images in the future when API is updated
-    // For now, just use the initial image
-    
     return () => { cancelled = true; };
   }, [product.slug]);
 
-  // Default colors if none provided (placeholder for future enhancement)
-  const colors: ColorVariant[] = product.colors || [
-    { name: 'Black', hex: '#000000' },
-    { name: 'Navy', hex: '#1a365d' },
-    { name: 'Gray', hex: '#718096' },
-  ];
-
   // Show front image by default, back image on hover (if available)
-  // Since we're not loading additional images right now, this will just show the main image
   const displayImage = isHovered && images.length > 1 ? images[1] : images[0] || product.image;
-
-  const handleColorClick = (e: React.MouseEvent, index: number) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setSelectedColorIndex(index);
-  };
 
   return (
     <LinkBox 
@@ -91,45 +66,6 @@ export default function ProductCard({ product }: Props) {
           <Text fontWeight="semibold" fontSize="lg" color="primary">
             {product.price}
           </Text>
-        )}
-
-        {/* Color Variants */}
-        {colors.length > 0 && (
-          <Box>
-            <Text fontSize="xs" color="gray.500" mb={2} textTransform="uppercase" letterSpacing="wide">
-              Available Colors
-            </Text>
-            <HStack spacing={2}>
-              {colors.slice(0, 5).map((color, idx) => (
-                <Box
-                  key={idx}
-                  as="button"
-                  w="24px"
-                  h="24px"
-                  rounded="full"
-                  bg={color.hex}
-                  borderWidth="2px"
-                  borderColor={idx === selectedColorIndex ? 'primary' : 'gray.300'}
-                  _dark={{ borderColor: idx === selectedColorIndex ? 'primary' : 'gray.600' }}
-                  cursor="pointer"
-                  transition="all 0.2s"
-                  _hover={{ 
-                    transform: 'scale(1.1)',
-                    borderColor: 'primary'
-                  }}
-                  onClick={(e) => handleColorClick(e, idx)}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  title={color.name}
-                  aria-label={`Select ${color.name} color`}
-                />
-              ))}
-              {colors.length > 5 && (
-                <Text fontSize="xs" color="gray.500">
-                  +{colors.length - 5}
-                </Text>
-              )}
-            </HStack>
-          </Box>
         )}
       </VStack>
     </LinkBox>
