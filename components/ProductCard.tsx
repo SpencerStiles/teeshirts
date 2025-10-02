@@ -1,8 +1,11 @@
-import { Box, Image, Heading, Text, Button, LinkBox, LinkOverlay, VStack, IconButton } from '@chakra-ui/react';
+import { Box, Image, Heading, Text, LinkBox, LinkOverlay, VStack, HStack, useColorModeValue } from '@chakra-ui/react';
 import Link from 'next/link';
-import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { useEffect, useState } from 'react';
-import type React from 'react';
+
+interface ColorVariant {
+  name: string;
+  hex: string;
+}
 
 interface Props {
   product: {
@@ -10,12 +13,17 @@ interface Props {
     title: string;
     image: string;
     price?: string;
+    colors?: ColorVariant[];
   };
 }
 
 export default function ProductCard({ product }: Props) {
   const [images, setImages] = useState<string[]>([product.image]);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const [selectedColorIndex, setSelectedColorIndex] = useState(0);
+
+  const cardBg = useColorModeValue('background.light', 'gray.900');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
 
   useEffect(() => {
     let cancelled = false;
@@ -26,7 +34,6 @@ export default function ProductCard({ product }: Props) {
         const data = await res.json();
         if (!cancelled && Array.isArray(data.images) && data.images.length > 0) {
           setImages(data.images);
-          setCurrentIndex(0);
         }
       } catch {}
     }
@@ -34,82 +41,99 @@ export default function ProductCard({ product }: Props) {
     return () => { cancelled = true; };
   }, [product.slug]);
 
-  const hasMultiple = images.length > 1;
-  const prev = (e?: React.MouseEvent) => {
-    e?.preventDefault();
-    e?.stopPropagation();
-    setCurrentIndex((i) => (i - 1 + images.length) % images.length);
-  };
-  const next = (e?: React.MouseEvent) => {
-    e?.preventDefault();
-    e?.stopPropagation();
-    setCurrentIndex((i) => (i + 1) % images.length);
+  // Default colors if none provided (placeholder for future enhancement)
+  const colors: ColorVariant[] = product.colors || [
+    { name: 'Black', hex: '#000000' },
+    { name: 'Navy', hex: '#1a365d' },
+    { name: 'Gray', hex: '#718096' },
+  ];
+
+  // Show front image by default, back image on hover
+  const displayImage = isHovered && images.length > 1 ? images[1] : images[0];
+
+  const handleColorClick = (e: React.MouseEvent, index: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedColorIndex(index);
   };
 
   return (
-    <LinkBox as="article" borderWidth="1px" borderRadius="lg" overflow="hidden" bg="background.light" _dark={{ bg: 'gray.900' }} shadow="lg" transition="box-shadow 0.2s" _hover={{ shadow: '2xl' }} role="group">
-      <Box position="relative" h="260px" w="100%" overflow="hidden" onMouseDown={(e) => { e.stopPropagation(); }} onClick={(e) => { e.stopPropagation(); }}>
-        <Image src={images[currentIndex] || product.image} alt={product.title} w="100%" h="100%" objectFit="cover" transition="transform 0.5s" _groupHover={{ transform: 'scale(1.03)' }} />
-        {hasMultiple && (
-          <>
-            <IconButton
-              aria-label="Previous image"
-              icon={<ChevronLeftIcon />}
-              size="sm"
-              variant="solid"
-              colorScheme="blackAlpha"
-              position="absolute"
-              top="50%"
-              left="2"
-              transform="translateY(-50%)"
-              zIndex={1}
-              pointerEvents="auto"
-              onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
-              onClick={prev}
-            />
-            <IconButton
-              aria-label="Next image"
-              icon={<ChevronRightIcon />}
-              size="sm"
-              variant="solid"
-              colorScheme="blackAlpha"
-              position="absolute"
-              top="50%"
-              right="2"
-              transform="translateY(-50%)"
-              zIndex={1}
-              pointerEvents="auto"
-              onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
-              onClick={next}
-            />
-          </>
+    <LinkBox 
+      as="article" 
+      borderWidth="1px" 
+      borderColor={borderColor}
+      borderRadius="lg" 
+      overflow="hidden" 
+      bg={cardBg}
+      shadow="md" 
+      transition="all 0.2s" 
+      _hover={{ shadow: 'xl', transform: 'translateY(-2px)' }} 
+      role="group"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <Box position="relative" h="300px" w="100%" overflow="hidden" bg="gray.100" _dark={{ bg: 'gray.800' }}>
+        <Image 
+          src={displayImage || product.image} 
+          alt={product.title} 
+          w="100%" 
+          h="100%" 
+          objectFit="cover" 
+          transition="opacity 0.3s ease-in-out"
+        />
+      </Box>
+      
+      <VStack align="stretch" spacing={3} p={4}>
+        <Heading size="sm" noOfLines={2} minH="40px">
+          <LinkOverlay as={Link} href={`/p/${product.slug}`}>
+            {product.title}
+          </LinkOverlay>
+        </Heading>
+        
+        {product.price && (
+          <Text fontWeight="semibold" fontSize="lg" color="primary">
+            {product.price}
+          </Text>
         )}
-        {hasMultiple && (
-          <Box position="absolute" bottom="2" left="50%" transform="translateX(-50%)" display="flex" gap={1} pointerEvents="none">
-            {images.map((_, idx) => (
-              <Box
-                key={idx}
-                w="8px"
-                h="8px"
-                rounded="full"
-                bg={idx === currentIndex ? 'primary' : 'whiteAlpha.700'}
-                borderWidth={idx === currentIndex ? '0px' : '1px'}
-                borderColor="blackAlpha.400"
-              />
-            ))}
+
+        {/* Color Variants */}
+        {colors.length > 0 && (
+          <Box>
+            <Text fontSize="xs" color="gray.500" mb={2} textTransform="uppercase" letterSpacing="wide">
+              Available Colors
+            </Text>
+            <HStack spacing={2}>
+              {colors.slice(0, 5).map((color, idx) => (
+                <Box
+                  key={idx}
+                  as="button"
+                  w="24px"
+                  h="24px"
+                  rounded="full"
+                  bg={color.hex}
+                  borderWidth="2px"
+                  borderColor={idx === selectedColorIndex ? 'primary' : 'gray.300'}
+                  _dark={{ borderColor: idx === selectedColorIndex ? 'primary' : 'gray.600' }}
+                  cursor="pointer"
+                  transition="all 0.2s"
+                  _hover={{ 
+                    transform: 'scale(1.1)',
+                    borderColor: 'primary'
+                  }}
+                  onClick={(e) => handleColorClick(e, idx)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  title={color.name}
+                  aria-label={`Select ${color.name} color`}
+                />
+              ))}
+              {colors.length > 5 && (
+                <Text fontSize="xs" color="gray.500">
+                  +{colors.length - 5}
+                </Text>
+              )}
+            </HStack>
           </Box>
         )}
-      </Box>
-      <VStack align="stretch" spacing={2} p={4}>
-        <Heading size="md" noOfLines={1}>
-          <LinkOverlay as={Link} href={`/p/${product.slug}`}>{product.title}</LinkOverlay>
-        </Heading>
-        {product.price && (
-          <Text color="gray.500">{product.price}</Text>
-        )}
-        <Button as={Link} href={`/p/${product.slug}`} mt={2} rounded="full" bg="primary" color="white" fontWeight="bold" textTransform="uppercase" letterSpacing="wider">
-          View Details
-        </Button>
       </VStack>
     </LinkBox>
   );

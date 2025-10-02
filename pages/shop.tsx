@@ -13,8 +13,14 @@ import {
   Stack,
   Input,
   useColorModeValue,
+  Tabs,
+  TabList,
+  Tab,
+  TabPanels,
+  TabPanel,
 } from "@chakra-ui/react";
 import type { GetServerSideProps } from "next";
+import { useState } from "react";
 import FeaturedRow from "@/components/FeaturedRow";
 import ProductCard from "@/components/ProductCard";
 import { fetchSpringProductsPage, type SpringProduct } from "@/lib/spring";
@@ -23,6 +29,7 @@ type Props = { items: SpringProduct[]; page: number; hasNext: boolean; totalPage
 
 export default function ShopPage({ items, page, hasNext, totalPages }: Props) {
   const { colorMode, toggleColorMode } = useColorMode();
+  const [activeCategory, setActiveCategory] = useState<string>('explore');
   // Deprecated Spring embed controls removed in favor of native grid
 
   const heroBg = useColorModeValue(
@@ -37,6 +44,25 @@ export default function ShopPage({ items, page, hasNext, totalPages }: Props) {
     .filter((p) => !!p.image)
     .slice(0, 3)
     .map((p) => ({ slug: p.slug, title: p.title, image: p.image }));
+
+  // Category filtering logic (basic keyword matching)
+  const filterByCategory = (products: SpringProduct[], category: string) => {
+    if (category === 'explore') return products;
+    
+    const keywords: Record<string, string[]> = {
+      apparel: ['shirt', 't-shirt', 'tee', 'hoodie', 'sweatshirt', 'tank', 'long sleeve', 'pants', 'athletic'],
+      accessories: ['hat', 'cap', 'bag', 'sticker', 'stationery', 'accessory'],
+      drinkware: ['mug', 'cup', 'bottle', 'tumbler', 'drinkware'],
+    };
+    
+    const categoryKeywords = keywords[category] || [];
+    return products.filter(p => {
+      const title = p.title.toLowerCase();
+      return categoryKeywords.some(keyword => title.includes(keyword));
+    });
+  };
+
+  const filteredItems = filterByCategory(items, activeCategory);
 
   return (
     <VStack align="stretch" spacing={10}>
@@ -109,30 +135,68 @@ export default function ShopPage({ items, page, hasNext, totalPages }: Props) {
         <FeaturedRow items={featuredItems} />
       </Box>
 
-      {/* Native Catalog Grid */}
+      {/* Category Tabs & Catalog Grid */}
       <Box id="catalog">
-        <HStack mb={4}>
+        <HStack mb={6}>
           <Heading size="lg" textTransform="uppercase" letterSpacing="wider">
-            All Products
+            Shop Apparel
           </Heading>
           <Spacer />
           <Button onClick={toggleColorMode} variant="outline">
             {colorMode === "dark" ? "Light mode" : "Dark mode"}
           </Button>
         </HStack>
-        <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} spacing={6}>
-          {items.map((p) => (
-            <ProductCard
-              key={p.slug}
-              product={{
-                slug: p.slug,
-                title: p.title,
-                image: p.image,
-                price: p.price,
-              }}
-            />
-          ))}
-        </SimpleGrid>
+
+        <Tabs 
+          variant="soft-rounded" 
+          colorScheme="red"
+          onChange={(index) => {
+            const categories = ['explore', 'apparel', 'accessories', 'drinkware'];
+            setActiveCategory(categories[index]);
+          }}
+        >
+          <TabList mb={6} flexWrap="wrap" gap={2}>
+            <Tab fontWeight="bold" textTransform="uppercase" letterSpacing="wide">
+              Explore
+            </Tab>
+            <Tab fontWeight="bold" textTransform="uppercase" letterSpacing="wide">
+              Apparel
+            </Tab>
+            <Tab fontWeight="bold" textTransform="uppercase" letterSpacing="wide">
+              Accessories
+            </Tab>
+            <Tab fontWeight="bold" textTransform="uppercase" letterSpacing="wide">
+              Drinkware
+            </Tab>
+          </TabList>
+
+          <TabPanels>
+            {['explore', 'apparel', 'accessories', 'drinkware'].map((category) => (
+              <TabPanel key={category} px={0}>
+                <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={6}>
+                  {filteredItems.map((p) => (
+                    <ProductCard
+                      key={p.slug}
+                      product={{
+                        slug: p.slug,
+                        title: p.title,
+                        image: p.image,
+                        price: p.price,
+                      }}
+                    />
+                  ))}
+                </SimpleGrid>
+                {filteredItems.length === 0 && (
+                  <Box textAlign="center" py={12}>
+                    <Text fontSize="lg" color="gray.500">
+                      No products found in this category.
+                    </Text>
+                  </Box>
+                )}
+              </TabPanel>
+            ))}
+          </TabPanels>
+        </Tabs>
         {/* Pagination controls */}
         <HStack mt={6} justify="space-between" align="center" wrap="wrap" gap={2}>
           <Button as="a" href={`/shop?page=${Math.max(1, page - 1)}`} isDisabled={page <= 1} variant="outline">
