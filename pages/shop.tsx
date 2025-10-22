@@ -25,8 +25,17 @@ import { useRouter } from "next/router";
 import FeaturedRow from "@/components/FeaturedRow";
 import ProductCard from "@/components/ProductCard";
 import { fetchSpringProductsPage, fetchSpringProductsByCategory, type SpringProduct } from "@/lib/spring";
+import { listCatalogDesigns } from "@/lib/catalog";
 
-type Props = { items: SpringProduct[]; page: number; hasNext: boolean; totalPages: number };
+type CatalogItem = {
+  slug: string;
+  title: string;
+  image: string;
+  price?: string;
+  category?: string;
+};
+
+type Props = { items: CatalogItem[]; page: number; hasNext: boolean; totalPages: number };
 
 export default function ShopPage({ items, page, hasNext, totalPages }: Props) {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -389,6 +398,39 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   const ITEMS_PER_PAGE = 16;
   
   try {
+    const catalogDesigns = await listCatalogDesigns();
+    if (catalogDesigns.length > 0) {
+      const normalized: CatalogItem[] = catalogDesigns.map((design) => ({
+        slug: design.slug,
+        title: design.title,
+        image: design.heroImage,
+        price: design.variants.find((v) => v.price)?.price,
+        category: design.category,
+      }));
+
+      const byCategory = category === 'explore'
+        ? normalized
+        : normalized.filter((d) => d.category === category);
+
+      const totalPages = Math.max(1, Math.ceil(byCategory.length / ITEMS_PER_PAGE));
+      const startIndex = (page - 1) * ITEMS_PER_PAGE;
+      const paginatedItems = byCategory.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+      const hasNext = page < totalPages;
+
+      return {
+        props: {
+          items: paginatedItems,
+          page,
+          hasNext,
+          totalPages,
+        },
+      };
+    }
+  } catch (err) {
+    console.warn('Failed to load springCatalog dataset', err);
+  }
+
+  try {
     let allItems: SpringProduct[] = [];
     
     if (category === 'explore') {
@@ -463,11 +505,28 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
       }
     }
     
-    // Now paginate the combined results into chunks of ITEMS_PER_PAGE
-    const totalPages = Math.ceil(allItems.length / ITEMS_PER_PAGE);
+    // Deduplicate by design - keep only one product per design (title)
+    // Group by normalized title and keep the first one
+    const uniqueDesigns = new Map<string, SpringProduct>();
+    for (const item of allItems) {
+      const designKey = item.title.toLowerCase().trim();
+      if (!uniqueDesigns.has(designKey)) {
+        uniqueDesigns.set(designKey, item);
+      }
+    }
+    const deduplicatedItems = Array.from(uniqueDesigns.values());
+    
+    // Now paginate the deduplicated results into chunks of ITEMS_PER_PAGE
+    const totalPages = Math.ceil(deduplicatedItems.length / ITEMS_PER_PAGE); // >=1 when items exist, else 0
     const startIndex = (page - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
-    const paginatedItems = allItems.slice(startIndex, endIndex);
+    const paginatedItems = deduplicatedItems.slice(startIndex, endIndex).map((item) => ({
+      slug: item.slug,
+      title: item.title,
+      image: item.image,
+      price: item.price,
+      category: item.category,
+    }));
     const hasNext = page < totalPages;
     
     return { 

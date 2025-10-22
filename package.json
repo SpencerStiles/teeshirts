@@ -5,23 +5,25 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "ingest:spring": "tsx scripts/ingest-spring.ts"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.2.4",
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
+    "cheerio": "^1.0.0",
     "framer-motion": "^11.2.12",
     "next": "^14.2.5",
     "next-seo": "^6.5.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "cheerio": "^1.0.0"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@types/node": "^20.12.12",
     "@types/react": "^18.3.3",
+    "tsx": "^4.20.6",
     "typescript": "^5.5.2"
   }
 }

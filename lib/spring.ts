@@ -191,28 +191,40 @@ export async function fetchSpringProductsByCategory(
   const $ = load(html);
 
   const items = new Map<string, SpringProduct>();
-  $('a[href^="/listing/"]').each((_: number, el: any) => {
-    const href = $(el).attr('href') || '';
+  
+  // Find product cards/containers first, then extract link and image from the same container
+  // This ensures we match the correct variant link with its displayed image
+  const productContainers = $('a[href^="/listing/"]').toArray();
+  
+  for (const el of productContainers) {
+    const $el = $(el);
+    const href = $el.attr('href') || '';
+    if (!href) continue;
+    
     const springUrl = absoluteUrl(href);
-    // Create unique slug that includes product ID to avoid duplicates
-    const urlObj = new URL(springUrl);
-    const productId = urlObj.searchParams.get('product') || '';
-    const basePath = urlObj.pathname.split('/').pop() || '';
-    const slug = productId ? `${basePath}-${productId}` : deriveSlugFromHref(href);
+    // Use just the base listing name as the slug (without product ID)
+    // This way all variants of a design will have the same slug
+    const basePath = new URL(springUrl).pathname.split('/').pop() || '';
+    const slug = deriveSlugFromHref(`/listing/${basePath}`);
 
-    let title = $(el).find('h2, h3, .title, .product-title, p').first().text().trim();
-    if (!title) title = $(el).attr('title') || slug;
+    // Get title from the link or its children
+    let title = $el.find('h2, h3, .title, .product-title, p').first().text().trim();
+    if (!title) title = $el.attr('title') || $el.text().trim() || slug;
     title = normalizeTitle(title);
 
-    let img = $(el).find('img').first().attr('src') || $(el).find('img').first().attr('data-src') || '';
+    // Get image from within this specific link element
+    let img = $el.find('img').first().attr('src') || $el.find('img').first().attr('data-src') || '';
     if (!img) {
-      const srcset = $(el).find('source').first().attr('srcset') || '';
+      const srcset = $el.find('source').first().attr('srcset') || '';
       if (srcset) img = srcset.split(',')[0]?.trim().split(' ')[0] || '';
     }
     const image = absoluteUrl(img);
-
-    items.set(slug, { slug, title, image, springUrl, category });
-  });
+    
+    // Only add if we have both a valid image and it's not a duplicate
+    if (image && !items.has(slug)) {
+      items.set(slug, { slug, title, image, springUrl, category });
+    }
+  }
 
   const nextPage = p + 1;
   const hasNext = $(`a[href*="?page=${nextPage}"]`).length > 0 || /page=\d+/.test(html);
@@ -340,9 +352,151 @@ export async function fetchSpringProductBySlug(slug: string): Promise<SpringProd
   return null;
 }
 
+// Fetch all variants of a design (all product types with the same design)
+export async function fetchSpringProductVariants(slug: string): Promise<SpringProduct[]> {
+  const base = await fetchSpringProductBySlug(slug);
+  if (!base) return [];
+  
+  try {
+    // Fetch the listing page
+    const res = await fetch(base.springUrl, {
+      headers: {
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      }
+    });
+    if (!res.ok) return [base];
+    
+    const html = await res.text();
+    const $ = load(html);
+    
+    const variants: SpringProduct[] = [];
+    const seenProductIds = new Set<string>();
+    
+    // Look for Next.js data which contains product variants
+    const nextDataTxt = $('script#__NEXT_DATA__').first().contents().text();
+    if (nextDataTxt) {
+      try {
+        const nextObj = JSON.parse(nextDataTxt);
+        
+        // Search for products array in the Next.js data
+        const findProducts = (node: any): any[] => {
+          if (!node) return [];
+          
+          // Check if this is a products array
+          if (Array.isArray(node) && node.length > 0 && node[0]?.id && node[0]?.name) {
+            return node;
+          }
+          
+          // Search recursively
+          if (Array.isArray(node)) {
+            for (const item of node) {
+              const found = findProducts(item);
+              if (found.length > 0) return found;
+            }
+          } else if (typeof node === 'object') {
+            for (const key of Object.keys(node)) {
+              const found = findProducts(node[key]);
+              if (found.length > 0) return found;
+            }
+          }
+          return [];
+        };
+        
+        const products = findProducts(nextObj);
+        for (const prod of products) {
+          const productId = String(prod.id || prod.productId || '');
+          if (!productId || seenProductIds.has(productId)) continue;
+          
+          seenProductIds.add(productId);
+          
+          const variantName = prod.name || prod.title || prod.productName || base.title;
+          const variantImage = prod.image || prod.imageUrl || prod.mockupUrl || base.image;
+          const variantUrl = `${base.springUrl.split('?')[0]}?product=${productId}`;
+          
+          variants.push({
+            slug: `${slug}-${productId}`,
+            title: variantName,
+            image: absoluteUrl(variantImage),
+            springUrl: variantUrl,
+            category: base.category,
+          });
+        }
+      } catch {}
+    }
+    
+    // Fallback: look for links with product IDs
+    if (variants.length === 0) {
+      $('a[href*="?product="], button[data-product-id]').each((_: number, el: any) => {
+        const href = $(el).attr('href') || '';
+        const dataId = $(el).attr('data-product-id') || '';
+        
+        let fullUrl = '';
+        let productId = '';
+        
+        if (href && href.includes('?product=')) {
+          fullUrl = absoluteUrl(href);
+          const urlObj = new URL(fullUrl);
+          productId = urlObj.searchParams.get('product') || '';
+        } else if (dataId) {
+          productId = dataId;
+          fullUrl = `${base.springUrl.split('?')[0]}?product=${productId}`;
+        }
+        
+        if (!productId || seenProductIds.has(productId)) return;
+        seenProductIds.add(productId);
+        
+        const variantName = $(el).text().trim() || base.title;
+        
+        variants.push({
+          slug: `${slug}-${productId}`,
+          title: variantName,
+          image: base.image,
+          springUrl: fullUrl,
+          category: base.category,
+        });
+      });
+    }
+    
+    return variants.length > 0 ? variants : [base];
+  } catch {
+    return [base];
+  }
+}
+
 export async function fetchSpringProductDetailBySlug(slug: string): Promise<SpringProduct | null> {
   const base = await fetchSpringProductBySlug(slug);
   if (!base) return null;
+  
+  // Extract product ID from the URL if present
+  let productId: string | null = null;
+  try {
+    const url = new URL(base.springUrl);
+    productId = url.searchParams.get('product');
+  } catch {}
+  
+  // If we have a specific product ID, fetch the page and try to get the OG image
+  // which should be specific to this variant
+  if (productId) {
+    try {
+      const res = await fetch(base.springUrl, {
+        headers: {
+          'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        }
+      });
+      if (res.ok) {
+        const html = await res.text();
+        const $ = load(html);
+        const ogImg = $('meta[property="og:image"]').attr('content');
+        if (ogImg) {
+          const variantImage = absoluteUrl(ogImg);
+          return { ...base, image: variantImage, images: [variantImage] };
+        }
+      }
+    } catch {}
+    // Fallback to base image if we couldn't fetch variant-specific image
+    return { ...base, images: [base.image] };
+  }
+  
   try {
     const res = await fetch(base.springUrl, {
       headers: {
@@ -412,28 +566,94 @@ export async function fetchSpringProductDetailBySlug(slug: string): Promise<Spri
     if (nextDataTxt) {
       try {
         const nextObj = JSON.parse(nextDataTxt);
-        const visit = (node: any) => {
-          if (!node) return;
-          if (typeof node === 'string') {
-            if (isLikelyProductImg(node)) set.add(absoluteUrl(node));
-            return;
+        
+        // If we have a specific product ID, try to find that product's data first
+        if (productId) {
+          const productIdNum = parseInt(productId, 10);
+          
+          const findProductData = (node: any): any => {
+            if (!node || typeof node !== 'object') return null;
+            
+            // Check if this node has a product ID that matches (try multiple field names and both string/number)
+            const checkId = (val: any) => {
+              if (val === productId || val === productIdNum) return true;
+              if (typeof val === 'string' && val === productId) return true;
+              if (typeof val === 'number' && val === productIdNum) return true;
+              return false;
+            };
+            
+            if (checkId(node.id) || checkId(node.productId) || checkId(node.product) || 
+                checkId(node.productID) || checkId(node.product_id)) {
+              return node;
+            }
+            
+            // Search in arrays
+            if (Array.isArray(node)) {
+              for (const item of node) {
+                const found = findProductData(item);
+                if (found) return found;
+              }
+            } else {
+              // Search in object properties
+              for (const key of Object.keys(node)) {
+                const found = findProductData(node[key]);
+                if (found) return found;
+              }
+            }
+            return null;
+          };
+          
+          const productData = findProductData(nextObj);
+          if (productData) {
+            // Only collect images from this specific product's data
+            const visit = (node: any) => {
+              if (!node) return;
+              if (typeof node === 'string') {
+                if (isLikelyProductImg(node)) set.add(absoluteUrl(node));
+                return;
+              }
+              if (Array.isArray(node)) {
+                for (const it of node) visit(it);
+                return;
+              }
+              if (typeof node === 'object') {
+                addUrl(node?.src);
+                addUrl(node?.url);
+                addUrl(node?.image);
+                addUrl(node?.thumbnail);
+                if (typeof node?.srcSet === 'string') addUrl(node.srcSet);
+                if (typeof node?.srcset === 'string') addUrl(node.srcset);
+                for (const k of Object.keys(node)) visit(node[k]);
+              }
+            };
+            visit(productData);
           }
-          if (Array.isArray(node)) {
-            for (const it of node) visit(it);
-            return;
-          }
-          if (typeof node === 'object') {
-            // Common fields that may hold images
-            addUrl(node?.src);
-            addUrl(node?.url);
-            addUrl(node?.image);
-            addUrl(node?.thumbnail);
-            if (typeof node?.srcSet === 'string') addUrl(node.srcSet);
-            if (typeof node?.srcset === 'string') addUrl(node.srcset);
-            for (const k of Object.keys(node)) visit(node[k]);
-          }
-        };
-        visit(nextObj);
+        }
+        
+        // If no product ID or couldn't find specific product data, collect all images (old behavior)
+        if (set.size === 0) {
+          const visit = (node: any) => {
+            if (!node) return;
+            if (typeof node === 'string') {
+              if (isLikelyProductImg(node)) set.add(absoluteUrl(node));
+              return;
+            }
+            if (Array.isArray(node)) {
+              for (const it of node) visit(it);
+              return;
+            }
+            if (typeof node === 'object') {
+              addUrl(node?.src);
+              addUrl(node?.url);
+              addUrl(node?.image);
+              addUrl(node?.thumbnail);
+              if (typeof node?.srcSet === 'string') addUrl(node.srcSet);
+              if (typeof node?.srcset === 'string') addUrl(node.srcset);
+              for (const k of Object.keys(node)) visit(node[k]);
+            }
+          };
+          visit(nextObj);
+        }
       } catch {}
     }
 
@@ -491,30 +711,59 @@ export async function fetchSpringProductDetailBySlug(slug: string): Promise<Spri
 
     // If we likely only captured size variants from mockup-api, try harvesting mockup IDs
     // Extract unique IDs from paths like /v3/image/<ID>/...
-    const harvestMockupIds = (text: string) => {
+    // Limit to 6 images max to avoid collecting from multiple product variants
+    const harvestMockupIds = (text: string, maxIds: number = 6) => {
       const ids = new Set<string>();
       const re = /\/(?:v3|api)\/image\/([A-Za-z0-9_-]+)/gi;
       let m: RegExpExecArray | null;
       while ((m = re.exec(text)) !== null) {
         if (m[1]) ids.add(m[1]);
-        if (ids.size > 12) break;
+        if (ids.size >= maxIds) break;
       }
       return Array.from(ids.values());
     };
 
     const mockupIds = new Set<string>();
-    // From HTML
-    for (const id of harvestMockupIds(html)) mockupIds.add(id);
-    // From __NEXT_DATA__ JSON string, if available
-    const nextDataTxt2 = $('script#__NEXT_DATA__').first().contents().text();
-    if (nextDataTxt2) {
-      for (const id of harvestMockupIds(nextDataTxt2)) mockupIds.add(id);
+    
+    // If we have a product ID and found specific product data, limit to fewer images
+    const maxMockupIds = productId && set.size > 0 ? 6 : 12;
+    
+    // From HTML (but limit collection)
+    for (const id of harvestMockupIds(html, maxMockupIds)) {
+      mockupIds.add(id);
+      if (mockupIds.size >= maxMockupIds) break;
     }
+    
+    // Only search __NEXT_DATA__ if we don't have enough images yet
+    if (mockupIds.size < maxMockupIds) {
+      const nextDataTxt2 = $('script#__NEXT_DATA__').first().contents().text();
+      if (nextDataTxt2) {
+        for (const id of harvestMockupIds(nextDataTxt2, maxMockupIds - mockupIds.size)) {
+          mockupIds.add(id);
+          if (mockupIds.size >= maxMockupIds) break;
+        }
+      }
+    }
+    
     // Turn IDs into canonical 800x800 mockup URLs
     if (mockupIds.size > 0) {
       for (const id of mockupIds) {
         set.add(`https://mockup-api.teespring.com/v3/image/${id}/800/800.jpg`);
       }
+    }
+
+    // If we have a product ID but didn't find enough specific images, aggressively limit the total
+    // This prevents showing images from other product variants
+    if (productId && set.size > 8) {
+      const limitedSet = new Set<string>();
+      let count = 0;
+      for (const url of set) {
+        if (count >= 8) break;
+        limitedSet.add(url);
+        count++;
+      }
+      set.clear();
+      limitedSet.forEach(url => set.add(url));
     }
 
     // Normalize and dedupe similar variants (strip query/hash, collapse size variants)

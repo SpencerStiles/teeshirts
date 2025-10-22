@@ -1,0 +1,2039 @@
+{
+  "generatedAt": "2025-10-22T22:24:58.044Z",
+  "store": "sgt-major-says",
+  "designs": [
+    {
+      "slug": "new-what-is-best-in-life",
+      "title": "What Is Best in Life",
+      "category": "apparel",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/eS6P1BwcYx5qdliMECjpol5m-qI/800/800.jpg",
+      "variants": [
+        {
+          "productId": "104076",
+          "label": "Unisex Full Zip Hoodie - Deep Royal",
+          "image": "https://mockup-api.teespring.com/v3/image/xk2-LVyxctKOOQoS82P-662uob0/800/800.jpg",
+          "price": "50.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/new-what-is-best-in-life?product=1027",
+          "productType": "Unisex Full Zip Hoodie",
+          "colorName": "Deep Royal",
+          "colorHex": "#003594"
+        },
+        {
+          "productId": "104079",
+          "label": "Unisex Full Zip Hoodie - Light Steel",
+          "image": "https://mockup-api.teespring.com/v3/image/I5G60UCKDAH0FtRoKj5nijb9wio/800/800.jpg",
+          "price": "50.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/new-what-is-best-in-life?product=1027",
+          "productType": "Unisex Full Zip Hoodie",
+          "colorName": "Light Steel",
+          "colorHex": "#B1B3B3"
+        },
+        {
+          "productId": "104077",
+          "label": "Unisex Full Zip Hoodie - Deep Red",
+          "image": "https://mockup-api.teespring.com/v3/image/hrn05RiwIHXBLo_Efve2EdLPC0I/800/800.jpg",
+          "price": "50.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/new-what-is-best-in-life?product=1027",
+          "productType": "Unisex Full Zip Hoodie",
+          "colorName": "Deep Red",
+          "colorHex": "#BA0C2F"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:46.464Z"
+    },
+    {
+      "slug": "fyi-i-m-nothing-but-trouble",
+      "title": "Fyi I M Nothing but Trouble",
+      "category": "apparel",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/rerZNHF3td05JUexLi-zjzV7XZo/800/800.jpg",
+      "variants": [
+        {
+          "productId": "104077",
+          "label": "Unisex Full Zip Hoodie - Deep Red",
+          "image": "https://mockup-api.teespring.com/v3/image/SmhNryCnJM5CA8wAogwojuHC7cU/800/800.jpg",
+          "price": "50.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fyi-i-m-nothing-but-trouble?product=1027",
+          "productType": "Unisex Full Zip Hoodie",
+          "colorName": "Deep Red",
+          "colorHex": "#BA0C2F"
+        },
+        {
+          "productId": "104079",
+          "label": "Unisex Full Zip Hoodie - Light Steel",
+          "image": "https://mockup-api.teespring.com/v3/image/MnQ1w7YteyzSO-PNVo6gel--hiE/800/800.jpg",
+          "price": "50.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fyi-i-m-nothing-but-trouble?product=1027",
+          "productType": "Unisex Full Zip Hoodie",
+          "colorName": "Light Steel",
+          "colorHex": "#B1B3B3"
+        },
+        {
+          "productId": "104076",
+          "label": "Unisex Full Zip Hoodie - Deep Royal",
+          "image": "https://mockup-api.teespring.com/v3/image/9JYLFc6O0mbp6hbNBoi6wNQHGf0/800/800.jpg",
+          "price": "50.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fyi-i-m-nothing-but-trouble?product=1027",
+          "productType": "Unisex Full Zip Hoodie",
+          "colorName": "Deep Royal",
+          "colorHex": "#003594"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:46.467Z"
+    },
+    {
+      "slug": "fyi-i-m-a-bad-idea",
+      "title": "Fyi I M a Bad Idea",
+      "category": "apparel",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/jEgUhjoBUEPYA9UfFrciA_4X2is/800/800.jpg",
+      "variants": [
+        {
+          "productId": "5839",
+          "label": "Unisex Classic Pullover Hoodie - Carolina Blue",
+          "image": "https://mockup-api.teespring.com/v3/image/nBV_9LKJ7w1k54-vIyre1fNiOdY/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fyi-i-m-a-bad-idea?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Carolina Blue",
+          "colorHex": "#5c9dd4"
+        },
+        {
+          "productId": "5818",
+          "label": "Unisex Classic Pullover Hoodie - White",
+          "image": "https://mockup-api.teespring.com/v3/image/AkB-uXT7Ej1jKf6vOnWK1xpZslk/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fyi-i-m-a-bad-idea?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "White",
+          "colorHex": "#ffffff"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:46.467Z"
+    },
+    {
+      "slug": "sometime-in-life-you-got-to-ro",
+      "title": "Sometime in Life You Got to Ro",
+      "category": "apparel",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/2XPbNhcTmU_RzIHktGZi6oOJLBs/800/800.jpg",
+      "variants": [
+        {
+          "productId": "5818",
+          "label": "Unisex Classic Pullover Hoodie - White",
+          "image": "https://mockup-api.teespring.com/v3/image/iLw8Y9fEBXYABY32b0cm5GLNag8/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/sometime-in-life-you-got-to-ro?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "White",
+          "colorHex": "#ffffff"
+        },
+        {
+          "productId": "5829",
+          "label": "Unisex Classic Pullover Hoodie - Irish Green",
+          "image": "https://mockup-api.teespring.com/v3/image/IMgewp0gF0a1hcCuvxysnPDZojk/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/sometime-in-life-you-got-to-ro?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Irish Green",
+          "colorHex": "#009A44"
+        },
+        {
+          "productId": "5839",
+          "label": "Unisex Classic Pullover Hoodie - Carolina Blue",
+          "image": "https://mockup-api.teespring.com/v3/image/14ltL27aBHj4AyEWY-LR7aMKEx4/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/sometime-in-life-you-got-to-ro?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Carolina Blue",
+          "colorHex": "#5c9dd4"
+        },
+        {
+          "productId": "5842",
+          "label": "Unisex Classic Pullover Hoodie - Light Pink",
+          "image": "https://mockup-api.teespring.com/v3/image/7VfriN3ZPFbgUGzcSy_jZPGncDM/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/sometime-in-life-you-got-to-ro?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Light Pink",
+          "colorHex": "#F5B6CD"
+        },
+        {
+          "productId": "5822",
+          "label": "Unisex Classic Pullover Hoodie - Sport Grey",
+          "image": "https://mockup-api.teespring.com/v3/image/CseJMLReMdDuuvLSb-M8KhfkSsc/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/sometime-in-life-you-got-to-ro?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Sport Grey",
+          "colorHex": "#B1B3B3"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:46.468Z"
+    },
+    {
+      "slug": "fyi-i-m-100-trouble",
+      "title": "Fyi I M 100 Trouble",
+      "category": "apparel",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/Pk81AIQSEiJxuNPOZ0z7Gj19uJE/800/800.jpg",
+      "variants": [
+        {
+          "productId": "5824",
+          "label": "Unisex Classic Pullover Hoodie - Red",
+          "image": "https://mockup-api.teespring.com/v3/image/wovS5gCdm6nFikJCkrY3SLKyCtc/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fyi-i-m-100-trouble?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Red",
+          "colorHex": "#BA0C2F"
+        },
+        {
+          "productId": "5839",
+          "label": "Unisex Classic Pullover Hoodie - Carolina Blue",
+          "image": "https://mockup-api.teespring.com/v3/image/9gj9DSx2oogioVwyDttCoFzQ8Uc/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fyi-i-m-100-trouble?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Carolina Blue",
+          "colorHex": "#5c9dd4"
+        },
+        {
+          "productId": "5837",
+          "label": "Unisex Classic Pullover Hoodie - Safety Orange",
+          "image": "https://mockup-api.teespring.com/v3/image/xFrwzYTF1SImyQ0iq7Oq07jkqNE/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fyi-i-m-100-trouble?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Safety Orange",
+          "colorHex": "#FF6900"
+        },
+        {
+          "productId": "5818",
+          "label": "Unisex Classic Pullover Hoodie - White",
+          "image": "https://mockup-api.teespring.com/v3/image/soKQEaiaY0A-Rb4hsBkxL0_OK7Y/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fyi-i-m-100-trouble?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "White",
+          "colorHex": "#ffffff"
+        },
+        {
+          "productId": "5842",
+          "label": "Unisex Classic Pullover Hoodie - Light Pink",
+          "image": "https://mockup-api.teespring.com/v3/image/y-osdIeJ_1lLZgeMxsUbtYqFhLg/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fyi-i-m-100-trouble?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Light Pink",
+          "colorHex": "#F5B6CD"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:46.468Z"
+    },
+    {
+      "slug": "airmen-3",
+      "title": "Airmen",
+      "category": "apparel",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/6263ujmANBtGyHPNE3yXPMpK-sk/800/800.jpg",
+      "variants": [
+        {
+          "productId": "6383",
+          "label": "Toddler Classic Tee - Navy",
+          "image": "https://mockup-api.teespring.com/v3/image/FaQ9u6bpfgFby2cTx8w1QBkAhB0/800/800.jpg",
+          "price": "21.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/airmen-3?product=340",
+          "productType": "Toddler Classic Tee",
+          "colorName": "Navy",
+          "colorHex": "#151C33"
+        },
+        {
+          "productId": "6381",
+          "label": "Toddler Classic Tee - Royal",
+          "image": "https://mockup-api.teespring.com/v3/image/v5uZrcv_IfFIouiM4gWBevagwCc/800/800.jpg",
+          "price": "21.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/airmen-3?product=340",
+          "productType": "Toddler Classic Tee",
+          "colorName": "Royal",
+          "colorHex": "#1950BF"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:46.468Z"
+    },
+    {
+      "slug": "airmen-2",
+      "title": "Airmen",
+      "category": "apparel",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/vP-bL2FPPO9HEPf8ZzIaJpSXT-Q/800/800.jpg",
+      "variants": [
+        {
+          "productId": "6383",
+          "label": "Toddler Classic Tee - Navy",
+          "image": "https://mockup-api.teespring.com/v3/image/g1CLM8Oi6orcUQmqyYuFJUlWNCo/800/800.jpg",
+          "price": "21.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/airmen-2?product=340",
+          "productType": "Toddler Classic Tee",
+          "colorName": "Navy",
+          "colorHex": "#151C33"
+        },
+        {
+          "productId": "6381",
+          "label": "Toddler Classic Tee - Royal",
+          "image": "https://mockup-api.teespring.com/v3/image/bjVMYbSSMtqPi88l7ZoyN8lNuNE/800/800.jpg",
+          "price": "21.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/airmen-2?product=340",
+          "productType": "Toddler Classic Tee",
+          "colorName": "Royal",
+          "colorHex": "#1950BF"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:46.469Z"
+    },
+    {
+      "slug": "get-airmen",
+      "title": "Airmen",
+      "category": "apparel",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/CMXKiGmgkds06NwvHTjJvWxpDA8/800/800.jpg",
+      "variants": [
+        {
+          "productId": "106110",
+          "label": "All-Over Print Unisex Hoodie - Vivid Blue",
+          "image": "https://mockup-api.teespring.com/v3/image/7D3pQMKKgfr7UlFP1DID4ugQOpc/800/800.jpg",
+          "price": "69.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/get-airmen?product=2180",
+          "productType": "All-Over Print Unisex Hoodie",
+          "colorName": "Vivid Blue",
+          "colorHex": "#00bae4"
+        },
+        {
+          "productId": "106106",
+          "label": "All-Over Print Unisex Hoodie - Deep Navy",
+          "image": "https://mockup-api.teespring.com/v3/image/zrDe43-m9R4b_gDdn5WXWZXzis4/800/800.jpg",
+          "price": "69.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/get-airmen?product=2180",
+          "productType": "All-Over Print Unisex Hoodie",
+          "colorName": "Deep Navy",
+          "colorHex": "#002144"
+        },
+        {
+          "productId": "106113",
+          "label": "All-Over Print Unisex Hoodie - Pastel Blue",
+          "image": "https://mockup-api.teespring.com/v3/image/gv7BG230LmFs9c9Y4hbLRuu8OlQ/800/800.jpg",
+          "price": "69.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/get-airmen?product=2180",
+          "productType": "All-Over Print Unisex Hoodie",
+          "colorName": "Pastel Blue",
+          "colorHex": "#70d0ec"
+        },
+        {
+          "productId": "106105",
+          "label": "All-Over Print Unisex Hoodie - Royal Blue",
+          "image": "https://mockup-api.teespring.com/v3/image/FMQ3XArTi80G-ng7wuLDkn1qD8Y/800/800.jpg",
+          "price": "69.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/get-airmen?product=2180",
+          "productType": "All-Over Print Unisex Hoodie",
+          "colorName": "Royal Blue",
+          "colorHex": "#001ca8"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:46.469Z"
+    },
+    {
+      "slug": "fafo-october-2025",
+      "title": "Fafo October",
+      "category": "apparel",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/OvR0CnD3HFzIdnMxkO0CD1snUe4/800/800.jpg",
+      "variants": [
+        {
+          "productId": "105363",
+          "label": "All-Over Print Sports Bra - White",
+          "image": "https://mockup-api.teespring.com/v3/image/MXGtnWiXsLtIooBhW3uY0CQbSqQ/800/800.jpg",
+          "price": "49.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fafo-october-2025?product=1890",
+          "productType": "All-Over Print Sports Bra",
+          "colorName": "White",
+          "colorHex": "#ffffff"
+        },
+        {
+          "productId": "105378",
+          "label": "All-Over Print Sports Bra - Pastel Blue",
+          "image": "https://mockup-api.teespring.com/v3/image/K6QVk0NMHOeJvCGRoyT948Dlvws/800/800.jpg",
+          "price": "49.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fafo-october-2025?product=1890",
+          "productType": "All-Over Print Sports Bra",
+          "colorName": "Pastel Blue",
+          "colorHex": "#70d0ec"
+        },
+        {
+          "productId": "105364",
+          "label": "All-Over Print Sports Bra - Black",
+          "image": "https://mockup-api.teespring.com/v3/image/FlGDGz-t5YkOaXCOi7pwA3ukhuA/800/800.jpg",
+          "price": "49.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fafo-october-2025?product=1890",
+          "productType": "All-Over Print Sports Bra",
+          "colorName": "Black",
+          "colorHex": "#000000"
+        },
+        {
+          "productId": "105365",
+          "label": "All-Over Print Sports Bra - Medium Grey",
+          "image": "https://mockup-api.teespring.com/v3/image/UDqyCVHtDakvt-IQnreweBGOAWU/800/800.jpg",
+          "price": "49.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fafo-october-2025?product=1890",
+          "productType": "All-Over Print Sports Bra",
+          "colorName": "Medium Grey",
+          "colorHex": "#8e908f"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:46.469Z"
+    },
+    {
+      "slug": "sergeant-major-says-3884",
+      "title": "Sergeant Major Says",
+      "category": "apparel",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/0lRKD1JgEeByUuACPC18W7FPxG8/800/800.jpg",
+      "variants": [
+        {
+          "productId": "101936",
+          "label": "Tote Bag - Natural",
+          "image": "https://mockup-api.teespring.com/v3/image/KIflQTcXKTsqtY5LjW5GTYDtYEw/800/800.jpg",
+          "price": "29.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/sergeant-major-says-3884?product=526",
+          "productType": "Tote Bag",
+          "colorName": "Natural",
+          "colorHex": "#f8f8e6"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:46.469Z"
+    },
+    {
+      "slug": "new-always-do-you",
+      "title": "Always Do You",
+      "category": "apparel",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/pxdSQDtEAF_aCv_QHqt__F3wiKQ/800/800.jpg",
+      "variants": [
+        {
+          "productId": "2397",
+          "label": "Classic Crew Neck T-Shirt - Black",
+          "image": "https://mockup-api.teespring.com/v3/image/VrMF4TnJ1_GitpQAnzRaHxE7fQE/800/800.jpg",
+          "price": "22.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/new-always-do-you?product=2",
+          "productType": "Classic Crew Neck T-Shirt",
+          "colorName": "Black",
+          "colorHex": "#1a1a1a"
+        },
+        {
+          "productId": "576",
+          "label": "Classic Crew Neck T-Shirt - Navy",
+          "image": "https://mockup-api.teespring.com/v3/image/HGSOO2uV3TwuOnEbyJZB0d0BZ7I/800/800.jpg",
+          "price": "22.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/new-always-do-you?product=2",
+          "productType": "Classic Crew Neck T-Shirt",
+          "colorName": "Navy",
+          "colorHex": "#0A1339"
+        },
+        {
+          "productId": "2232",
+          "label": "Classic Crew Neck T-Shirt - Purple",
+          "image": "https://mockup-api.teespring.com/v3/image/CKfwfiY0X75zjK6OHnwKOpxnbz8/800/800.jpg",
+          "price": "22.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/new-always-do-you?product=2",
+          "productType": "Classic Crew Neck T-Shirt",
+          "colorName": "Purple",
+          "colorHex": "#4b256e"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:46.470Z"
+    },
+    {
+      "slug": "fafo-september-2025",
+      "title": "Fafo September",
+      "category": "apparel",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/Q6j6dbvuxUPRf1gUehevct6QbxI/800/800.jpg",
+      "variants": [
+        {
+          "productId": "5827",
+          "label": "Unisex Classic Pullover Hoodie - Purple",
+          "image": "https://mockup-api.teespring.com/v3/image/SOBP2tOuoh44fyWS-3HtvHnJOyU/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fafo-september-2025?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Purple",
+          "colorHex": "#470A68"
+        },
+        {
+          "productId": "5819",
+          "label": "Unisex Classic Pullover Hoodie - Black",
+          "image": "https://mockup-api.teespring.com/v3/image/P1eSUTfjXCuaW5ttl_QtRlhgJRs/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fafo-september-2025?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Black",
+          "colorHex": "#0f0f0f"
+        },
+        {
+          "productId": "5823",
+          "label": "Unisex Classic Pullover Hoodie - Royal",
+          "image": "https://mockup-api.teespring.com/v3/image/tDGxx7DCS4poi-W-ax5p2rwqXVc/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fafo-september-2025?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Royal",
+          "colorHex": "#003594"
+        },
+        {
+          "productId": "6319",
+          "label": "Unisex Classic Pullover Hoodie - Charcoal",
+          "image": "https://mockup-api.teespring.com/v3/image/OPISqBQEwT7cfLzj9FlmHV-MqW0/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fafo-september-2025?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Charcoal",
+          "colorHex": "#54585A"
+        },
+        {
+          "productId": "5820",
+          "label": "Unisex Classic Pullover Hoodie - Navy",
+          "image": "https://mockup-api.teespring.com/v3/image/pJ0Qj8flQgNyIgNkDt7CYh93zBg/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fafo-september-2025?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Navy",
+          "colorHex": "#1F2A44"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:46.470Z"
+    },
+    {
+      "slug": "death-before-dishonor-9302",
+      "title": "Death Before Dishonor",
+      "category": "apparel",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/L5O3kRwyvlMdp4ZzuGKdjsLVWuE/800/800.jpg",
+      "variants": [
+        {
+          "productId": "5832",
+          "label": "Unisex Classic Pullover Hoodie - Dark Heather",
+          "image": "https://mockup-api.teespring.com/v3/image/BGDiViPHPUP-1dvCbxADQMi9pvs/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/death-before-dishonor-9302?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Dark Heather",
+          "colorHex": "#373A36"
+        },
+        {
+          "productId": "5819",
+          "label": "Unisex Classic Pullover Hoodie - Black",
+          "image": "https://mockup-api.teespring.com/v3/image/nPO5xZxMoxfMif674dZdGls8RV0/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/death-before-dishonor-9302?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Black",
+          "colorHex": "#0f0f0f"
+        },
+        {
+          "productId": "5823",
+          "label": "Unisex Classic Pullover Hoodie - Royal",
+          "image": "https://mockup-api.teespring.com/v3/image/G8aE_ZTy1jabu6dp5NripwisbHI/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/death-before-dishonor-9302?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Royal",
+          "colorHex": "#003594"
+        },
+        {
+          "productId": "5820",
+          "label": "Unisex Classic Pullover Hoodie - Navy",
+          "image": "https://mockup-api.teespring.com/v3/image/McBS9KLQXfid2dajCj2dMrvfUX0/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/death-before-dishonor-9302?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Navy",
+          "colorHex": "#1F2A44"
+        },
+        {
+          "productId": "5828",
+          "label": "Unisex Classic Pullover Hoodie - Forest Green",
+          "image": "https://mockup-api.teespring.com/v3/image/eWhIDV7XXrQPd7gSxgoe6faH_7U/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/death-before-dishonor-9302?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Forest Green",
+          "colorHex": "#205C40"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:46.470Z"
+    },
+    {
+      "slug": "ptsd-we-the-brave",
+      "title": "Ptsd We the Brave",
+      "category": "apparel",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/GweMTxKGnbf0Vpz6vGBk3JXGRdM/800/800.jpg",
+      "variants": [
+        {
+          "productId": "104073",
+          "label": "Unisex Full Zip Hoodie - Black",
+          "image": "https://mockup-api.teespring.com/v3/image/CWYI3z1abLDNK8gFxjEu4BgKtyA/800/800.jpg",
+          "price": "50.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/ptsd-we-the-brave?product=1027",
+          "productType": "Unisex Full Zip Hoodie",
+          "colorName": "Black",
+          "colorHex": "#0f0f0f"
+        },
+        {
+          "productId": "104075",
+          "label": "Unisex Full Zip Hoodie - Navy",
+          "image": "https://mockup-api.teespring.com/v3/image/F5BuZtWext3u3YbS2bBG27C86bk/800/800.jpg",
+          "price": "50.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/ptsd-we-the-brave?product=1027",
+          "productType": "Unisex Full Zip Hoodie",
+          "colorName": "Navy",
+          "colorHex": "#1F2A44"
+        },
+        {
+          "productId": "104079",
+          "label": "Unisex Full Zip Hoodie - Light Steel",
+          "image": "https://mockup-api.teespring.com/v3/image/wSJxLjuC1r1zVjZy88MZctKxVfE/800/800.jpg",
+          "price": "50.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/ptsd-we-the-brave?product=1027",
+          "productType": "Unisex Full Zip Hoodie",
+          "colorName": "Light Steel",
+          "colorHex": "#B1B3B3"
+        },
+        {
+          "productId": "104076",
+          "label": "Unisex Full Zip Hoodie - Deep Royal",
+          "image": "https://mockup-api.teespring.com/v3/image/Ukxq_qwNfN3PZDizdKr_7rbk6UA/800/800.jpg",
+          "price": "50.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/ptsd-we-the-brave?product=1027",
+          "productType": "Unisex Full Zip Hoodie",
+          "colorName": "Deep Royal",
+          "colorHex": "#003594"
+        },
+        {
+          "productId": "104077",
+          "label": "Unisex Full Zip Hoodie - Deep Red",
+          "image": "https://mockup-api.teespring.com/v3/image/i_xbtXxWQBJUPE19vsxLRo2tE3c/800/800.jpg",
+          "price": "50.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/ptsd-we-the-brave?product=1027",
+          "productType": "Unisex Full Zip Hoodie",
+          "colorName": "Deep Red",
+          "colorHex": "#BA0C2F"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:46.471Z"
+    },
+    {
+      "slug": "get-sgmsays",
+      "title": "Get Sgmsays",
+      "category": "apparel",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/FHoGSTtH0EGEEoJBPciBKubqgcY/800/800.jpg",
+      "variants": [
+        {
+          "productId": "5832",
+          "label": "Unisex Classic Pullover Hoodie - Dark Heather",
+          "image": "https://mockup-api.teespring.com/v3/image/j31u9d-VTuKx3o9-XWYJLRnNuB0/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/get-sgmsays?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Dark Heather",
+          "colorHex": "#373A36"
+        },
+        {
+          "productId": "5819",
+          "label": "Unisex Classic Pullover Hoodie - Black",
+          "image": "https://mockup-api.teespring.com/v3/image/Df-AyvaoY0Y8rEbKeQgXpJPyZhs/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/get-sgmsays?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Black",
+          "colorHex": "#0f0f0f"
+        },
+        {
+          "productId": "5829",
+          "label": "Unisex Classic Pullover Hoodie - Irish Green",
+          "image": "https://mockup-api.teespring.com/v3/image/pssqEOkXPZF20ne4MAcOX76hiWg/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/get-sgmsays?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Irish Green",
+          "colorHex": "#009A44"
+        },
+        {
+          "productId": "5818",
+          "label": "Unisex Classic Pullover Hoodie - White",
+          "image": "https://mockup-api.teespring.com/v3/image/T82q0ZVCwli_EYEAyOfEC1IDn8s/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/get-sgmsays?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "White",
+          "colorHex": "#ffffff"
+        },
+        {
+          "productId": "5828",
+          "label": "Unisex Classic Pullover Hoodie - Forest Green",
+          "image": "https://mockup-api.teespring.com/v3/image/XY_WETpDTNgvGeDSHdhG6UADblU/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/get-sgmsays?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Forest Green",
+          "colorHex": "#205C40"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:46.471Z"
+    },
+    {
+      "slug": "ptsd-just-another-battle",
+      "title": "Ptsd Just Another Battle",
+      "category": "apparel",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/gSf_EeYpH-14Qh2_z4y4c8YLCxk/800/800.jpg",
+      "variants": [
+        {
+          "productId": "105363",
+          "label": "All-Over Print Sports Bra - White",
+          "image": "https://mockup-api.teespring.com/v3/image/gSf_EeYpH-14Qh2_z4y4c8YLCxk/800/800.jpg",
+          "price": "49.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/ptsd-just-another-battle?product=1890",
+          "productType": "All-Over Print Sports Bra",
+          "colorName": "White",
+          "colorHex": "#ffffff"
+        },
+        {
+          "productId": "105374",
+          "label": "All-Over Print Sports Bra - Hot Pink",
+          "image": "https://mockup-api.teespring.com/v3/image/Y790ZStnrf105wmBuFN_6rL5dHA/800/800.jpg",
+          "price": "49.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/ptsd-just-another-battle?product=1890",
+          "productType": "All-Over Print Sports Bra",
+          "colorName": "Hot Pink",
+          "colorHex": "#ff17a3"
+        },
+        {
+          "productId": "105366",
+          "label": "All-Over Print Sports Bra - Red",
+          "image": "https://mockup-api.teespring.com/v3/image/GhTcuLKyz9H3d8rgc6n5ZTD5cfc/800/800.jpg",
+          "price": "49.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/ptsd-just-another-battle?product=1890",
+          "productType": "All-Over Print Sports Bra",
+          "colorName": "Red",
+          "colorHex": "#e70033"
+        },
+        {
+          "productId": "105365",
+          "label": "All-Over Print Sports Bra - Medium Grey",
+          "image": "https://mockup-api.teespring.com/v3/image/dmKdUprcrXsHHbkF4aj2YcKBQb8/800/800.jpg",
+          "price": "49.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/ptsd-just-another-battle?product=1890",
+          "productType": "All-Over Print Sports Bra",
+          "colorName": "Medium Grey",
+          "colorHex": "#8e908f"
+        },
+        {
+          "productId": "105375",
+          "label": "All-Over Print Sports Bra - Vivid Blue",
+          "image": "https://mockup-api.teespring.com/v3/image/lsK-AM5uM0dm9xnZRwdZrLHicXU/800/800.jpg",
+          "price": "49.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/ptsd-just-another-battle?product=1890",
+          "productType": "All-Over Print Sports Bra",
+          "colorName": "Vivid Blue",
+          "colorHex": "#00bae4"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:46.472Z"
+    },
+    {
+      "slug": "fred-october-2025",
+      "title": "Fred October",
+      "category": "apparel",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/Y75kkfmVVbm9MQlIT4FnGJSxmyg/800/800.jpg",
+      "variants": [
+        {
+          "productId": "105363",
+          "label": "All-Over Print Sports Bra - White",
+          "image": "https://mockup-api.teespring.com/v3/image/Y75kkfmVVbm9MQlIT4FnGJSxmyg/800/800.jpg",
+          "price": "49.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fred-october-2025?product=1890",
+          "productType": "All-Over Print Sports Bra",
+          "colorName": "White",
+          "colorHex": "#ffffff"
+        },
+        {
+          "productId": "105378",
+          "label": "All-Over Print Sports Bra - Pastel Blue",
+          "image": "https://mockup-api.teespring.com/v3/image/PLFgLkc7m0pckut9MGkX2po-5qU/800/800.jpg",
+          "price": "49.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fred-october-2025?product=1890",
+          "productType": "All-Over Print Sports Bra",
+          "colorName": "Pastel Blue",
+          "colorHex": "#70d0ec"
+        },
+        {
+          "productId": "105368",
+          "label": "All-Over Print Sports Bra - Yellow",
+          "image": "https://mockup-api.teespring.com/v3/image/1BJklBzEIKRrk6crANq0AObuHrg/800/800.jpg",
+          "price": "49.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fred-october-2025?product=1890",
+          "productType": "All-Over Print Sports Bra",
+          "colorName": "Yellow",
+          "colorHex": "#fbe700"
+        },
+        {
+          "productId": "105373",
+          "label": "All-Over Print Sports Bra - Bright Green",
+          "image": "https://mockup-api.teespring.com/v3/image/7cK8hjzL4CL_adQTJjCSlop7s4E/800/800.jpg",
+          "price": "49.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fred-october-2025?product=1890",
+          "productType": "All-Over Print Sports Bra",
+          "colorName": "Bright Green",
+          "colorHex": "#53da3f"
+        },
+        {
+          "productId": "105365",
+          "label": "All-Over Print Sports Bra - Medium Grey",
+          "image": "https://mockup-api.teespring.com/v3/image/uTBWIB-qzN6UE71xk0heixpUNqw/800/800.jpg",
+          "price": "49.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fred-october-2025?product=1890",
+          "productType": "All-Over Print Sports Bra",
+          "colorName": "Medium Grey",
+          "colorHex": "#8e908f"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:46.472Z"
+    },
+    {
+      "slug": "buy-ptsd-we-the-brave",
+      "title": "Ptsd We the Brave",
+      "category": "apparel",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/YzhakFmtzAwfZykarROchwTWmjA/800/800.jpg",
+      "variants": [
+        {
+          "productId": "101936",
+          "label": "Tote Bag - Natural",
+          "image": "https://mockup-api.teespring.com/v3/image/C2jCRfX4RQKSQ7x_2kHY6PTYmo0/800/800.jpg",
+          "price": "29.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/buy-ptsd-we-the-brave?product=526",
+          "productType": "Tote Bag",
+          "colorName": "Natural",
+          "colorHex": "#f8f8e6"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:46.472Z"
+    },
+    {
+      "slug": "girl-power-september-2025",
+      "title": "Girl Power September",
+      "category": "apparel",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/ZikNtHMKkLxUVdxkiSZ782W4F70/800/800.jpg",
+      "variants": [
+        {
+          "productId": "104073",
+          "label": "Unisex Full Zip Hoodie - Black",
+          "image": "https://mockup-api.teespring.com/v3/image/iIe0XDJGuy7e3kCc_DrTQx4jhi4/800/800.jpg",
+          "price": "50.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/girl-power-september-2025?product=1027",
+          "productType": "Unisex Full Zip Hoodie",
+          "colorName": "Black",
+          "colorHex": "#0f0f0f"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:46.472Z"
+    },
+    {
+      "slug": "buy-ptsd-we-the-brave",
+      "title": "Ptsd We the Brave",
+      "category": "accessories",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/C2jCRfX4RQKSQ7x_2kHY6PTYmo0/800/800.jpg",
+      "variants": [
+        {
+          "productId": "101936",
+          "label": "Tote Bag - Natural",
+          "image": "https://mockup-api.teespring.com/v3/image/C2jCRfX4RQKSQ7x_2kHY6PTYmo0/800/800.jpg",
+          "price": "29.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/buy-ptsd-we-the-brave?product=526",
+          "productType": "Tote Bag",
+          "colorName": "Natural",
+          "colorHex": "#f8f8e6"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:52.068Z"
+    },
+    {
+      "slug": "fafo-october-2025",
+      "title": "Fafo October",
+      "category": "accessories",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/HfTOE1G9Bw4d5dJtw0dJnPp6B3Q/800/800.jpg",
+      "variants": [
+        {
+          "productId": "105363",
+          "label": "All-Over Print Sports Bra - White",
+          "image": "https://mockup-api.teespring.com/v3/image/MXGtnWiXsLtIooBhW3uY0CQbSqQ/800/800.jpg",
+          "price": "49.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fafo-october-2025?product=1890",
+          "productType": "All-Over Print Sports Bra",
+          "colorName": "White",
+          "colorHex": "#ffffff"
+        },
+        {
+          "productId": "105378",
+          "label": "All-Over Print Sports Bra - Pastel Blue",
+          "image": "https://mockup-api.teespring.com/v3/image/K6QVk0NMHOeJvCGRoyT948Dlvws/800/800.jpg",
+          "price": "49.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fafo-october-2025?product=1890",
+          "productType": "All-Over Print Sports Bra",
+          "colorName": "Pastel Blue",
+          "colorHex": "#70d0ec"
+        },
+        {
+          "productId": "105364",
+          "label": "All-Over Print Sports Bra - Black",
+          "image": "https://mockup-api.teespring.com/v3/image/FlGDGz-t5YkOaXCOi7pwA3ukhuA/800/800.jpg",
+          "price": "49.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fafo-october-2025?product=1890",
+          "productType": "All-Over Print Sports Bra",
+          "colorName": "Black",
+          "colorHex": "#000000"
+        },
+        {
+          "productId": "105365",
+          "label": "All-Over Print Sports Bra - Medium Grey",
+          "image": "https://mockup-api.teespring.com/v3/image/UDqyCVHtDakvt-IQnreweBGOAWU/800/800.jpg",
+          "price": "49.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fafo-october-2025?product=1890",
+          "productType": "All-Over Print Sports Bra",
+          "colorName": "Medium Grey",
+          "colorHex": "#8e908f"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:52.068Z"
+    },
+    {
+      "slug": "sergeant-major-says-3884",
+      "title": "Sergeant Major Says",
+      "category": "accessories",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/KIflQTcXKTsqtY5LjW5GTYDtYEw/800/800.jpg",
+      "variants": [
+        {
+          "productId": "101936",
+          "label": "Tote Bag - Natural",
+          "image": "https://mockup-api.teespring.com/v3/image/KIflQTcXKTsqtY5LjW5GTYDtYEw/800/800.jpg",
+          "price": "29.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/sergeant-major-says-3884?product=526",
+          "productType": "Tote Bag",
+          "colorName": "Natural",
+          "colorHex": "#f8f8e6"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:52.068Z"
+    },
+    {
+      "slug": "duty-honor-country-flag",
+      "title": "Duty Honor Country Flag",
+      "category": "accessories",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/mjYpUAqeQhfVGBtaXEzOK5S5LEc/800/800.jpg",
+      "variants": [
+        {
+          "productId": "6379",
+          "label": "Toddler Classic Tee - White",
+          "image": "https://mockup-api.teespring.com/v3/image/Dswb8a1xUzM3GOkq03557kuShmM/800/800.jpg",
+          "price": "21.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/duty-honor-country-flag?product=340",
+          "productType": "Toddler Classic Tee",
+          "colorName": "White",
+          "colorHex": "#FFFFFF"
+        },
+        {
+          "productId": "6384",
+          "label": "Toddler Classic Tee - Light Pink",
+          "image": "https://mockup-api.teespring.com/v3/image/k3h-xIW9k7uPD_VySctHrXmXVOM/800/800.jpg",
+          "price": "21.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/duty-honor-country-flag?product=340",
+          "productType": "Toddler Classic Tee",
+          "colorName": "Light Pink",
+          "colorHex": "#FFCCE2"
+        },
+        {
+          "productId": "6381",
+          "label": "Toddler Classic Tee - Royal",
+          "image": "https://mockup-api.teespring.com/v3/image/HqMwv3bMwH_Lme8-8iAeXYYuMEE/800/800.jpg",
+          "price": "21.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/duty-honor-country-flag?product=340",
+          "productType": "Toddler Classic Tee",
+          "colorName": "Royal",
+          "colorHex": "#1950BF"
+        },
+        {
+          "productId": "6412",
+          "label": "Toddler Classic Tee - Black",
+          "image": "https://mockup-api.teespring.com/v3/image/m4_IBNPnezcClp4N81ZZwJaINFA/800/800.jpg",
+          "price": "21.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/duty-honor-country-flag?product=340",
+          "productType": "Toddler Classic Tee",
+          "colorName": "Black",
+          "colorHex": "#222222"
+        },
+        {
+          "productId": "6383",
+          "label": "Toddler Classic Tee - Navy",
+          "image": "https://mockup-api.teespring.com/v3/image/T6QIoBWPF-TqB0FhI_4yif4sN2o/800/800.jpg",
+          "price": "21.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/duty-honor-country-flag?product=340",
+          "productType": "Toddler Classic Tee",
+          "colorName": "Navy",
+          "colorHex": "#151C33"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:52.068Z"
+    },
+    {
+      "slug": "duty-honor-coun-september-2025",
+      "title": "Duty Honor Coun September",
+      "category": "accessories",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/ja9c2alsG1uZMTtDWkywlpM3Ofk/800/800.jpg",
+      "variants": [
+        {
+          "productId": "104073",
+          "label": "Unisex Full Zip Hoodie - Black",
+          "image": "https://mockup-api.teespring.com/v3/image/gCN6yEPK_MoeevOoqUzyTD6onOA/800/800.jpg",
+          "price": "50.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/duty-honor-coun-september-2025?product=1027",
+          "productType": "Unisex Full Zip Hoodie",
+          "colorName": "Black",
+          "colorHex": "#0f0f0f"
+        },
+        {
+          "productId": "104079",
+          "label": "Unisex Full Zip Hoodie - Light Steel",
+          "image": "https://mockup-api.teespring.com/v3/image/SVo07QCTjCTR20JExBQkaFMQmes/800/800.jpg",
+          "price": "50.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/duty-honor-coun-september-2025?product=1027",
+          "productType": "Unisex Full Zip Hoodie",
+          "colorName": "Light Steel",
+          "colorHex": "#B1B3B3"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:52.069Z"
+    },
+    {
+      "slug": "fluent-in-aac",
+      "title": "Fluent in Aac",
+      "category": "accessories",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/N9SaldK75yXUGzM4AFc3_m5tw0A/800/800.jpg",
+      "variants": [
+        {
+          "productId": "101936",
+          "label": "Tote Bag - Natural",
+          "image": "https://mockup-api.teespring.com/v3/image/N9SaldK75yXUGzM4AFc3_m5tw0A/800/800.jpg",
+          "price": "29.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/fluent-in-aac?product=526",
+          "productType": "Tote Bag",
+          "colorName": "Natural",
+          "colorHex": "#f8f8e6"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:52.069Z"
+    },
+    {
+      "slug": "my-support-system-2025",
+      "title": "My Support System",
+      "category": "accessories",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/8uPbi_EAT4ddcyl-0mgleZx7_Pg/800/800.jpg",
+      "variants": [
+        {
+          "productId": "5818",
+          "label": "Unisex Classic Pullover Hoodie - White",
+          "image": "https://mockup-api.teespring.com/v3/image/jHRDbNCKz3ZJlCKoHTWJ3nqlDR4/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/my-support-system-2025?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "White",
+          "colorHex": "#ffffff"
+        },
+        {
+          "productId": "5819",
+          "label": "Unisex Classic Pullover Hoodie - Black",
+          "image": "https://mockup-api.teespring.com/v3/image/2GiXTvySIb6Gdq7hv-g5zm3kfeA/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/my-support-system-2025?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Black",
+          "colorHex": "#0f0f0f"
+        },
+        {
+          "productId": "5839",
+          "label": "Unisex Classic Pullover Hoodie - Carolina Blue",
+          "image": "https://mockup-api.teespring.com/v3/image/lXQSgLRpRfhmJrZTzzyO8GjJa3A/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/my-support-system-2025?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Carolina Blue",
+          "colorHex": "#5c9dd4"
+        },
+        {
+          "productId": "6319",
+          "label": "Unisex Classic Pullover Hoodie - Charcoal",
+          "image": "https://mockup-api.teespring.com/v3/image/MPlM9TclhEC4-cafzC3j_mDAcno/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/my-support-system-2025?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Charcoal",
+          "colorHex": "#54585A"
+        },
+        {
+          "productId": "5837",
+          "label": "Unisex Classic Pullover Hoodie - Safety Orange",
+          "image": "https://mockup-api.teespring.com/v3/image/5NqdnUV5A36oMdL59MhgNA7j2_M/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/my-support-system-2025?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Safety Orange",
+          "colorHex": "#FF6900"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:52.069Z"
+    },
+    {
+      "slug": "buy-my-support-system",
+      "title": "My Support System",
+      "category": "accessories",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/Z1nVxwTuDo0KttxgSbOxEdu92yI/800/800.jpg",
+      "variants": [
+        {
+          "productId": "106302",
+          "label": "Tru Transfer Printed Classic Long Sleeve Tee - Dark Heather",
+          "image": "https://mockup-api.teespring.com/v3/image/f61rPH7RQbfbzRyWQPqd0zk9kL4/800/800.jpg",
+          "price": "36.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/buy-my-support-system?product=2240",
+          "productType": "Tru Transfer Printed Classic Long Sleeve Tee",
+          "colorName": "Dark Heather",
+          "colorHex": "#383838"
+        },
+        {
+          "productId": "106298",
+          "label": "Tru Transfer Printed Classic Long Sleeve Tee - Black",
+          "image": "https://mockup-api.teespring.com/v3/image/jtVKlPxd7A4esXjNtAoYhrS4V64/800/800.jpg",
+          "price": "36.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/buy-my-support-system?product=2240",
+          "productType": "Tru Transfer Printed Classic Long Sleeve Tee",
+          "colorName": "Black",
+          "colorHex": "#222222"
+        },
+        {
+          "productId": "106297",
+          "label": "Tru Transfer Printed Classic Long Sleeve Tee - White",
+          "image": "https://mockup-api.teespring.com/v3/image/ml5lwWmXExlvtJ_QCzUtyrI77VQ/800/800.jpg",
+          "price": "36.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/buy-my-support-system?product=2240",
+          "productType": "Tru Transfer Printed Classic Long Sleeve Tee",
+          "colorName": "White",
+          "colorHex": "#ffffff"
+        },
+        {
+          "productId": "106301",
+          "label": "Tru Transfer Printed Classic Long Sleeve Tee - Dark Chocolate",
+          "image": "https://mockup-api.teespring.com/v3/image/8A2ktooPJk69eSe0d5BtQoJdvi0/800/800.jpg",
+          "price": "36.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/buy-my-support-system?product=2240",
+          "productType": "Tru Transfer Printed Classic Long Sleeve Tee",
+          "colorName": "Dark Chocolate",
+          "colorHex": "#665542"
+        },
+        {
+          "productId": "106307",
+          "label": "Tru Transfer Printed Classic Long Sleeve Tee - Light Pink",
+          "image": "https://mockup-api.teespring.com/v3/image/TZwwSMLlXTolIRCBjOXuQ-N2PmE/800/800.jpg",
+          "price": "36.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/buy-my-support-system?product=2240",
+          "productType": "Tru Transfer Printed Classic Long Sleeve Tee",
+          "colorName": "Light Pink",
+          "colorHex": "#ffd5d5"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:52.069Z"
+    },
+    {
+      "slug": "get-sergeant-major-says",
+      "title": "Sergeant Major Says",
+      "category": "accessories",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/Jqh5xxWnd_mFaXyqhMxLiyqWiTk/800/800.jpg",
+      "variants": [
+        {
+          "productId": "105388",
+          "label": "Notebook - Black",
+          "image": "https://mockup-api.teespring.com/v3/image/A6AjPV5uxwBPXTTCx5vAagNYLao/800/800.jpg",
+          "price": "19.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/get-sergeant-major-says?product=1899",
+          "productType": "Notebook",
+          "colorName": "Black",
+          "colorHex": "#000000"
+        },
+        {
+          "productId": "105394",
+          "label": "Notebook - Royal Blue",
+          "image": "https://mockup-api.teespring.com/v3/image/SGPCzIBKBfQPGqxnyx_GkQZj83M/800/800.jpg",
+          "price": "19.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/get-sergeant-major-says?product=1899",
+          "productType": "Notebook",
+          "colorName": "Royal Blue",
+          "colorHex": "#001ca8"
+        },
+        {
+          "productId": "105393",
+          "label": "Notebook - Kelly Green",
+          "image": "https://mockup-api.teespring.com/v3/image/5WLAK09r0ITfNe60cP3n1DMMiHs/800/800.jpg",
+          "price": "19.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/get-sergeant-major-says?product=1899",
+          "productType": "Notebook",
+          "colorName": "Kelly Green",
+          "colorHex": "#009d4f"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:52.069Z"
+    },
+    {
+      "slug": "new-sergeant-major-says",
+      "title": "Sergeant Major Says",
+      "category": "accessories",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/aIJVFIVLuscO49f-Jfz6rj9XUhU/800/800.jpg",
+      "variants": [
+        {
+          "productId": "103544",
+          "label": "Die Cut Sticker - Standard",
+          "image": "https://mockup-api.teespring.com/v3/image/aIJVFIVLuscO49f-Jfz6rj9XUhU/800/800.jpg",
+          "price": "6.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/new-sergeant-major-says?product=794",
+          "productType": "Die Cut Sticker",
+          "colorName": "Standard",
+          "colorHex": "#ffffff"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:52.069Z"
+    },
+    {
+      "slug": "raised-by-predators-2025",
+      "title": "Raised by Predators",
+      "category": "accessories",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/SDRU5ttH4AtdZo4_lqROyZdlCh4/800/800.jpg",
+      "variants": [
+        {
+          "productId": "105971",
+          "label": "Dad Hat | Yupoong 6245CM - Black",
+          "image": "https://mockup-api.teespring.com/v3/image/SDRU5ttH4AtdZo4_lqROyZdlCh4/800/800.jpg",
+          "price": "34.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/raised-by-predators-2025?product=2148",
+          "productType": "Dad Hat | Yupoong 6245CM",
+          "colorName": "Black",
+          "colorHex": "#181717"
+        },
+        {
+          "productId": "106128",
+          "label": "Dad Hat | Yupoong 6245CM - Dark Grey",
+          "image": "https://mockup-api.teespring.com/v3/image/87jr4X17ATQS4CoftpdaN1c6Owk/800/800.jpg",
+          "price": "34.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/raised-by-predators-2025?product=2148",
+          "productType": "Dad Hat | Yupoong 6245CM",
+          "colorName": "Dark Grey",
+          "colorHex": "#39353a"
+        },
+        {
+          "productId": "106127",
+          "label": "Dad Hat | Yupoong 6245CM - Cranberry",
+          "image": "https://mockup-api.teespring.com/v3/image/DH-zREOUTy6EU6ibGHXkPWqxE6Q/800/800.jpg",
+          "price": "34.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/raised-by-predators-2025?product=2148",
+          "productType": "Dad Hat | Yupoong 6245CM",
+          "colorName": "Cranberry",
+          "colorHex": "#a3001b"
+        },
+        {
+          "productId": "105972",
+          "label": "Dad Hat | Yupoong 6245CM - Green Camo",
+          "image": "https://mockup-api.teespring.com/v3/image/hbKz3hH5yoiW6aKEcSBNVT3ns1Q/800/800.jpg",
+          "price": "34.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/raised-by-predators-2025?product=2148",
+          "productType": "Dad Hat | Yupoong 6245CM",
+          "colorName": "Green Camo",
+          "colorHex": "#415446"
+        },
+        {
+          "productId": "105974",
+          "label": "Dad Hat | Yupoong 6245CM - Navy",
+          "image": "https://mockup-api.teespring.com/v3/image/iidBVWm_67a2apvjFcXV_-YHJm4/800/800.jpg",
+          "price": "34.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/raised-by-predators-2025?product=2148",
+          "productType": "Dad Hat | Yupoong 6245CM",
+          "colorName": "Navy",
+          "colorHex": "#182031"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:52.070Z"
+    },
+    {
+      "slug": "crom-5772",
+      "title": "Crom",
+      "category": "accessories",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/FOXcXZUgHgReV0e-ctJ6vyCbccU/800/800.jpg",
+      "variants": [
+        {
+          "productId": "105991",
+          "label": "Beanie | Yupoong 1501KC - Gold",
+          "image": "https://mockup-api.teespring.com/v3/image/FOXcXZUgHgReV0e-ctJ6vyCbccU/800/800.jpg",
+          "price": "31.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/crom-5772?product=2152",
+          "productType": "Beanie | Yupoong 1501KC",
+          "colorName": "Gold",
+          "colorHex": "#ffa913"
+        },
+        {
+          "productId": "105996",
+          "label": "Beanie | Yupoong 1501KC - White",
+          "image": "https://mockup-api.teespring.com/v3/image/PTsMjCRhs-1K9WpSXaHUDBGGQaE/800/800.jpg",
+          "price": "31.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/crom-5772?product=2152",
+          "productType": "Beanie | Yupoong 1501KC",
+          "colorName": "White",
+          "colorHex": "#FFFFFF"
+        },
+        {
+          "productId": "105992",
+          "label": "Beanie | Yupoong 1501KC - Heather Grey",
+          "image": "https://mockup-api.teespring.com/v3/image/4npFoDPc3hIr5llOpJ7VUnYCRlU/800/800.jpg",
+          "price": "31.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/crom-5772?product=2152",
+          "productType": "Beanie | Yupoong 1501KC",
+          "colorName": "Heather Grey",
+          "colorHex": "#a19f9b"
+        },
+        {
+          "productId": "105994",
+          "label": "Beanie | Yupoong 1501KC - Red",
+          "image": "https://mockup-api.teespring.com/v3/image/gXnJNweOMwadZ27LcPsByoBWFlo/800/800.jpg",
+          "price": "31.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/crom-5772?product=2152",
+          "productType": "Beanie | Yupoong 1501KC",
+          "colorName": "Red",
+          "colorHex": "#b91616"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:52.070Z"
+    },
+    {
+      "slug": "crom-october-2025",
+      "title": "Crom October",
+      "category": "accessories",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/SlYOrcRHtaMIARkqSt0PpJRf0A0/800/800.jpg",
+      "variants": [
+        {
+          "productId": "105986",
+          "label": "Trucker Hat | Yupoong 6606 - Black",
+          "image": "https://mockup-api.teespring.com/v3/image/SlYOrcRHtaMIARkqSt0PpJRf0A0/800/800.jpg",
+          "price": "31.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/crom-october-2025?product=2150",
+          "productType": "Trucker Hat | Yupoong 6606",
+          "colorName": "Black",
+          "colorHex": "#181818"
+        },
+        {
+          "productId": "105988",
+          "label": "Trucker Hat | Yupoong 6606 - Navy/ White",
+          "image": "https://mockup-api.teespring.com/v3/image/yZcp_9oDXPTLSWjX8tvaGcvydlY/800/800.jpg",
+          "price": "31.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/crom-october-2025?product=2150",
+          "productType": "Trucker Hat | Yupoong 6606",
+          "colorName": "Navy/ White",
+          "colorHex": "#243044"
+        },
+        {
+          "productId": "105987",
+          "label": "Trucker Hat | Yupoong 6606 - Navy",
+          "image": "https://mockup-api.teespring.com/v3/image/LHzqiSarxvfoNpF9hRd4J8Z0dW8/800/800.jpg",
+          "price": "31.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/crom-october-2025?product=2150",
+          "productType": "Trucker Hat | Yupoong 6606",
+          "colorName": "Navy",
+          "colorHex": "#24303b"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:52.070Z"
+    },
+    {
+      "slug": "crom-2025",
+      "title": "Crom",
+      "category": "accessories",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/TEiJLI5U4BcgWA6th9D1BnO1cfo/800/800.jpg",
+      "variants": [
+        {
+          "productId": "105979",
+          "label": "Snapback | Yupoong 6089M - Green Camo",
+          "image": "https://mockup-api.teespring.com/v3/image/TEiJLI5U4BcgWA6th9D1BnO1cfo/800/800.jpg",
+          "price": "33.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/crom-2025?product=2149",
+          "productType": "Snapback | Yupoong 6089M",
+          "colorName": "Green Camo",
+          "colorHex": "#415446"
+        },
+        {
+          "productId": "105983",
+          "label": "Snapback | Yupoong 6089M - Red",
+          "image": "https://mockup-api.teespring.com/v3/image/1a7mmhVMFE8eolmeRtcCxM58IpI/800/800.jpg",
+          "price": "33.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/crom-2025?product=2149",
+          "productType": "Snapback | Yupoong 6089M",
+          "colorName": "Red",
+          "colorHex": "#dd0b2e"
+        },
+        {
+          "productId": "105980",
+          "label": "Snapback | Yupoong 6089M - Heather Grey",
+          "image": "https://mockup-api.teespring.com/v3/image/uc1uurgWgm1rbYjexrVIFQwj63s/800/800.jpg",
+          "price": "33.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/crom-2025?product=2149",
+          "productType": "Snapback | Yupoong 6089M",
+          "colorName": "Heather Grey",
+          "colorHex": "#A8A59E"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:52.070Z"
+    },
+    {
+      "slug": "buy-crom",
+      "title": "Crom",
+      "category": "accessories",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/8jjrHqJ0RYilRIV3ySpcpGWOq0A/800/800.jpg",
+      "variants": [
+        {
+          "productId": "105975",
+          "label": "Snapback | Yupoong 6089M - Black",
+          "image": "https://mockup-api.teespring.com/v3/image/8jjrHqJ0RYilRIV3ySpcpGWOq0A/800/800.jpg",
+          "price": "33.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/buy-crom?product=2149",
+          "productType": "Snapback | Yupoong 6089M",
+          "colorName": "Black",
+          "colorHex": "#2a2a2a"
+        },
+        {
+          "productId": "105984",
+          "label": "Snapback | Yupoong 6089M - Royal Blue",
+          "image": "https://mockup-api.teespring.com/v3/image/2lBMtN2HFrjusUhWmtN6sJ-OuuU/800/800.jpg",
+          "price": "33.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/buy-crom?product=2149",
+          "productType": "Snapback | Yupoong 6089M",
+          "colorName": "Royal Blue",
+          "colorHex": "#10337a"
+        },
+        {
+          "productId": "105979",
+          "label": "Snapback | Yupoong 6089M - Green Camo",
+          "image": "https://mockup-api.teespring.com/v3/image/olc6gVUJZjK-zx3w7-3T88GR1bg/800/800.jpg",
+          "price": "33.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/buy-crom?product=2149",
+          "productType": "Snapback | Yupoong 6089M",
+          "colorName": "Green Camo",
+          "colorHex": "#415446"
+        },
+        {
+          "productId": "105983",
+          "label": "Snapback | Yupoong 6089M - Red",
+          "image": "https://mockup-api.teespring.com/v3/image/DyAekP9w3Vtq3pZ4cgyhjNoNaJM/800/800.jpg",
+          "price": "33.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/buy-crom?product=2149",
+          "productType": "Snapback | Yupoong 6089M",
+          "colorName": "Red",
+          "colorHex": "#dd0b2e"
+        },
+        {
+          "productId": "105978",
+          "label": "Snapback | Yupoong 6089M - Dark Navy",
+          "image": "https://mockup-api.teespring.com/v3/image/xhKrrAEYg7VZ3sQEsvBYaGcrxfA/800/800.jpg",
+          "price": "33.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/buy-crom?product=2149",
+          "productType": "Snapback | Yupoong 6089M",
+          "colorName": "Dark Navy",
+          "colorHex": "#15293a"
+        },
+        {
+          "productId": "105981",
+          "label": "Snapback | Yupoong 6089M - Maroon",
+          "image": "https://mockup-api.teespring.com/v3/image/-M2M45QUyWSnJNB6bgRSrxUhpzE/800/800.jpg",
+          "price": "33.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/buy-crom?product=2149",
+          "productType": "Snapback | Yupoong 6089M",
+          "colorName": "Maroon",
+          "colorHex": "#651929"
+        },
+        {
+          "productId": "105982",
+          "label": "Snapback | Yupoong 6089M - Navy",
+          "image": "https://mockup-api.teespring.com/v3/image/X90UHPtSvCp7tqvkFroOSi94VbU/800/800.jpg",
+          "price": "33.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/buy-crom?product=2149",
+          "productType": "Snapback | Yupoong 6089M",
+          "colorName": "Navy",
+          "colorHex": "#303044"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:52.070Z"
+    },
+    {
+      "slug": "get-crom",
+      "title": "Crom",
+      "category": "accessories",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/RLVya5a4GZTl1ADOXbV_--17cYc/800/800.jpg",
+      "variants": [
+        {
+          "productId": "105972",
+          "label": "Dad Hat | Yupoong 6245CM - Green Camo",
+          "image": "https://mockup-api.teespring.com/v3/image/RLVya5a4GZTl1ADOXbV_--17cYc/800/800.jpg",
+          "price": "34.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/get-crom?product=2148",
+          "productType": "Dad Hat | Yupoong 6245CM",
+          "colorName": "Green Camo",
+          "colorHex": "#415446"
+        },
+        {
+          "productId": "106008",
+          "label": "Dad Hat | Yupoong 6245CM - White",
+          "image": "https://mockup-api.teespring.com/v3/image/c6ecQ4EIYD-2xa4m3T3D-65QGU8/800/800.jpg",
+          "price": "34.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/get-crom?product=2148",
+          "productType": "Dad Hat | Yupoong 6245CM",
+          "colorName": "White",
+          "colorHex": "#ffffff"
+        },
+        {
+          "productId": "105973",
+          "label": "Dad Hat | Yupoong 6245CM - Pink",
+          "image": "https://mockup-api.teespring.com/v3/image/ia-60x20n9P2O4XQ3UgRmtqTmks/800/800.jpg",
+          "price": "34.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/get-crom?product=2148",
+          "productType": "Dad Hat | Yupoong 6245CM",
+          "colorName": "Pink",
+          "colorHex": "#fab2ba"
+        },
+        {
+          "productId": "106124",
+          "label": "Dad Hat | Yupoong 6245CM - Light Blue",
+          "image": "https://mockup-api.teespring.com/v3/image/84a3TNkqxdVmutfELy6DApHOj2c/800/800.jpg",
+          "price": "34.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/get-crom?product=2148",
+          "productType": "Dad Hat | Yupoong 6245CM",
+          "colorName": "Light Blue",
+          "colorHex": "#b5cbda"
+        },
+        {
+          "productId": "106123",
+          "label": "Dad Hat | Yupoong 6245CM - Khaki",
+          "image": "https://mockup-api.teespring.com/v3/image/Sg7qGhOFw20cO2PV9MariOEycfg/800/800.jpg",
+          "price": "34.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/get-crom?product=2148",
+          "productType": "Dad Hat | Yupoong 6245CM",
+          "colorName": "Khaki",
+          "colorHex": "#b49771"
+        },
+        {
+          "productId": "106126",
+          "label": "Dad Hat | Yupoong 6245CM - Stone",
+          "image": "https://mockup-api.teespring.com/v3/image/Fk21Ce9EDBIZqLYrrcc6JHvpym0/800/800.jpg",
+          "price": "34.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/get-crom?product=2148",
+          "productType": "Dad Hat | Yupoong 6245CM",
+          "colorName": "Stone",
+          "colorHex": "#d6bdad"
+        },
+        {
+          "productId": "106127",
+          "label": "Dad Hat | Yupoong 6245CM - Cranberry",
+          "image": "https://mockup-api.teespring.com/v3/image/AtuFIenYMSXryCc8NHUi3eK1mt0/800/800.jpg",
+          "price": "34.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/get-crom?product=2148",
+          "productType": "Dad Hat | Yupoong 6245CM",
+          "colorName": "Cranberry",
+          "colorHex": "#a3001b"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:52.070Z"
+    },
+    {
+      "slug": "new-crom",
+      "title": "Crom",
+      "category": "accessories",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/xyeww0zqOl3FxIhOXmNOkkS0VMQ/800/800.jpg",
+      "variants": [
+        {
+          "productId": "105971",
+          "label": "Dad Hat | Yupoong 6245CM - Black",
+          "image": "https://mockup-api.teespring.com/v3/image/xyeww0zqOl3FxIhOXmNOkkS0VMQ/800/800.jpg",
+          "price": "34.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/new-crom?product=2148",
+          "productType": "Dad Hat | Yupoong 6245CM",
+          "colorName": "Black",
+          "colorHex": "#181717"
+        },
+        {
+          "productId": "106128",
+          "label": "Dad Hat | Yupoong 6245CM - Dark Grey",
+          "image": "https://mockup-api.teespring.com/v3/image/Q17At_byxnvCwQtvRl9kakpmhDU/800/800.jpg",
+          "price": "34.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/new-crom?product=2148",
+          "productType": "Dad Hat | Yupoong 6245CM",
+          "colorName": "Dark Grey",
+          "colorHex": "#39353a"
+        },
+        {
+          "productId": "106127",
+          "label": "Dad Hat | Yupoong 6245CM - Cranberry",
+          "image": "https://mockup-api.teespring.com/v3/image/J4l9_zpZpB3jMCEMOWwTd_2m64U/800/800.jpg",
+          "price": "34.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/new-crom?product=2148",
+          "productType": "Dad Hat | Yupoong 6245CM",
+          "colorName": "Cranberry",
+          "colorHex": "#a3001b"
+        },
+        {
+          "productId": "105972",
+          "label": "Dad Hat | Yupoong 6245CM - Green Camo",
+          "image": "https://mockup-api.teespring.com/v3/image/FxV75wvIp5Mx7sh2O9ZoC0Tn90s/800/800.jpg",
+          "price": "34.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/new-crom?product=2148",
+          "productType": "Dad Hat | Yupoong 6245CM",
+          "colorName": "Green Camo",
+          "colorHex": "#415446"
+        },
+        {
+          "productId": "105974",
+          "label": "Dad Hat | Yupoong 6245CM - Navy",
+          "image": "https://mockup-api.teespring.com/v3/image/R3gaBvXNervRijL5f2izoXZfzS4/800/800.jpg",
+          "price": "34.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/new-crom?product=2148",
+          "productType": "Dad Hat | Yupoong 6245CM",
+          "colorName": "Navy",
+          "colorHex": "#182031"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:52.070Z"
+    },
+    {
+      "slug": "101st-airborne-di-october-2025",
+      "title": "101st Airborne Di October",
+      "category": "accessories",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/7-XLxmK0MjbgQNsMl2T6OrO3HM8/800/800.jpg",
+      "variants": [
+        {
+          "productId": "106123",
+          "label": "Dad Hat | Yupoong 6245CM - Khaki",
+          "image": "https://mockup-api.teespring.com/v3/image/7-XLxmK0MjbgQNsMl2T6OrO3HM8/800/800.jpg",
+          "price": "34.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/101st-airborne-di-october-2025?product=2148",
+          "productType": "Dad Hat | Yupoong 6245CM",
+          "colorName": "Khaki",
+          "colorHex": "#b49771"
+        },
+        {
+          "productId": "106008",
+          "label": "Dad Hat | Yupoong 6245CM - White",
+          "image": "https://mockup-api.teespring.com/v3/image/KMcwgqTUSqvdJtErE1124rh9cRg/800/800.jpg",
+          "price": "34.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/101st-airborne-di-october-2025?product=2148",
+          "productType": "Dad Hat | Yupoong 6245CM",
+          "colorName": "White",
+          "colorHex": "#ffffff"
+        },
+        {
+          "productId": "105973",
+          "label": "Dad Hat | Yupoong 6245CM - Pink",
+          "image": "https://mockup-api.teespring.com/v3/image/MNvWnM-nkEClReGLtGVfvLn0Q3U/800/800.jpg",
+          "price": "34.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/101st-airborne-di-october-2025?product=2148",
+          "productType": "Dad Hat | Yupoong 6245CM",
+          "colorName": "Pink",
+          "colorHex": "#fab2ba"
+        },
+        {
+          "productId": "106124",
+          "label": "Dad Hat | Yupoong 6245CM - Light Blue",
+          "image": "https://mockup-api.teespring.com/v3/image/12SkgZdr1p9-0dEYiKtCbBfYWh4/800/800.jpg",
+          "price": "34.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/101st-airborne-di-october-2025?product=2148",
+          "productType": "Dad Hat | Yupoong 6245CM",
+          "colorName": "Light Blue",
+          "colorHex": "#b5cbda"
+        },
+        {
+          "productId": "106126",
+          "label": "Dad Hat | Yupoong 6245CM - Stone",
+          "image": "https://mockup-api.teespring.com/v3/image/8Kg3ooPuKJnb3tp0Gsvnvx1BV_8/800/800.jpg",
+          "price": "34.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/101st-airborne-di-october-2025?product=2148",
+          "productType": "Dad Hat | Yupoong 6245CM",
+          "colorName": "Stone",
+          "colorHex": "#d6bdad"
+        },
+        {
+          "productId": "106127",
+          "label": "Dad Hat | Yupoong 6245CM - Cranberry",
+          "image": "https://mockup-api.teespring.com/v3/image/9SE052BUSTK6sDx7ZhFjIv3VtgE/800/800.jpg",
+          "price": "34.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/101st-airborne-di-october-2025?product=2148",
+          "productType": "Dad Hat | Yupoong 6245CM",
+          "colorName": "Cranberry",
+          "colorHex": "#a3001b"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:52.071Z"
+    },
+    {
+      "slug": "alternate-designs",
+      "title": "Alternate Designs",
+      "category": "drinkware",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/ODLki6mffvV6FfsKMly1fjUG7Tw/800/800.jpg",
+      "variants": [
+        {
+          "productId": "101936",
+          "label": "Tote Bag - Natural",
+          "image": "https://mockup-api.teespring.com/v3/image/rFo9pnqlQtyjhVxnwbgDtPDdGuM/800/800.jpg",
+          "price": "29.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/alternate-designs?product=526",
+          "productType": "Tote Bag",
+          "colorName": "Natural",
+          "colorHex": "#f8f8e6"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:55.384Z"
+    },
+    {
+      "slug": "sergeant-major-says-logo",
+      "title": "Sergeant Major Says Logo",
+      "category": "drinkware",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/diWoaBcYxQ-v93VRcbutQKqSHJw/800/800.jpg",
+      "variants": [
+        {
+          "productId": "101936",
+          "label": "Tote Bag - Natural",
+          "image": "https://mockup-api.teespring.com/v3/image/e7mrzmmefCqB3xs3uvmvTFxsGwk/800/800.jpg",
+          "price": "29.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/sergeant-major-says-logo?product=526",
+          "productType": "Tote Bag",
+          "colorName": "Natural",
+          "colorHex": "#f8f8e6"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:55.385Z"
+    },
+    {
+      "slug": "airmen-3",
+      "title": "Airmen",
+      "category": "drinkware",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/aAiP2dZdfqMeAgYTQx6CLTtaA2E/800/800.jpg",
+      "variants": [
+        {
+          "productId": "6383",
+          "label": "Toddler Classic Tee - Navy",
+          "image": "https://mockup-api.teespring.com/v3/image/FaQ9u6bpfgFby2cTx8w1QBkAhB0/800/800.jpg",
+          "price": "21.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/airmen-3?product=340",
+          "productType": "Toddler Classic Tee",
+          "colorName": "Navy",
+          "colorHex": "#151C33"
+        },
+        {
+          "productId": "6381",
+          "label": "Toddler Classic Tee - Royal",
+          "image": "https://mockup-api.teespring.com/v3/image/v5uZrcv_IfFIouiM4gWBevagwCc/800/800.jpg",
+          "price": "21.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/airmen-3?product=340",
+          "productType": "Toddler Classic Tee",
+          "colorName": "Royal",
+          "colorHex": "#1950BF"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:55.385Z"
+    },
+    {
+      "slug": "airmen-2",
+      "title": "Airmen",
+      "category": "drinkware",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/B7l2dnFMYYJ-os0aUpaX-N9OaJ4/800/800.jpg",
+      "variants": [
+        {
+          "productId": "6383",
+          "label": "Toddler Classic Tee - Navy",
+          "image": "https://mockup-api.teespring.com/v3/image/g1CLM8Oi6orcUQmqyYuFJUlWNCo/800/800.jpg",
+          "price": "21.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/airmen-2?product=340",
+          "productType": "Toddler Classic Tee",
+          "colorName": "Navy",
+          "colorHex": "#151C33"
+        },
+        {
+          "productId": "6381",
+          "label": "Toddler Classic Tee - Royal",
+          "image": "https://mockup-api.teespring.com/v3/image/bjVMYbSSMtqPi88l7ZoyN8lNuNE/800/800.jpg",
+          "price": "21.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/airmen-2?product=340",
+          "productType": "Toddler Classic Tee",
+          "colorName": "Royal",
+          "colorHex": "#1950BF"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:55.385Z"
+    },
+    {
+      "slug": "get-airmen",
+      "title": "Airmen",
+      "category": "drinkware",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/ojIOl7r06nPnbDizGfo_fosdHDU/800/800.jpg",
+      "variants": [
+        {
+          "productId": "106110",
+          "label": "All-Over Print Unisex Hoodie - Vivid Blue",
+          "image": "https://mockup-api.teespring.com/v3/image/7D3pQMKKgfr7UlFP1DID4ugQOpc/800/800.jpg",
+          "price": "69.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/get-airmen?product=2180",
+          "productType": "All-Over Print Unisex Hoodie",
+          "colorName": "Vivid Blue",
+          "colorHex": "#00bae4"
+        },
+        {
+          "productId": "106106",
+          "label": "All-Over Print Unisex Hoodie - Deep Navy",
+          "image": "https://mockup-api.teespring.com/v3/image/zrDe43-m9R4b_gDdn5WXWZXzis4/800/800.jpg",
+          "price": "69.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/get-airmen?product=2180",
+          "productType": "All-Over Print Unisex Hoodie",
+          "colorName": "Deep Navy",
+          "colorHex": "#002144"
+        },
+        {
+          "productId": "106113",
+          "label": "All-Over Print Unisex Hoodie - Pastel Blue",
+          "image": "https://mockup-api.teespring.com/v3/image/gv7BG230LmFs9c9Y4hbLRuu8OlQ/800/800.jpg",
+          "price": "69.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/get-airmen?product=2180",
+          "productType": "All-Over Print Unisex Hoodie",
+          "colorName": "Pastel Blue",
+          "colorHex": "#70d0ec"
+        },
+        {
+          "productId": "106105",
+          "label": "All-Over Print Unisex Hoodie - Royal Blue",
+          "image": "https://mockup-api.teespring.com/v3/image/FMQ3XArTi80G-ng7wuLDkn1qD8Y/800/800.jpg",
+          "price": "69.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/get-airmen?product=2180",
+          "productType": "All-Over Print Unisex Hoodie",
+          "colorName": "Royal Blue",
+          "colorHex": "#001ca8"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:55.385Z"
+    },
+    {
+      "slug": "sms-1696",
+      "title": "Sms",
+      "category": "drinkware",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/xK0E9qPLvC80fHfWc0UDguWyvXE/800/800.jpg",
+      "variants": [
+        {
+          "productId": "6379",
+          "label": "Toddler Classic Tee - White",
+          "image": "https://mockup-api.teespring.com/v3/image/ozPMZVhM9vY6-qswONNg0PnrO5g/800/800.jpg",
+          "price": "21.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/sms-1696?product=340",
+          "productType": "Toddler Classic Tee",
+          "colorName": "White",
+          "colorHex": "#FFFFFF"
+        },
+        {
+          "productId": "6384",
+          "label": "Toddler Classic Tee - Light Pink",
+          "image": "https://mockup-api.teespring.com/v3/image/z3UBVKEl1UxMb6Nrnweu4aQhrkc/800/800.jpg",
+          "price": "21.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/sms-1696?product=340",
+          "productType": "Toddler Classic Tee",
+          "colorName": "Light Pink",
+          "colorHex": "#FFCCE2"
+        },
+        {
+          "productId": "6381",
+          "label": "Toddler Classic Tee - Royal",
+          "image": "https://mockup-api.teespring.com/v3/image/ug5xJmrHHMoG7n2dOlJ04ChlRmE/800/800.jpg",
+          "price": "21.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/sms-1696?product=340",
+          "productType": "Toddler Classic Tee",
+          "colorName": "Royal",
+          "colorHex": "#1950BF"
+        },
+        {
+          "productId": "6412",
+          "label": "Toddler Classic Tee - Black",
+          "image": "https://mockup-api.teespring.com/v3/image/nHEVy5Nblf6kHCSKyxtffLgnsG8/800/800.jpg",
+          "price": "21.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/sms-1696?product=340",
+          "productType": "Toddler Classic Tee",
+          "colorName": "Black",
+          "colorHex": "#222222"
+        },
+        {
+          "productId": "6383",
+          "label": "Toddler Classic Tee - Navy",
+          "image": "https://mockup-api.teespring.com/v3/image/4PvNlCEFwl5mRnV-NXFjk3CI_Pc/800/800.jpg",
+          "price": "21.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/sms-1696?product=340",
+          "productType": "Toddler Classic Tee",
+          "colorName": "Navy",
+          "colorHex": "#151C33"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:55.385Z"
+    },
+    {
+      "slug": "sergeant-major-says-3884",
+      "title": "Sergeant Major Says",
+      "category": "drinkware",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/1p2DL1xCU9mF8-SWOef8WPXDyXc/800/800.jpg",
+      "variants": [
+        {
+          "productId": "101936",
+          "label": "Tote Bag - Natural",
+          "image": "https://mockup-api.teespring.com/v3/image/KIflQTcXKTsqtY5LjW5GTYDtYEw/800/800.jpg",
+          "price": "29.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/sergeant-major-says-3884?product=526",
+          "productType": "Tote Bag",
+          "colorName": "Natural",
+          "colorHex": "#f8f8e6"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:55.385Z"
+    },
+    {
+      "slug": "autism-awareness-6527",
+      "title": "Autism Awareness",
+      "category": "drinkware",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/gOcplsOGynboyItSgFC6MBpRnvM/800/800.jpg",
+      "variants": [
+        {
+          "productId": "6379",
+          "label": "Toddler Classic Tee - White",
+          "image": "https://mockup-api.teespring.com/v3/image/RKh94G-P00z1XjHu6XnuEV2D_YE/800/800.jpg",
+          "price": "21.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/autism-awareness-6527?product=340",
+          "productType": "Toddler Classic Tee",
+          "colorName": "White",
+          "colorHex": "#FFFFFF"
+        },
+        {
+          "productId": "6384",
+          "label": "Toddler Classic Tee - Light Pink",
+          "image": "https://mockup-api.teespring.com/v3/image/Z-vo6z6E3jv-QzMtV26CvI_XpCg/800/800.jpg",
+          "price": "21.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/autism-awareness-6527?product=340",
+          "productType": "Toddler Classic Tee",
+          "colorName": "Light Pink",
+          "colorHex": "#FFCCE2"
+        },
+        {
+          "productId": "6381",
+          "label": "Toddler Classic Tee - Royal",
+          "image": "https://mockup-api.teespring.com/v3/image/nci3DrE2DSvZw3cyCMPGQtDEhc4/800/800.jpg",
+          "price": "21.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/autism-awareness-6527?product=340",
+          "productType": "Toddler Classic Tee",
+          "colorName": "Royal",
+          "colorHex": "#1950BF"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:55.386Z"
+    },
+    {
+      "slug": "new-always-do-you",
+      "title": "Always Do You",
+      "category": "drinkware",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/PRWXCXL09vY8J4lJ6hGIZWq6TMs/800/800.jpg",
+      "variants": [
+        {
+          "productId": "2397",
+          "label": "Classic Crew Neck T-Shirt - Black",
+          "image": "https://mockup-api.teespring.com/v3/image/VrMF4TnJ1_GitpQAnzRaHxE7fQE/800/800.jpg",
+          "price": "22.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/new-always-do-you?product=2",
+          "productType": "Classic Crew Neck T-Shirt",
+          "colorName": "Black",
+          "colorHex": "#1a1a1a"
+        },
+        {
+          "productId": "576",
+          "label": "Classic Crew Neck T-Shirt - Navy",
+          "image": "https://mockup-api.teespring.com/v3/image/HGSOO2uV3TwuOnEbyJZB0d0BZ7I/800/800.jpg",
+          "price": "22.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/new-always-do-you?product=2",
+          "productType": "Classic Crew Neck T-Shirt",
+          "colorName": "Navy",
+          "colorHex": "#0A1339"
+        },
+        {
+          "productId": "2232",
+          "label": "Classic Crew Neck T-Shirt - Purple",
+          "image": "https://mockup-api.teespring.com/v3/image/CKfwfiY0X75zjK6OHnwKOpxnbz8/800/800.jpg",
+          "price": "22.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/new-always-do-you?product=2",
+          "productType": "Classic Crew Neck T-Shirt",
+          "colorName": "Purple",
+          "colorHex": "#4b256e"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:55.386Z"
+    },
+    {
+      "slug": "distressed-flag-2025",
+      "title": "Distressed Flag",
+      "category": "drinkware",
+      "heroImage": "https://mockup-api.teespring.com/v3/image/3rSstZmn3ztaR-fB7UDShy9EbF8/800/800.jpg",
+      "variants": [
+        {
+          "productId": "5822",
+          "label": "Unisex Classic Pullover Hoodie - Sport Grey",
+          "image": "https://mockup-api.teespring.com/v3/image/zkfwCRjRj-SlmuLGyCC_zOYyWHo/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/distressed-flag-2025?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Sport Grey",
+          "colorHex": "#B1B3B3"
+        },
+        {
+          "productId": "5819",
+          "label": "Unisex Classic Pullover Hoodie - Black",
+          "image": "https://mockup-api.teespring.com/v3/image/IL2LqN2anmIjIjAe7ddB8VrelKE/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/distressed-flag-2025?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Black",
+          "colorHex": "#0f0f0f"
+        },
+        {
+          "productId": "5839",
+          "label": "Unisex Classic Pullover Hoodie - Carolina Blue",
+          "image": "https://mockup-api.teespring.com/v3/image/cxrvdBbsgUUbamCDH51k7AtQJM4/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/distressed-flag-2025?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Carolina Blue",
+          "colorHex": "#5c9dd4"
+        },
+        {
+          "productId": "6319",
+          "label": "Unisex Classic Pullover Hoodie - Charcoal",
+          "image": "https://mockup-api.teespring.com/v3/image/GTW9ZcLhOP4Jf5eYrnRrT1_6npk/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/distressed-flag-2025?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "Charcoal",
+          "colorHex": "#54585A"
+        },
+        {
+          "productId": "5818",
+          "label": "Unisex Classic Pullover Hoodie - White",
+          "image": "https://mockup-api.teespring.com/v3/image/8DUurMcH5raSwJGsWk8i21o5DpQ/800/800.jpg",
+          "price": "40.99",
+          "springUrl": "https://sgt-major-says.creator-spring.com/listing/distressed-flag-2025?product=212",
+          "productType": "Unisex Classic Pullover Hoodie",
+          "colorName": "White",
+          "colorHex": "#ffffff"
+        }
+      ],
+      "lastIndexed": "2025-10-22T22:23:55.386Z"
+    }
+  ]
+}

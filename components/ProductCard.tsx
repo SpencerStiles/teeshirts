@@ -1,6 +1,7 @@
 import { Box, Image, Heading, Text, LinkBox, LinkOverlay, VStack, useColorModeValue } from '@chakra-ui/react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { humanizeSlugTitle } from '@/lib/title';
 
 interface Props {
   product: {
@@ -17,6 +18,7 @@ export default function ProductCard({ product }: Props) {
 
   const cardBg = useColorModeValue('background.light', 'gray.900');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
+  const displayTitle = humanizeSlugTitle(product.title, product.slug);
 
   useEffect(() => {
     // Disable additional image fetching for now
@@ -47,7 +49,7 @@ export default function ProductCard({ product }: Props) {
       <Box position="relative" h="300px" w="100%" overflow="hidden" bg="gray.100" _dark={{ bg: 'gray.800' }}>
         <Image 
           src={displayImage || product.image} 
-          alt={product.title} 
+          alt={displayTitle || product.title} 
           w="100%" 
           h="100%" 
           objectFit="cover" 
@@ -58,7 +60,7 @@ export default function ProductCard({ product }: Props) {
       <VStack align="stretch" spacing={3} p={4}>
         <Heading size="sm" noOfLines={2} minH="40px">
           <LinkOverlay as={Link} href={`/p/${product.slug}`}>
-            {product.title}
+            {displayTitle}
           </LinkOverlay>
         </Heading>
         

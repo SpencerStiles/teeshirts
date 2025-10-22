@@ -1,5 +1,6 @@
 import { Box, Button, Heading, HStack, Image, LinkBox, LinkOverlay, SimpleGrid, Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
+import { humanizeSlugTitle } from '@/lib/title';
 
 type FeaturedItem = {
   slug: string;
@@ -19,7 +20,12 @@ const fallbackItems: FeaturedItem[] = [
 ];
 
 export default function FeaturedRow({ items }: Props) {
-  const list = (items && items.length > 0 ? items : fallbackItems).slice(0, 3);
+  const list = (items && items.length > 0 ? items : fallbackItems)
+    .slice(0, 3)
+    .map((item) => ({
+      ...item,
+      title: humanizeSlugTitle(item.title, item.slug),
+    }));
   return (
     <Box>
       <HStack mb={4}>
