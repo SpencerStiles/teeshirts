@@ -128,6 +128,72 @@ const categories: Record<string, string> = {
   drinkware: '/Drinkware',
 };
 
+const MAX_CATEGORY_PAGES = 200;
+
+function findViewAllHref($: ReturnType<typeof load>): string | null {
+  let found: string | null = null;
+  $('a[href], button[data-href], button[data-url]').each((_, el) => {
+    const $el = $(el);
+    const text = ($el.text() || $el.attr('aria-label') || '').trim().toLowerCase();
+    const hasViewAllKeyword = text.includes('view all') || text.includes('show all') || text.includes('see all');
+    const testId = ($el.attr('data-testid') || '').toLowerCase();
+    const isViewAllTestId = testId.includes('view-all');
+    if (!hasViewAllKeyword && !isViewAllTestId) return;
+    const href = $el.attr('href') || $el.attr('data-href') || $el.attr('data-url');
+    if (href) {
+      found = href;
+      return false; // break
+    }
+  });
+  return found;
+}
+
+async function resolveCategoryEntry(basePath: string): Promise<{
+  normalizedPath: string;
+  firstHtml: string;
+  firstPage: number;
+  firstUrl: string;
+}> {
+  const initialUrl = new URL(basePath, BASE_URL);
+  const initialHtml = await fetchHtml(initialUrl.toString());
+  const $initial = load(initialHtml);
+  const viewAllHref = findViewAllHref($initial);
+  if (!viewAllHref) {
+    return {
+      normalizedPath: basePath,
+      firstHtml: initialHtml,
+      firstPage: 1,
+      firstUrl: initialUrl.toString(),
+    };
+  }
+
+  const viewAllUrl = new URL(viewAllHref, BASE_URL);
+  const firstPageParam = parseInt(viewAllUrl.searchParams.get('page') ?? '1', 10) || 1;
+  const viewAllHtml = await fetchHtml(viewAllUrl.toString());
+
+  const normalizedUrl = new URL(viewAllUrl.toString());
+  normalizedUrl.searchParams.delete('page');
+  const normalizedSearch = normalizedUrl.searchParams.toString();
+  const normalizedPath = `${normalizedUrl.pathname}${normalizedSearch ? `?${normalizedSearch}` : ''}`;
+
+  return {
+    normalizedPath,
+    firstHtml: viewAllHtml,
+    firstPage: firstPageParam,
+    firstUrl: viewAllUrl.toString(),
+  };
+}
+
+function buildCategoryPageUrl(basePath: string, page: number): string {
+  const url = new URL(basePath, BASE_URL);
+  if (page <= 1) {
+    url.searchParams.delete('page');
+  } else {
+    url.searchParams.set('page', String(page));
+  }
+  return url.toString();
+}
+
 function normalizeSlug(href: string): string {
   try {
     const url = new URL(href, BASE_URL);
@@ -183,13 +249,26 @@ function normalizeTitle(raw: string, fallbackSlug?: string): string {
 async function crawlCategory(catKey: string): Promise<DesignRecord[]> {
   const listings: DesignRecord[] = [];
   const seenSlugs = new Set<string>();
-  let page = 1;
-  let consecutiveEmpty = 0;
 
-  while (page <= 10 && consecutiveEmpty < 2) {
-    const url = `${BASE_URL}${categories[catKey]}${page > 1 ? `?page=${page}` : ''}`;
-    console.log(`[category:${catKey}] page ${page} → ${url}`);
-    const html = await fetchHtml(url);
+  const { normalizedPath, firstHtml, firstPage, firstUrl } = await resolveCategoryEntry(categories[catKey]);
+
+  let page = firstPage;
+  let consecutiveEmpty = 0;
+  let firstPageConsumed = false;
+  let currentPageUrl = firstUrl;
+
+  while (page <= MAX_CATEGORY_PAGES && consecutiveEmpty < 2) {
+    let html: string;
+    if (!firstPageConsumed) {
+      html = firstHtml;
+      firstPageConsumed = true;
+    } else {
+      currentPageUrl = buildCategoryPageUrl(normalizedPath, page);
+      html = await fetchHtml(currentPageUrl);
+    }
+
+    console.log(`[category:${catKey}] page ${page} → ${currentPageUrl}`);
+
     const $ = load(html);
     let foundOnPage = 0;
 
@@ -229,6 +308,7 @@ async function crawlCategory(catKey: string): Promise<DesignRecord[]> {
     else consecutiveEmpty = 0;
 
     page += 1;
+    currentPageUrl = buildCategoryPageUrl(normalizedPath, page);
     await delay(500);
   }
 
