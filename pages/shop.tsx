@@ -24,7 +24,11 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import FeaturedRow from "@/components/FeaturedRow";
 import ProductCard from "@/components/ProductCard";
-import { fetchSpringProductsPage, fetchSpringProductsByCategory, type SpringProduct } from "@/lib/spring";
+import {
+  fetchSpringProductsPage,
+  fetchSpringProductsByCategory,
+  type SpringProduct,
+} from "@/lib/spring";
 import { listCatalogDesigns } from "@/lib/catalog";
 
 type CatalogItem = {
@@ -35,19 +39,24 @@ type CatalogItem = {
   category?: string;
 };
 
-type Props = { items: CatalogItem[]; page: number; hasNext: boolean; totalPages: number };
+type Props = {
+  items: CatalogItem[];
+  page: number;
+  hasNext: boolean;
+  totalPages: number;
+};
 
 export default function ShopPage({ items, page, hasNext, totalPages }: Props) {
   const { colorMode, toggleColorMode } = useColorMode();
   const router = useRouter();
-  const categoryFromUrl = (router.query.category as string) || 'explore';
+  const categoryFromUrl = (router.query.category as string) || "explore";
   const [activeCategory, setActiveCategory] = useState<string>(categoryFromUrl);
-  
+
   // Update active category when URL changes
   useEffect(() => {
     setActiveCategory(categoryFromUrl);
   }, [categoryFromUrl]);
-  
+
   // Deprecated Spring embed controls removed in favor of native grid
 
   const heroBg = useColorModeValue(
@@ -58,9 +67,10 @@ export default function ShopPage({ items, page, hasNext, totalPages }: Props) {
   const cardBg = useColorModeValue("background.light", "blackAlpha.600");
 
   // Filter items by category using the category field from Spring
-  const filteredItems = activeCategory === 'explore' 
-    ? items 
-    : items.filter(p => p.category === activeCategory);
+  const filteredItems =
+    activeCategory === "explore"
+      ? items
+      : items.filter((p) => p.category === activeCategory);
 
   // Pick first 3 items with images for Featured section from the filtered items
   // Using first 3 instead of random to avoid hydration errors (server/client mismatch)
@@ -152,12 +162,19 @@ export default function ShopPage({ items, page, hasNext, totalPages }: Props) {
           </Button>
         </HStack>
 
-        <Tabs 
-          variant="soft-rounded" 
+        <Tabs
+          variant="soft-rounded"
           colorScheme="red"
-          index={['explore', 'apparel', 'accessories', 'drinkware'].indexOf(activeCategory)}
+          index={["explore", "apparel", "accessories", "drinkware"].indexOf(
+            activeCategory
+          )}
           onChange={(index) => {
-            const categories = ['explore', 'apparel', 'accessories', 'drinkware'];
+            const categories = [
+              "explore",
+              "apparel",
+              "accessories",
+              "drinkware",
+            ];
             const newCategory = categories[index];
             setActiveCategory(newCategory);
             // Reset to page 1 when changing categories
@@ -165,92 +182,263 @@ export default function ShopPage({ items, page, hasNext, totalPages }: Props) {
           }}
         >
           <TabList mb={6} flexWrap="wrap" gap={2}>
-            <Tab fontWeight="bold" textTransform="uppercase" letterSpacing="wide">
+            <Tab
+              fontWeight="bold"
+              textTransform="uppercase"
+              letterSpacing="wide"
+            >
               Explore
             </Tab>
-            <Tab fontWeight="bold" textTransform="uppercase" letterSpacing="wide">
+            <Tab
+              fontWeight="bold"
+              textTransform="uppercase"
+              letterSpacing="wide"
+            >
               Apparel
             </Tab>
-            <Tab fontWeight="bold" textTransform="uppercase" letterSpacing="wide">
+            <Tab
+              fontWeight="bold"
+              textTransform="uppercase"
+              letterSpacing="wide"
+            >
               Accessories
             </Tab>
-            <Tab fontWeight="bold" textTransform="uppercase" letterSpacing="wide">
+            <Tab
+              fontWeight="bold"
+              textTransform="uppercase"
+              letterSpacing="wide"
+            >
               Drinkware
             </Tab>
           </TabList>
 
           <TabPanels>
-            {['explore', 'apparel', 'accessories', 'drinkware'].map((category) => (
-              <TabPanel key={category} px={0}>
-                <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={6}>
-                  {filteredItems.map((p) => (
-                    <ProductCard
-                      key={p.slug}
-                      product={{
-                        slug: p.slug,
-                        title: p.title,
-                        image: p.image,
-                        price: p.price,
-                      }}
-                    />
-                  ))}
-                </SimpleGrid>
-                {filteredItems.length === 0 && (
-                  <Box textAlign="center" py={12}>
-                    <Text fontSize="lg" color="gray.500">
-                      No products found in this category.
-                    </Text>
-                  </Box>
-                )}
-              </TabPanel>
-            ))}
+            {["explore", "apparel", "accessories", "drinkware"].map(
+              (category) => (
+                <TabPanel key={category} px={0}>
+                  <SimpleGrid
+                    columns={{ base: 1, sm: 2, md: 3, lg: 4 }}
+                    spacing={6}
+                  >
+                    {filteredItems.map((p) => (
+                      <ProductCard
+                        key={p.slug}
+                        product={{
+                          slug: p.slug,
+                          title: p.title,
+                          image: p.image,
+                          price: p.price,
+                        }}
+                      />
+                    ))}
+                  </SimpleGrid>
+                  {filteredItems.length === 0 && (
+                    <Box textAlign="center" py={12}>
+                      <Text fontSize="lg" color="gray.500">
+                        No products found in this category.
+                      </Text>
+                    </Box>
+                  )}
+                </TabPanel>
+              )
+            )}
           </TabPanels>
         </Tabs>
-        {/* Pagination controls */}
-        <HStack mt={6} justify="space-between" align="center" wrap="wrap" gap={2}>
-          <Button 
-            as="a" 
-            href={`/shop?page=${Math.max(1, page - 1)}&category=${activeCategory}`} 
-            isDisabled={page <= 1} 
-            variant="outline"
+        {/* Enhanced Pagination Controls */}
+        <Box w="full" mt={6}>
+          <HStack
+            spacing={2}
+            justify="space-between"
+            align="center"
+            wrap="wrap"
           >
-            Prev
-          </Button>
-          <HStack>
-            {(() => {
-              const buttons: JSX.Element[] = [];
-              const maxButtons = 9; // window size
-              let start = Math.max(1, page - Math.floor(maxButtons / 2));
-              let end = Math.min(totalPages, start + maxButtons - 1);
-              if (end - start + 1 < maxButtons) start = Math.max(1, end - maxButtons + 1);
-              if (start > 1) buttons.push(<Text key="first">…</Text>);
-              for (let p = start; p <= end; p++) {
-                buttons.push(
-                  <Button
-                    key={p}
-                    as="a"
-                    href={`/shop?page=${p}&category=${activeCategory}`}
-                    size="sm"
-                    variant={p === page ? 'solid' : 'outline'}
-                    colorScheme={p === page ? 'teal' : undefined}
-                  >
-                    {p}
-                  </Button>
-                );
-              }
-              if (end < totalPages) buttons.push(<Text key="last">…</Text>);
-              return buttons;
-            })()}
+            {/* First & Previous Buttons */}
+            <HStack spacing={2}>
+              <Button
+                as="a"
+                href={`/shop?page=1&category=${activeCategory}`}
+                isDisabled={page <= 1}
+                variant="outline"
+                size="sm"
+                aria-label="First page"
+              >
+                «
+              </Button>
+              <Button
+                as="a"
+                href={`/shop?page=${Math.max(
+                  1,
+                  page - 1
+                )}&category=${activeCategory}`}
+                isDisabled={page <= 1}
+                variant="outline"
+              >
+                Prev
+              </Button>
+            </HStack>
+
+            {/* Page Numbers */}
+            <HStack
+              spacing={1}
+              flexWrap="wrap"
+              justify="center"
+              flex={1}
+              mx={2}
+            >
+              {(() => {
+                const buttons: JSX.Element[] = [];
+                const maxButtons = 5;
+                let start = Math.max(1, page - Math.floor(maxButtons / 2));
+                let end = Math.min(totalPages, start + maxButtons - 1);
+
+                if (end - start + 1 < maxButtons) {
+                  start = Math.max(1, end - maxButtons + 1);
+                }
+
+                // First page + ellipsis
+                if (start > 1) {
+                  buttons.push(
+                    <Button
+                      key={1}
+                      as="a"
+                      href={`/shop?page=1&category=${activeCategory}`}
+                      size="sm"
+                      variant={1 === page ? "solid" : "outline"}
+                      colorScheme={1 === page ? "teal" : undefined}
+                    >
+                      1
+                    </Button>
+                  );
+                  if (start > 2) {
+                    buttons.push(
+                      <Text key="start-ellipsis" px={2}>
+                        …
+                      </Text>
+                    );
+                  }
+                }
+
+                // Page numbers
+                for (let p = start; p <= end; p++) {
+                  if (p === 1 && start > 1) continue;
+                  buttons.push(
+                    <Button
+                      key={p}
+                      as="a"
+                      href={`/shop?page=${p}&category=${activeCategory}`}
+                      size="sm"
+                      variant={p === page ? "solid" : "outline"}
+                      colorScheme={p === page ? "teal" : undefined}
+                    >
+                      {p}
+                    </Button>
+                  );
+                }
+
+                // Last page + ellipsis
+                if (end < totalPages) {
+                  if (end < totalPages - 1) {
+                    buttons.push(
+                      <Text key="end-ellipsis" px={2}>
+                        …
+                      </Text>
+                    );
+                  }
+                  buttons.push(
+                    <Button
+                      key={totalPages}
+                      as="a"
+                      href={`/shop?page=${totalPages}&category=${activeCategory}`}
+                      size="sm"
+                      variant={totalPages === page ? "solid" : "outline"}
+                      colorScheme={totalPages === page ? "teal" : undefined}
+                    >
+                      {totalPages}
+                    </Button>
+                  );
+                }
+
+                return buttons;
+              })()}
+
+              {/* Jump to page input */}
+              <HStack ml={4} display={{ base: "none", md: "flex" }}>
+                <Text whiteSpace="nowrap" fontSize="sm">
+                  Go to:
+                </Text>
+                <Input
+                  type="number"
+                  min={1}
+                  max={totalPages}
+                  defaultValue={page}
+                  w="70px"
+                  size="sm"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      const targetPage = Math.min(
+                        totalPages,
+                        Math.max(
+                          1,
+                          parseInt((e.target as HTMLInputElement).value) || 1
+                        )
+                      );
+                      window.location.href = `/shop?page=${targetPage}&category=${activeCategory}`;
+                    }
+                  }}
+                />
+              </HStack>
+            </HStack>
+
+            {/* Next & Last Buttons */}
+            <HStack spacing={2}>
+              <Button
+                as="a"
+                href={`/shop?page=${page + 1}&category=${activeCategory}`}
+                isDisabled={!hasNext}
+                variant="outline"
+              >
+                Next
+              </Button>
+              <Button
+                as="a"
+                href={`/shop?page=${totalPages}&category=${activeCategory}`}
+                isDisabled={!hasNext}
+                variant="outline"
+                size="sm"
+                aria-label="Last page"
+              >
+                »
+              </Button>
+            </HStack>
           </HStack>
-          <Button 
-            as="a" 
-            href={`/shop?page=${page + 1}&category=${activeCategory}`} 
-            isDisabled={!hasNext} 
-            variant="outline"
-          >
-            Next
-          </Button>
-        </HStack>
+
+          {/* Mobile-friendly jump to page */}
+          <HStack mt={4} w="full" display={{ base: "flex", md: "none" }}>
+            <Text whiteSpace="nowrap" fontSize="sm">
+              Go to page:
+            </Text>
+            <Input
+              type="number"
+              min={1}
+              max={totalPages}
+              defaultValue={page}
+              flex={1}
+              size="sm"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  const targetPage = Math.min(
+                    totalPages,
+                    Math.max(
+                      1,
+                      parseInt((e.target as HTMLInputElement).value) || 1
+                    )
+                  );
+                  window.location.href = `/shop?page=${targetPage}&category=${activeCategory}`;
+                }
+              }}
+            />
+          </HStack>
+        </Box>
       </Box>
 
       {/* Categories */}
@@ -391,12 +579,16 @@ export default function ShopPage({ items, page, hasNext, totalPages }: Props) {
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
-  const pageParam = Array.isArray(ctx.query.page) ? ctx.query.page[0] : ctx.query.page;
-  const categoryParam = Array.isArray(ctx.query.category) ? ctx.query.category[0] : ctx.query.category;
-  const page = Math.max(1, parseInt(pageParam || '1', 10) || 1);
-  const category = categoryParam || 'explore';
+  const pageParam = Array.isArray(ctx.query.page)
+    ? ctx.query.page[0]
+    : ctx.query.page;
+  const categoryParam = Array.isArray(ctx.query.category)
+    ? ctx.query.category[0]
+    : ctx.query.category;
+  const page = Math.max(1, parseInt(pageParam || "1", 10) || 1);
+  const category = categoryParam || "explore";
   const ITEMS_PER_PAGE = 16;
-  
+
   try {
     const catalogDesigns = await listCatalogDesigns();
     if (catalogDesigns.length > 0) {
@@ -404,17 +596,23 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
         slug: design.slug,
         title: design.title,
         image: design.heroImage,
-        price: design.variants.find((v) => v.price)?.price,
         category: design.category,
       }));
 
-      const byCategory = category === 'explore'
-        ? normalized
-        : normalized.filter((d) => d.category === category);
+      const byCategory =
+        category === "explore"
+          ? normalized
+          : normalized.filter((d) => d.category === category);
 
-      const totalPages = Math.max(1, Math.ceil(byCategory.length / ITEMS_PER_PAGE));
+      const totalPages = Math.max(
+        1,
+        Math.ceil(byCategory.length / ITEMS_PER_PAGE)
+      );
       const startIndex = (page - 1) * ITEMS_PER_PAGE;
-      const paginatedItems = byCategory.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+      const paginatedItems = byCategory.slice(
+        startIndex,
+        startIndex + ITEMS_PER_PAGE
+      );
       const hasNext = page < totalPages;
 
       return {
@@ -427,23 +625,26 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
       };
     }
   } catch (err) {
-    console.warn('Failed to load springCatalog dataset', err);
+    console.warn("Failed to load springCatalog dataset", err);
   }
 
   try {
     let allItems: SpringProduct[] = [];
-    
-    if (category === 'explore') {
+
+    if (category === "explore") {
       // For "Explore", fetch all categories from all their pages
-      const fetchAllPages = async (cat: 'apparel' | 'accessories' | 'drinkware') => {
+      const fetchAllPages = async (
+        cat: "apparel" | "accessories" | "drinkware"
+      ) => {
         const items: SpringProduct[] = [];
         const seenSlugs = new Set<string>();
         let currentPage = 1;
         let hasMore = true;
-        
-        while (hasMore && currentPage <= 10) { // Limit to 10 pages per category to avoid infinite loops
+
+        while (hasMore && currentPage <= 10) {
+          // Limit to 10 pages per category to avoid infinite loops
           const result = await fetchSpringProductsByCategory(cat, currentPage);
-          
+
           // Check if we're getting new items or just duplicates
           let newItemsCount = 0;
           for (const item of result.items) {
@@ -453,38 +654,45 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
               newItemsCount++;
             }
           }
-          
+
           // If we got no new items, stop fetching (pagination is just repeating)
           if (newItemsCount === 0) {
             break;
           }
-          
+
           hasMore = result.hasNext;
           currentPage++;
         }
         return items;
       };
-      
-      const [apparelItems, accessoriesItems, drinkwareItems] = await Promise.all([
-        fetchAllPages('apparel'),
-        fetchAllPages('accessories'),
-        fetchAllPages('drinkware'),
-      ]);
+
+      const [apparelItems, accessoriesItems, drinkwareItems] =
+        await Promise.all([
+          fetchAllPages("apparel"),
+          fetchAllPages("accessories"),
+          fetchAllPages("drinkware"),
+        ]);
 
       allItems = [...apparelItems, ...accessoriesItems, ...drinkwareItems];
     } else {
       // For specific category, fetch all pages from that category
-      const validCategory = ['apparel', 'accessories', 'drinkware'].includes(category) 
-        ? category as 'apparel' | 'accessories' | 'drinkware'
-        : 'apparel';
-      
+      const validCategory = ["apparel", "accessories", "drinkware"].includes(
+        category
+      )
+        ? (category as "apparel" | "accessories" | "drinkware")
+        : "apparel";
+
       const seenSlugs = new Set<string>();
       let currentPage = 1;
       let hasMore = true;
-      
-      while (hasMore && currentPage <= 10) { // Limit to 10 pages to avoid infinite loops
-        const result = await fetchSpringProductsByCategory(validCategory, currentPage);
-        
+
+      while (hasMore && currentPage <= 10) {
+        // Limit to 10 pages to avoid infinite loops
+        const result = await fetchSpringProductsByCategory(
+          validCategory,
+          currentPage
+        );
+
         // Check if we're getting new items or just duplicates
         let newItemsCount = 0;
         for (const item of result.items) {
@@ -494,17 +702,17 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
             newItemsCount++;
           }
         }
-        
+
         // If we got no new items, stop fetching (pagination is just repeating)
         if (newItemsCount === 0) {
           break;
         }
-        
+
         hasMore = result.hasNext;
         currentPage++;
       }
     }
-    
+
     // Deduplicate by design - keep only one product per design (title)
     // Group by normalized title and keep the first one
     const uniqueDesigns = new Map<string, SpringProduct>();
@@ -515,27 +723,29 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
       }
     }
     const deduplicatedItems = Array.from(uniqueDesigns.values());
-    
+
     // Now paginate the deduplicated results into chunks of ITEMS_PER_PAGE
     const totalPages = Math.ceil(deduplicatedItems.length / ITEMS_PER_PAGE); // >=1 when items exist, else 0
     const startIndex = (page - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
-    const paginatedItems = deduplicatedItems.slice(startIndex, endIndex).map((item) => ({
-      slug: item.slug,
-      title: item.title,
-      image: item.image,
-      price: item.price,
-      category: item.category,
-    }));
+    const paginatedItems = deduplicatedItems
+      .slice(startIndex, endIndex)
+      .map((item) => ({
+        slug: item.slug,
+        title: item.title,
+        image: item.image,
+        price: item.price,
+        category: item.category,
+      }));
     const hasNext = page < totalPages;
-    
-    return { 
-      props: { 
-        items: paginatedItems, 
-        page, 
-        hasNext, 
-        totalPages 
-      } 
+
+    return {
+      props: {
+        items: paginatedItems,
+        page,
+        hasNext,
+        totalPages,
+      },
     };
   } catch (e) {
     return { props: { items: [], page, hasNext: false, totalPages: 1 } };

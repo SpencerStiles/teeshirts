@@ -51,7 +51,7 @@ export default function NavBar() {
               href="/shop"
               _hover={{ textDecoration: "none", color: "primary" }}
             >
-              SGT Major Says
+              Sergeant Major Says
             </CLink>
           </Heading>
         </Flex>

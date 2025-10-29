@@ -9,6 +9,27 @@ const OUTPUT_PATH = path.join(process.cwd(), 'data', 'springCatalog.json');
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+function categorizeByProductType(productType: string): string {
+  const type = productType.toLowerCase();
+  
+  // Drinkware
+  if (type.includes('mug') || type.includes('bottle') || type.includes('tumbler') || 
+      type.includes('cup') || type.includes('flask')) {
+    return 'drinkware';
+  }
+  
+  // Accessories
+  if (type.includes('hat') || type.includes('cap') || type.includes('beanie') || 
+      type.includes('snapback') || type.includes('trucker') ||
+      type.includes('bag') || type.includes('tote') || type.includes('backpack') ||
+      type.includes('sticker') || type.includes('phone case') || type.includes('keychain')) {
+    return 'accessories';
+  }
+  
+  // Everything else is apparel (shirts, hoodies, pants, etc.)
+  return 'apparel';
+}
+
 async function fetchJson(url: string): Promise<any | null> {
   try {
     const res = await fetch(url, {
@@ -122,7 +143,10 @@ interface DesignRecord {
   lastIndexed: string;
 }
 
+// Main categories to crawl
 const categories: Record<string, string> = {
+  // Main categories
+  all: '/',  // Start with the main explore page
   apparel: '/apparel',
   accessories: '/accessories',
   drinkware: '/Drinkware',
@@ -148,40 +172,108 @@ function findViewAllHref($: ReturnType<typeof load>): string | null {
   return found;
 }
 
-async function resolveCategoryEntry(basePath: string): Promise<{
+interface CategoryEntry {
   normalizedPath: string;
   firstHtml: string;
   firstPage: number;
   firstUrl: string;
-}> {
-  const initialUrl = new URL(basePath, BASE_URL);
-  const initialHtml = await fetchHtml(initialUrl.toString());
-  const $initial = load(initialHtml);
-  const viewAllHref = findViewAllHref($initial);
-  if (!viewAllHref) {
-    return {
-      normalizedPath: basePath,
-      firstHtml: initialHtml,
-      firstPage: 1,
-      firstUrl: initialUrl.toString(),
-    };
+  title: string;
+  isSubcategory: boolean;
+}
+
+async function resolveCategoryEntry(
+  basePath: string,
+  isSubcategory: boolean = false,
+  parentTitle: string = ''
+): Promise<CategoryEntry[]> {
+  const results: CategoryEntry[] = [];
+  
+  try {
+    const initialUrl = new URL(basePath, BASE_URL);
+    console.log(`Fetching category: ${initialUrl.toString()}`);
+    const initialHtml = await fetchHtml(initialUrl.toString());
+    const $initial = load(initialHtml);
+
+    // If this is a main category page, look for subcategories first
+    if (!isSubcategory) {
+      // Look for subcategory sections
+      $initial('.category-section, .product-grid-container, section').each((_, section) => {
+        const $section = $initial(section);
+        const sectionTitle = $section.find('h2, h3, .section-title').first().text().trim() || 'Other';
+        
+        // Look for view all buttons in this section
+        const $viewAll = $section.find('a:contains("View All"), a:contains("view all"), button:contains("View All")').first();
+        if ($viewAll.length > 0) {
+          const href = $viewAll.attr('href') || $viewAll.attr('data-href') || '';
+          if (href) {
+            const fullHref = new URL(href, BASE_URL).toString();
+            console.log(`  Found subcategory: ${sectionTitle} → ${fullHref}`);
+            // Don't await here, we'll process them in sequence later
+            results.push({
+              normalizedPath: href,
+              firstHtml: '', // Will be fetched when processed
+              firstPage: 1,
+              firstUrl: fullHref,
+              title: `${parentTitle ? parentTitle + ' › ' : ''}${sectionTitle}`,
+              isSubcategory: true
+            });
+          }
+        }
+      });
+    }
+
+    // Process the current category
+    const viewAllHref = findViewAllHref($initial);
+    if (viewAllHref) {
+      const viewAllUrl = new URL(viewAllHref, BASE_URL);
+      const firstPageParam = parseInt(viewAllUrl.searchParams.get('page') ?? '1', 10) || 1;
+      
+      // Only fetch the view-all page if it's different from the current page
+      if (viewAllUrl.pathname !== initialUrl.pathname || 
+          viewAllUrl.search !== initialUrl.search) {
+        console.log(`  Found view-all link: ${viewAllUrl.toString()}`);
+        const viewAllHtml = await fetchHtml(viewAllUrl.toString());
+        
+        const normalizedUrl = new URL(viewAllUrl.toString());
+        normalizedUrl.searchParams.delete('page');
+        const normalizedSearch = normalizedUrl.searchParams.toString();
+        const normalizedPath = `${normalizedUrl.pathname}${normalizedSearch ? `?${normalizedSearch}` : ''}`;
+        
+        results.push({
+          normalizedPath,
+          firstHtml: viewAllHtml,
+          firstPage: firstPageParam,
+          firstUrl: viewAllUrl.toString(),
+          title: parentTitle || basePath,
+          isSubcategory
+        });
+      } else {
+        // No separate view-all page, use current page
+        results.push({
+          normalizedPath: basePath,
+          firstHtml: initialHtml,
+          firstPage: 1,
+          firstUrl: initialUrl.toString(),
+          title: parentTitle || basePath,
+          isSubcategory
+        });
+      }
+    } else {
+      // No view-all link, use current page
+      results.push({
+        normalizedPath: basePath,
+        firstHtml: initialHtml,
+        firstPage: 1,
+        firstUrl: initialUrl.toString(),
+        title: parentTitle || basePath,
+        isSubcategory
+      });
+    }
+  } catch (error) {
+    console.error(`Error resolving category ${basePath}:`, error);
   }
-
-  const viewAllUrl = new URL(viewAllHref, BASE_URL);
-  const firstPageParam = parseInt(viewAllUrl.searchParams.get('page') ?? '1', 10) || 1;
-  const viewAllHtml = await fetchHtml(viewAllUrl.toString());
-
-  const normalizedUrl = new URL(viewAllUrl.toString());
-  normalizedUrl.searchParams.delete('page');
-  const normalizedSearch = normalizedUrl.searchParams.toString();
-  const normalizedPath = `${normalizedUrl.pathname}${normalizedSearch ? `?${normalizedSearch}` : ''}`;
-
-  return {
-    normalizedPath,
-    firstHtml: viewAllHtml,
-    firstPage: firstPageParam,
-    firstUrl: viewAllUrl.toString(),
-  };
+  
+  return results;
 }
 
 function buildCategoryPageUrl(basePath: string, page: number): string {
@@ -199,7 +291,12 @@ function normalizeSlug(href: string): string {
     const url = new URL(href, BASE_URL);
     const parts = url.pathname.split('/').filter(Boolean);
     const last = parts[parts.length - 1];
-    return last.replace(/[^a-z0-9-]/gi, '-').toLowerCase();
+    let slug = last.replace(/[^a-z0-9-]/gi, '-').toLowerCase();
+    
+    // Don't include product ID - we want to group all variants under one design
+    // The product ID differentiates product types (t-shirt, hoodie, etc.) not unique designs
+    
+    return slug;
   } catch {
     return href.replace(/[^a-z0-9-]/gi, '-').toLowerCase();
   }
@@ -232,6 +329,11 @@ function normalizeTitle(raw: string, fallbackSlug?: string): string {
 
   s = s.replace(/-/g, ' ');
   s = s.replace(/\s{2,}/g, ' ').trim();
+  
+  // Remove (product) suffix and similar artifacts
+  s = s.replace(/\s*\(product\)\s*/gi, '');
+  s = s.replace(/\s*\[product\]\s*/gi, '');
+  s = s.trim();
 
   const small = new Set(['a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'in', 'nor', 'of', 'on', 'or', 'per', 'the', 'to', 'vs', 'via']);
   const words = s.split(' ');
@@ -246,72 +348,133 @@ function normalizeTitle(raw: string, fallbackSlug?: string): string {
     .join(' ');
 }
 
-async function crawlCategory(catKey: string): Promise<DesignRecord[]> {
+async function crawlCategoryPage(
+  entry: CategoryEntry,
+  seenSlugs: Set<string>,
+  catKey: string
+): Promise<DesignRecord[]> {
   const listings: DesignRecord[] = [];
-  const seenSlugs = new Set<string>();
-
-  const { normalizedPath, firstHtml, firstPage, firstUrl } = await resolveCategoryEntry(categories[catKey]);
-
-  let page = firstPage;
+  let page = entry.firstPage;
   let consecutiveEmpty = 0;
   let firstPageConsumed = false;
-  let currentPageUrl = firstUrl;
+  let currentPageUrl = entry.firstUrl;
 
   while (page <= MAX_CATEGORY_PAGES && consecutiveEmpty < 2) {
     let html: string;
-    if (!firstPageConsumed) {
-      html = firstHtml;
-      firstPageConsumed = true;
-    } else {
-      currentPageUrl = buildCategoryPageUrl(normalizedPath, page);
-      html = await fetchHtml(currentPageUrl);
-    }
+    
+    try {
+      if (!firstPageConsumed && entry.firstHtml) {
+        html = entry.firstHtml;
+        firstPageConsumed = true;
+      } else {
+        currentPageUrl = buildCategoryPageUrl(entry.normalizedPath, page);
+        console.log(`  [${entry.title}] Page ${page} → ${currentPageUrl}`);
+        html = await fetchHtml(currentPageUrl);
+        await delay(1500); // Be gentle to avoid 500 errors
+      }
 
-    console.log(`[category:${catKey}] page ${page} → ${currentPageUrl}`);
+      const $ = load(html);
+      let foundOnPage = 0;
 
-    const $ = load(html);
-    let foundOnPage = 0;
+      // Look for product links
+      $('a[href^="/listing/"]').each((_, el) => {
+        const href = $(el).attr('href');
+        if (!href) return;
+        
+        // Extract product parameter from query string
+        let productParam: string | null = null;
+        try {
+          const url = new URL(href, BASE_URL);
+          productParam = url.searchParams.get('product');
+        } catch {
+          // ignore
+        }
+        
+        let slug = normalizeSlug(href);
+        
+        // If there's a product param, append it to the slug to create unique identifiers
+        // This is important for pages like mugs where ?product=1565 is the mug variant
+        if (productParam) {
+          slug = `${slug}-${productParam}`;
+        }
+        
+        if (seenSlugs.has(slug)) return;
 
-    $('a[href^="/listing/"]').each((_, el) => {
-      const href = $(el).attr('href');
-      if (!href) return;
-      const slug = normalizeSlug(href);
-      if (seenSlugs.has(slug)) return;
-
-      const title = normalizeTitle(
-        $(el).find('h2, h3, .title, .product-title, p').first().text() ||
+        const title = normalizeTitle(
+          $(el).find('h2, h3, .title, .product-title, p').first().text() ||
           $(el).attr('title') ||
           slug,
-        slug
-      );
-      let image = $(el).find('img').first().attr('src') || '';
-      if (!image) {
-        const srcset = $(el).find('source').first().attr('srcset');
-        if (srcset) image = srcset.split(',')[0]?.trim().split(' ')[0] || '';
-      }
-      if (!image) return;
+          slug
+        );
+        
+        let image = $(el).find('img').first().attr('src') || '';
+        if (!image) {
+          const srcset = $(el).find('source').first().attr('srcset');
+          if (srcset) image = srcset.split(',')[0]?.trim().split(' ')[0] || '';
+        }
+        if (!image) return;
 
-      listings.push({
-        slug,
-        title,
-        category: catKey,
-        heroImage: new URL(image, BASE_URL).toString(),
-        variants: [],
-        lastIndexed: new Date().toISOString(),
+        listings.push({
+          slug,
+          title,
+          category: catKey,
+          heroImage: new URL(image, BASE_URL).toString(),
+          variants: [],
+          lastIndexed: new Date().toISOString(),
+        });
+
+        seenSlugs.add(slug);
+        foundOnPage++;
       });
 
-      seenSlugs.add(slug);
-      foundOnPage++;
-    });
-
-    if (foundOnPage === 0) consecutiveEmpty += 1;
-    else consecutiveEmpty = 0;
+      if (foundOnPage === 0) {
+        consecutiveEmpty += 1;
+        console.log(`  No products found on page ${page}`);
+      } else {
+        console.log(`  Found ${foundOnPage} products on page ${page}`);
+        consecutiveEmpty = 0;
+      }
+    } catch (error) {
+      console.error(`  Error processing page ${page}:`, error);
+      consecutiveEmpty += 1;
+    }
 
     page += 1;
-    currentPageUrl = buildCategoryPageUrl(normalizedPath, page);
-    await delay(500);
   }
 
+  return listings;
+}
+
+async function crawlCategory(catKey: string): Promise<DesignRecord[]> {
+  const listings: DesignRecord[] = [];
+  const seenSlugs = new Set<string>();
+  const categoryPath = categories[catKey];
+  
+  console.log(`\n=== Starting crawl of category: ${catKey} (${categoryPath}) ===`);
+  
+  // First, get the main category entries
+  const mainEntries = await resolveCategoryEntry(categoryPath, false, catKey);
+  
+  // Process each entry (main category + subcategories)
+  for (const entry of mainEntries) {
+    console.log(`\nProcessing ${entry.isSubcategory ? 'subcategory' : 'category'}: ${entry.title}`);
+    
+    // If this is a subcategory, we might need to resolve it further
+    if (entry.isSubcategory && !entry.firstHtml) {
+      const subEntries = await resolveCategoryEntry(entry.normalizedPath, true, entry.title);
+      
+      for (const subEntry of subEntries) {
+        const subListings = await crawlCategoryPage(subEntry, seenSlugs, catKey);
+        listings.push(...subListings);
+      }
+    } else {
+      // Process the main category or already resolved subcategory
+      const categoryListings = await crawlCategoryPage(entry, seenSlugs, catKey);
+      listings.push(...categoryListings);
+    }
+  }
+  
+  console.log(`\n=== Finished crawl of ${catKey}: Found ${listings.length} unique products ===`);
   return listings;
 }
 
@@ -335,7 +498,14 @@ function findProductsInNextData(nextData: unknown): any[] {
 }
 
 async function enrichDesign(record: DesignRecord): Promise<DesignRecord> {
-  const url = `${BASE_URL}/listing/${record.slug}`;
+  // Extract base slug and product ID if present
+  const slugParts = record.slug.match(/^(.+?)-(\d+)$/);
+  const baseSlug = slugParts ? slugParts[1] : record.slug;
+  const productId = slugParts ? slugParts[2] : null;
+  
+  const url = productId 
+    ? `${BASE_URL}/listing/${baseSlug}?product=${productId}`
+    : `${BASE_URL}/listing/${baseSlug}`;
   console.log(`  ↳ Fetch ${url}`);
   const html = await fetchHtml(url);
   const $ = load(html);
@@ -404,12 +574,12 @@ async function enrichDesign(record: DesignRecord): Promise<DesignRecord> {
 
   if (buildIdMatch) {
     const buildId = encodeURIComponent(buildIdMatch[1]);
-    const dataUrl = `${BASE_URL}/_next/data/${buildId}/listing/${record.slug}/default.json`;
+    const dataUrl = `${BASE_URL}/_next/data/${buildId}/listing/${baseSlug}/default.json`;
     try {
       const json = await fetchJson(dataUrl);
       storeListing = json?.pageProps?.storeListing ?? json?.storeListing ?? null;
     } catch (err) {
-      console.warn(`    ⚠️ Failed JSON fetch for ${record.slug}:`, err);
+      console.warn(`    ⚠️ Failed JSON fetch for ${baseSlug}:`, err);
     }
   }
 
@@ -419,6 +589,7 @@ async function enrichDesign(record: DesignRecord): Promise<DesignRecord> {
 
   if (storeListing) {
     const products = collectStoreListingProducts(storeListing);
+    console.log(`    Found ${products.length} products in storeListing for ${record.slug}`);
     for (const prod of products) {
       if (!prod) continue;
       const productType = (prod.productType || prod.title || record.title || '').toString().trim();
@@ -510,38 +681,174 @@ async function enrichDesign(record: DesignRecord): Promise<DesignRecord> {
     addVariant('unknown', record.title, record.heroImage);
   }
 
+  console.log(`    → Collected ${variants.length} variants for ${record.slug}`);
   return { ...record, variants };
 }
 
 async function main() {
   const allDesigns: DesignRecord[] = [];
-
-  for (const cat of Object.keys(categories)) {
-    const designs = await crawlCategory(cat);
-    allDesigns.push(...designs);
-    await delay(750);
+  const seenSlugs = new Set<string>();
+  
+  // Load existing catalog to avoid re-fetching items we already have
+  const existingDesigns = new Map<string, DesignRecord>();
+  try {
+    const existingData = await fs.readFile(OUTPUT_PATH, 'utf8');
+    const existingCatalog = JSON.parse(existingData);
+    if (existingCatalog?.designs && Array.isArray(existingCatalog.designs)) {
+      for (const design of existingCatalog.designs) {
+        if (design.slug && design.variants && design.variants.length > 0) {
+          existingDesigns.set(design.slug, design);
+        }
+      }
+      console.log(`📦 Loaded ${existingDesigns.size} existing designs from catalog`);
+    }
+  } catch (err) {
+    console.log('📦 No existing catalog found, starting fresh');
+  }
+  
+  // Process each main category
+  for (const catKey of Object.keys(categories)) {
+    try {
+      console.log(`\n===== PROCESSING CATEGORY: ${catKey.toUpperCase()} =====`);
+      const designs = await crawlCategory(catKey);
+      
+      let newCount = 0;
+      let updatedCount = 0;
+      
+      for (const design of designs) {
+        if (seenSlugs.has(design.slug)) {
+          // Design already exists - update category if this is more specific than "all"
+          if (catKey !== 'all') {
+            const existingDesign = allDesigns.find(d => d.slug === design.slug);
+            if (existingDesign && existingDesign.category === 'all') {
+              existingDesign.category = catKey;
+              updatedCount++;
+            }
+          }
+        } else {
+          // New design - add it
+          allDesigns.push(design);
+          seenSlugs.add(design.slug);
+          newCount++;
+        }
+      }
+      
+      console.log(`\n✅ Added ${newCount} new designs from ${catKey}, updated ${updatedCount} categories (${allDesigns.length} total so far)`);
+      
+      // Be nice to the server between categories
+      await delay(2000);
+      
+    } catch (error) {
+      console.error(`\n❌ Error processing category ${catKey}:`, error);
+      // Continue with next category even if one fails
+      await delay(5000); // Longer delay after error
+    }
   }
 
   console.log(`Found ${allDesigns.length} designs, enriching…`);
+  let skippedCount = 0;
+  let enrichedCount = 0;
+  
   for (let i = 0; i < allDesigns.length; i++) {
     const design = allDesigns[i];
+    
+    // Skip enrichment if we already have complete data for this item
+    if (existingDesigns.has(design.slug)) {
+      const existingDesign = existingDesigns.get(design.slug)!;
+      allDesigns[i] = existingDesign;
+      skippedCount++;
+      if (skippedCount % 10 === 0) {
+        console.log(`  ⏭️  Skipped ${skippedCount} already-enriched items...`);
+      }
+      continue; // No delay needed when skipping
+    }
+    
     try {
       allDesigns[i] = await enrichDesign(design);
+      enrichedCount++;
+      await delay(1000); // Delay only after making a request
     } catch (err) {
       console.warn(`  ⚠️ Failed to enrich ${design.slug}:`, err);
+      // Preserve existing data if enrichment fails, otherwise keep the basic design info
+      if (existingDesigns.has(design.slug)) {
+        allDesigns[i] = existingDesigns.get(design.slug)!;
+      }
+      // else: keep the unenriched design with basic info from category crawl
+      await delay(1000); // Delay after failed request too
     }
-    await delay(600);
   }
+  
+  console.log(`\n✅ Enriched ${enrichedCount} new items, skipped ${skippedCount} existing items`);
+
+  // Merge in existing designs that weren't found during this crawl
+  // This prevents data loss when Spring returns 500 errors for entire categories
+  let preservedCount = 0;
+  for (const [slug, existingDesign] of existingDesigns.entries()) {
+    if (!seenSlugs.has(slug)) {
+      allDesigns.push(existingDesign);
+      seenSlugs.add(slug);
+      preservedCount++;
+    }
+  }
+  if (preservedCount > 0) {
+    console.log(`📦 Preserved ${preservedCount} existing designs that weren't found during this crawl`);
+  }
+
+  // Filter out any undefined or incomplete designs
+  const validDesigns = allDesigns.filter(d => d && d.slug && d.title);
+  const failedCount = allDesigns.length - validDesigns.length;
+  if (failedCount > 0) {
+    console.log(`⚠️  Filtered out ${failedCount} incomplete designs`);
+  }
+
+  // Expand designs into individual products (one per product type)
+  // This allows each product type (t-shirt, hoodie, tank, etc.) to display as a separate card
+  console.log(`\n🔄 Expanding designs into individual product cards...`);
+  const expandedProducts: DesignRecord[] = [];
+  
+  for (const design of validDesigns) {
+    // Group variants by product type
+    const productTypeMap = new Map<string, VariantRecord[]>();
+    
+    for (const variant of design.variants) {
+      const productType = variant.productType || 'Unknown Product';
+      if (!productTypeMap.has(productType)) {
+        productTypeMap.set(productType, []);
+      }
+      productTypeMap.get(productType)!.push(variant);
+    }
+    
+    // Create a separate product entry for each product type
+    for (const [productType, variants] of productTypeMap.entries()) {
+      // Use first variant's image as hero image for this product type
+      const heroImage = variants[0]?.image || design.heroImage;
+      
+      // Categorize based on product type (mug->drinkware, hat->accessories, shirt->apparel)
+      const category = categorizeByProductType(productType);
+      
+      expandedProducts.push({
+        slug: `${design.slug}-${productType.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+        title: `${design.title} - ${productType}`,
+        category,
+        heroImage,
+        variants,
+        lastIndexed: design.lastIndexed,
+      });
+    }
+  }
+
+  console.log(`✨ Expanded ${validDesigns.length} designs into ${expandedProducts.length} individual product cards`);
 
   const payload = {
     generatedAt: new Date().toISOString(),
     store: STORE_SLUG,
-    designs: allDesigns,
+    designs: expandedProducts,
   };
 
   await fs.mkdir(path.dirname(OUTPUT_PATH), { recursive: true });
   await fs.writeFile(OUTPUT_PATH, JSON.stringify(payload, null, 2), 'utf8');
-  console.log(`Saved catalog → ${OUTPUT_PATH}`);
+  console.log(`\n📦 Saved ${expandedProducts.length} product cards to ${OUTPUT_PATH}`);
+  console.log(`   (${enrichedCount} newly enriched, ${skippedCount} preserved from existing catalog)`);
 }
 
 main().catch((err) => {

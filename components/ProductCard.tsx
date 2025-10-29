@@ -57,9 +57,9 @@ export default function ProductCard({ product }: Props) {
         />
       </Box>
       
-      <VStack align="stretch" spacing={3} p={4}>
-        <Heading size="sm" noOfLines={2} minH="40px">
-          <LinkOverlay as={Link} href={`/p/${product.slug}`}>
+      <VStack align="center" spacing={3} p={4}>
+        <Heading size="sm" noOfLines={2} minH="40px" textAlign="center">
+          <LinkOverlay as={Link} href={`/p/${product.slug}`} display="block" textAlign="center">
             {displayTitle}
           </LinkOverlay>
         </Heading>
