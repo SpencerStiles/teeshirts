@@ -749,33 +749,47 @@ async function main() {
   let skippedCount = 0;
   let enrichedCount = 0;
   
-  for (let i = 0; i < allDesigns.length; i++) {
-    const design = allDesigns[i];
-    
-    // Skip enrichment if we already have complete data for this item
-    if (existingDesigns.has(design.slug)) {
-      const existingDesign = existingDesigns.get(design.slug)!;
-      allDesigns[i] = existingDesign;
-      skippedCount++;
-      if (skippedCount % 10 === 0) {
-        console.log(`  ⏭️  Skipped ${skippedCount} already-enriched items...`);
-      }
-      continue; // No delay needed when skipping
-    }
-    
-    try {
-      allDesigns[i] = await enrichDesign(design);
-      enrichedCount++;
-      await delay(1000); // Delay only after making a request
-    } catch (err) {
-      console.warn(`  ⚠️ Failed to enrich ${design.slug}:`, err);
-      // Preserve existing data if enrichment fails, otherwise keep the basic design info
+  // Process in parallel batches of 5 to speed things up
+  const BATCH_SIZE = 5;
+  for (let i = 0; i < allDesigns.length; i += BATCH_SIZE) {
+    const batch = allDesigns.slice(i, i + BATCH_SIZE);
+    const batchPromises = batch.map(async (design, batchIndex) => {
+      const actualIndex = i + batchIndex;
+      
+      // Skip enrichment if we already have complete data for this item
       if (existingDesigns.has(design.slug)) {
-        allDesigns[i] = existingDesigns.get(design.slug)!;
+        const existingDesign = existingDesigns.get(design.slug)!;
+        skippedCount++;
+        if (skippedCount % 50 === 0) {
+          console.log(`  ⏭️  Skipped ${skippedCount} already-enriched items...`);
+        }
+        return { index: actualIndex, design: existingDesign, skipped: true };
       }
-      // else: keep the unenriched design with basic info from category crawl
-      await delay(1000); // Delay after failed request too
-    }
+      
+      try {
+        const enriched = await enrichDesign(design);
+        enrichedCount++;
+        if (enrichedCount % 10 === 0) {
+          console.log(`  ✓ Enriched ${enrichedCount}/${allDesigns.length - skippedCount} items...`);
+        }
+        return { index: actualIndex, design: enriched, skipped: false };
+      } catch (err) {
+        console.warn(`  ⚠️ Failed to enrich ${design.slug}:`, err);
+        // Preserve existing data if enrichment fails, otherwise keep the basic design info
+        if (existingDesigns.has(design.slug)) {
+          return { index: actualIndex, design: existingDesigns.get(design.slug)!, skipped: false };
+        }
+        return { index: actualIndex, design, skipped: false };
+      }
+    });
+    
+    const results = await Promise.all(batchPromises);
+    results.forEach(({ index, design }) => {
+      allDesigns[index] = design;
+    });
+    
+    // Small delay between batches to avoid overwhelming the server
+    await delay(300);
   }
   
   console.log(`\n✅ Enriched ${enrichedCount} new items, skipped ${skippedCount} existing items`);
