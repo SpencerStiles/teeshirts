@@ -8,6 +8,9 @@ on:
   schedule:
     - cron: '0 2 * * 0'
 
+permissions:
+  contents: write
+
 jobs:
   ingest:
     runs-on: ubuntu-latest
