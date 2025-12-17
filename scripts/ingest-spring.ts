@@ -7,6 +7,14 @@ const STORE_SLUG = 'sgt-major-says';
 const BASE_URL = `https://${STORE_SLUG}.creator-spring.com`;
 const OUTPUT_PATH = path.join(process.cwd(), 'data', 'springCatalog.json');
 
+// Rate limiting configuration
+const MAX_RETRIES = 5;
+const INITIAL_RETRY_DELAY_MS = 2000;
+const MAX_RETRY_DELAY_MS = 60000;
+const BATCH_SIZE = 2; // Reduced from 5 to avoid rate limiting
+const BATCH_DELAY_MS = 1500; // Delay between batches
+const REQUEST_DELAY_MS = 500; // Delay between individual requests in enrichment
+
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function categorizeByProductType(productType: string): string {
@@ -30,7 +38,7 @@ function categorizeByProductType(productType: string): string {
   return 'apparel';
 }
 
-async function fetchJson(url: string): Promise<any | null> {
+async function fetchJson(url: string, retryCount = 0): Promise<any | null> {
   try {
     const res = await fetch(url, {
       headers: {
@@ -38,22 +46,85 @@ async function fetchJson(url: string): Promise<any | null> {
         accept: 'application/json,text/plain,*/*'
       }
     });
+    
+    if (res.status === 429 || (res.status >= 500 && res.status < 600)) {
+      if (retryCount >= MAX_RETRIES) return null;
+      const backoffDelay = Math.min(
+        INITIAL_RETRY_DELAY_MS * Math.pow(2, retryCount),
+        MAX_RETRY_DELAY_MS
+      );
+      await delay(backoffDelay);
+      return fetchJson(url, retryCount + 1);
+    }
+    
     if (!res.ok) return null;
     return await res.json();
   } catch {
-    return null;
+    if (retryCount >= MAX_RETRIES) return null;
+    const backoffDelay = Math.min(
+      INITIAL_RETRY_DELAY_MS * Math.pow(2, retryCount),
+      MAX_RETRY_DELAY_MS
+    );
+    await delay(backoffDelay);
+    return fetchJson(url, retryCount + 1);
   }
 }
 
-async function fetchHtml(url: string): Promise<string> {
-  const res = await fetch(url, {
-    headers: {
-      'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
-      accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-    },
-  });
-  if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
-  return res.text();
+async function fetchHtml(url: string, retryCount = 0): Promise<string> {
+  try {
+    const res = await fetch(url, {
+      headers: {
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+        accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+      },
+    });
+    
+    if (res.status === 429) {
+      // Rate limited - apply exponential backoff
+      if (retryCount >= MAX_RETRIES) {
+        throw new Error(`Rate limited after ${MAX_RETRIES} retries: ${url}`);
+      }
+      const backoffDelay = Math.min(
+        INITIAL_RETRY_DELAY_MS * Math.pow(2, retryCount),
+        MAX_RETRY_DELAY_MS
+      );
+      console.log(`    ⏳ Rate limited (429), waiting ${backoffDelay / 1000}s before retry ${retryCount + 1}/${MAX_RETRIES}...`);
+      await delay(backoffDelay);
+      return fetchHtml(url, retryCount + 1);
+    }
+    
+    if (res.status >= 500 && res.status < 600) {
+      // Server error - retry with backoff
+      if (retryCount >= MAX_RETRIES) {
+        throw new Error(`Server error ${res.status} after ${MAX_RETRIES} retries: ${url}`);
+      }
+      const backoffDelay = Math.min(
+        INITIAL_RETRY_DELAY_MS * Math.pow(2, retryCount),
+        MAX_RETRY_DELAY_MS
+      );
+      console.log(`    ⏳ Server error (${res.status}), waiting ${backoffDelay / 1000}s before retry ${retryCount + 1}/${MAX_RETRIES}...`);
+      await delay(backoffDelay);
+      return fetchHtml(url, retryCount + 1);
+    }
+    
+    if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
+    return res.text();
+  } catch (err: any) {
+    // Network errors - retry with backoff
+    if (err.code === 'ECONNRESET' || err.code === 'ETIMEDOUT' || err.code === 'ENOTFOUND') {
+      if (retryCount >= MAX_RETRIES) {
+        throw new Error(`Network error after ${MAX_RETRIES} retries: ${url} - ${err.message}`);
+      }
+      const backoffDelay = Math.min(
+        INITIAL_RETRY_DELAY_MS * Math.pow(2, retryCount),
+        MAX_RETRY_DELAY_MS
+      );
+      console.log(`    ⏳ Network error, waiting ${backoffDelay / 1000}s before retry ${retryCount + 1}/${MAX_RETRIES}...`);
+      await delay(backoffDelay);
+      return fetchHtml(url, retryCount + 1);
+    }
+    throw err;
+  }
 }
 
 function unescapeNextFlightString(s: string): string {
@@ -749,8 +820,9 @@ async function main() {
   let skippedCount = 0;
   let enrichedCount = 0;
   
-  // Process in parallel batches of 5 to speed things up
-  const BATCH_SIZE = 5;
+  // Process in smaller parallel batches with retry queue for failed items
+  const failedDesigns: { index: number; design: DesignRecord }[] = [];
+  
   for (let i = 0; i < allDesigns.length; i += BATCH_SIZE) {
     const batch = allDesigns.slice(i, i + BATCH_SIZE);
     const batchPromises = batch.map(async (design, batchIndex) => {
@@ -763,8 +835,11 @@ async function main() {
         if (skippedCount % 50 === 0) {
           console.log(`  ⏭️  Skipped ${skippedCount} already-enriched items...`);
         }
-        return { index: actualIndex, design: existingDesign, skipped: true };
+        return { index: actualIndex, design: existingDesign, skipped: true, failed: false };
       }
+      
+      // Add small delay between requests within batch to spread load
+      await delay(batchIndex * REQUEST_DELAY_MS);
       
       try {
         const enriched = await enrichDesign(design);
@@ -772,24 +847,54 @@ async function main() {
         if (enrichedCount % 10 === 0) {
           console.log(`  ✓ Enriched ${enrichedCount}/${allDesigns.length - skippedCount} items...`);
         }
-        return { index: actualIndex, design: enriched, skipped: false };
+        return { index: actualIndex, design: enriched, skipped: false, failed: false };
       } catch (err) {
         console.warn(`  ⚠️ Failed to enrich ${design.slug}:`, err);
-        // Preserve existing data if enrichment fails, otherwise keep the basic design info
-        if (existingDesigns.has(design.slug)) {
-          return { index: actualIndex, design: existingDesigns.get(design.slug)!, skipped: false };
-        }
-        return { index: actualIndex, design, skipped: false };
+        return { index: actualIndex, design, skipped: false, failed: true };
       }
     });
     
     const results = await Promise.all(batchPromises);
-    results.forEach(({ index, design }) => {
-      allDesigns[index] = design;
+    results.forEach(({ index, design, failed }) => {
+      if (failed) {
+        failedDesigns.push({ index, design });
+      } else {
+        allDesigns[index] = design;
+      }
     });
     
-    // Small delay between batches to avoid overwhelming the server
-    await delay(300);
+    // Delay between batches to avoid overwhelming the server
+    await delay(BATCH_DELAY_MS);
+  }
+  
+  // Retry failed designs one at a time with longer delays
+  if (failedDesigns.length > 0) {
+    console.log(`\n🔄 Retrying ${failedDesigns.length} failed enrichments one at a time...`);
+    let retrySuccessCount = 0;
+    
+    for (const { index, design } of failedDesigns) {
+      // Wait longer before each retry
+      await delay(3000);
+      
+      try {
+        console.log(`  ↻ Retrying ${design.slug}...`);
+        const enriched = await enrichDesign(design);
+        allDesigns[index] = enriched;
+        retrySuccessCount++;
+        enrichedCount++;
+        console.log(`  ✓ Retry succeeded for ${design.slug}`);
+      } catch (err) {
+        console.warn(`  ⚠️ Retry failed for ${design.slug}:`, err);
+        // Preserve existing data if available, otherwise keep basic design info
+        if (existingDesigns.has(design.slug)) {
+          allDesigns[index] = existingDesigns.get(design.slug)!;
+        } else {
+          allDesigns[index] = design;
+        }
+      }
+    }
+    
+    console.log(`  ✅ Retry phase complete: ${retrySuccessCount}/${failedDesigns.length} succeeded`);
   }
   
   console.log(`\n✅ Enriched ${enrichedCount} new items, skipped ${skippedCount} existing items`);
@@ -862,7 +967,13 @@ async function main() {
   await fs.mkdir(path.dirname(OUTPUT_PATH), { recursive: true });
   await fs.writeFile(OUTPUT_PATH, JSON.stringify(payload, null, 2), 'utf8');
   console.log(`\n📦 Saved ${expandedProducts.length} product cards to ${OUTPUT_PATH}`);
-  console.log(`   (${enrichedCount} newly enriched, ${skippedCount} preserved from existing catalog)`);
+  console.log(`\n📊 Final Summary:`);
+  console.log(`   - Designs crawled this run: ${allDesigns.length - preservedCount}`);
+  console.log(`   - Newly enriched: ${enrichedCount}`);
+  console.log(`   - Skipped (already in catalog): ${skippedCount}`);
+  console.log(`   - Preserved from previous catalog: ${preservedCount}`);
+  console.log(`   - Total designs before expansion: ${validDesigns.length}`);
+  console.log(`   - Total product cards after expansion: ${expandedProducts.length}`);
 }
 
 main().catch((err) => {
