@@ -40,10 +40,16 @@ function categorizeByProductType(productType: string): string {
 
 async function fetchJson(url: string, retryCount = 0): Promise<any | null> {
   try {
-    const res = await fetch(url, {
+    // Add cache-busting query param to ensure fresh content
+    const cacheBustUrl = new URL(url);
+    cacheBustUrl.searchParams.set('_cb', Date.now().toString());
+    
+    const res = await fetch(cacheBustUrl.toString(), {
       headers: {
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        accept: 'application/json,text/plain,*/*'
+        accept: 'application/json,text/plain,*/*',
+        'cache-control': 'no-cache, no-store, must-revalidate',
+        'pragma': 'no-cache',
       }
     });
     
@@ -72,10 +78,16 @@ async function fetchJson(url: string, retryCount = 0): Promise<any | null> {
 
 async function fetchHtml(url: string, retryCount = 0): Promise<string> {
   try {
-    const res = await fetch(url, {
+    // Add cache-busting query param to ensure fresh content
+    const cacheBustUrl = new URL(url);
+    cacheBustUrl.searchParams.set('_cb', Date.now().toString());
+    
+    const res = await fetch(cacheBustUrl.toString(), {
       headers: {
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
         accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+        'cache-control': 'no-cache, no-store, must-revalidate',
+        'pragma': 'no-cache',
       },
     });
     
