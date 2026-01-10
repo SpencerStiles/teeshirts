@@ -14,14 +14,14 @@ on:
         required: false
         default: ''
   schedule:
-    # Crawl Explore/All every other hour on the hour
-    - cron: '0 */2 * * *'
-    # Crawl Apparel every other hour, 20 minutes past
-    - cron: '20 */2 * * *'
-    # Crawl Accessories every other hour, 40 minutes past
-    - cron: '40 */2 * * *'
-    # Crawl Drinkware every other hour, 50 minutes past
-    - cron: '50 */2 * * *'
+    # Explore/All daily at 22:00 UTC (10 PM)
+    - cron: '0 22 * * *'
+    # Apparel daily at 00:00 UTC (midnight)
+    - cron: '0 0 * * *'
+    # Accessories daily at 02:00 UTC
+    - cron: '0 2 * * *'
+    # Drinkware daily at 04:00 UTC
+    - cron: '0 4 * * *'
 
 permissions:
   contents: write
@@ -62,7 +62,7 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add data/springCatalog.json data/springCatalog.json.gz
+          git add data/springCatalog.json.gz
           git diff --staged --quiet || git commit -m "Update product catalog [skip ci]"
 
       - name: Push changes

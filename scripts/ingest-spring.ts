@@ -12,13 +12,16 @@ const OUTPUT_GZ_PATH = `${OUTPUT_PATH}.gz`;
 const gzipAsync = promisify(gzip);
 const gunzipAsync = promisify(gunzip);
 
-// Rate limiting configuration
-const MAX_RETRIES = 5;
-const INITIAL_RETRY_DELAY_MS = 2000;
-const MAX_RETRY_DELAY_MS = 60000;
-const BATCH_SIZE = 2; // Reduced from 5 to avoid rate limiting
-const BATCH_DELAY_MS = 1500; // Delay between batches
-const REQUEST_DELAY_MS = 500; // Delay between individual requests in enrichment
+// Rate limiting configuration (tunable via env)
+const MAX_RETRIES = parseInt(process.env.INGEST_MAX_RETRIES ?? '5', 10);
+const INITIAL_RETRY_DELAY_MS = parseInt(process.env.INGEST_INITIAL_RETRY_DELAY_MS ?? '2000', 10);
+const MAX_RETRY_DELAY_MS = parseInt(process.env.INGEST_MAX_RETRY_DELAY_MS ?? '60000', 10);
+const BATCH_SIZE = parseInt(process.env.INGEST_BATCH_SIZE ?? '2', 10);
+const BATCH_DELAY_MS = parseInt(process.env.INGEST_BATCH_DELAY_MS ?? '1500', 10);
+const REQUEST_DELAY_MS = parseInt(process.env.INGEST_REQUEST_DELAY_MS ?? '500', 10);
+const CATEGORY_PAGE_DELAY_MS = parseInt(process.env.INGEST_CATEGORY_PAGE_DELAY_MS ?? '1500', 10);
+const CATEGORY_RESOLVE_DELAY_MS = parseInt(process.env.INGEST_CATEGORY_RESOLVE_DELAY_MS ?? '5000', 10);
+const CATEGORY_GAP_DELAY_MS = parseInt(process.env.INGEST_CATEGORY_GAP_DELAY_MS ?? '2000', 10);
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -465,7 +468,7 @@ async function crawlCategoryPage(
         currentPageUrl = buildCategoryPageUrl(entry.normalizedPath, page);
         console.log(`  [${entry.title}] Page ${page} → ${currentPageUrl}`);
         html = await fetchHtml(currentPageUrl);
-        await delay(1500); // Be gentle to avoid 500 errors
+        await delay(CATEGORY_PAGE_DELAY_MS); // Be gentle to avoid 500 errors
       }
 
       const $ = load(html);
