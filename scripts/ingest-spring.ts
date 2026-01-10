@@ -1,7 +1,7 @@
 // scripts/ingest-spring.ts
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { gzip } from 'node:zlib';
+import { gzip, gunzip } from 'node:zlib';
 import { promisify } from 'node:util';
 import { load } from 'cheerio';
 
@@ -10,6 +10,7 @@ const BASE_URL = `https://${STORE_SLUG}.creator-spring.com`;
 const OUTPUT_PATH = path.join(process.cwd(), 'data', 'springCatalog.json');
 const OUTPUT_GZ_PATH = `${OUTPUT_PATH}.gz`;
 const gzipAsync = promisify(gzip);
+const gunzipAsync = promisify(gunzip);
 
 // Rate limiting configuration
 const MAX_RETRIES = 5;
@@ -240,6 +241,13 @@ const categories: Record<string, string> = {
 };
 
 const MAX_CATEGORY_PAGES = 200;
+const DEFAULT_CATEGORY_ORDER = Object.keys(categories);
+const enabledCategories = new Set(
+  (process.env.INGEST_CATEGORIES ?? DEFAULT_CATEGORY_ORDER.join(','))
+    .split(',')
+    .map((c) => c.trim().toLowerCase())
+    .filter(Boolean)
+);
 
 function findViewAllHref($: ReturnType<typeof load>): string | null {
   let found: string | null = null;
@@ -772,14 +780,49 @@ async function enrichDesign(record: DesignRecord): Promise<DesignRecord> {
   return { ...record, variants };
 }
 
+async function readExistingCatalogPayload(): Promise<string | null> {
+  try {
+    const compressed = await fs.readFile(OUTPUT_GZ_PATH);
+    const buffer = await gunzipAsync(compressed);
+    return buffer.toString('utf8');
+  } catch (err: any) {
+    if (err?.code !== 'ENOENT') {
+      console.warn('Failed to read compressed catalog snapshot', err);
+      return null;
+    }
+  }
+
+  try {
+    return await fs.readFile(OUTPUT_PATH, 'utf8');
+  } catch (err: any) {
+    if (err?.code !== 'ENOENT') {
+      console.warn('Failed to read catalog JSON snapshot', err);
+    }
+    return null;
+  }
+}
+
 async function main() {
+  if (enabledCategories.size === 0) {
+    console.warn('No categories enabled via INGEST_CATEGORIES; nothing to do.');
+    return;
+  }
+  console.log(
+    `🗂️  Categories to process: ${DEFAULT_CATEGORY_ORDER.filter((c) =>
+      enabledCategories.has(c)
+    ).join(', ')}`
+  );
   const allDesigns: DesignRecord[] = [];
   const seenSlugs = new Set<string>();
   
   // Load existing catalog to avoid re-fetching items we already have
   const existingDesigns = new Map<string, DesignRecord>();
   try {
-    const existingData = await fs.readFile(OUTPUT_PATH, 'utf8');
+    const existingPayload = await readExistingCatalogPayload();
+    if (!existingPayload) {
+      throw Object.assign(new Error('No catalog snapshot found'), { code: 'ENOENT' });
+    }
+    const existingData = existingPayload;
     const existingCatalog = JSON.parse(existingData);
     if (existingCatalog?.designs && Array.isArray(existingCatalog.designs)) {
       for (const design of existingCatalog.designs) {
@@ -794,7 +837,10 @@ async function main() {
   }
   
   // Process each main category
-  for (const catKey of Object.keys(categories)) {
+  for (const catKey of DEFAULT_CATEGORY_ORDER) {
+    if (!enabledCategories.has(catKey)) {
+      continue;
+    }
     try {
       console.log(`\n===== PROCESSING CATEGORY: ${catKey.toUpperCase()} =====`);
       const designs = await crawlCategory(catKey);
