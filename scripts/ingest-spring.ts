@@ -12,18 +12,95 @@ const OUTPUT_GZ_PATH = `${OUTPUT_PATH}.gz`;
 const gzipAsync = promisify(gzip);
 const gunzipAsync = promisify(gunzip);
 
-// Rate limiting configuration (tunable via env)
-const MAX_RETRIES = parseInt(process.env.INGEST_MAX_RETRIES ?? '5', 10);
-const INITIAL_RETRY_DELAY_MS = parseInt(process.env.INGEST_INITIAL_RETRY_DELAY_MS ?? '2000', 10);
-const MAX_RETRY_DELAY_MS = parseInt(process.env.INGEST_MAX_RETRY_DELAY_MS ?? '60000', 10);
-const BATCH_SIZE = parseInt(process.env.INGEST_BATCH_SIZE ?? '2', 10);
-const BATCH_DELAY_MS = parseInt(process.env.INGEST_BATCH_DELAY_MS ?? '1500', 10);
-const REQUEST_DELAY_MS = parseInt(process.env.INGEST_REQUEST_DELAY_MS ?? '500', 10);
-const CATEGORY_PAGE_DELAY_MS = parseInt(process.env.INGEST_CATEGORY_PAGE_DELAY_MS ?? '1500', 10);
-const CATEGORY_RESOLVE_DELAY_MS = parseInt(process.env.INGEST_CATEGORY_RESOLVE_DELAY_MS ?? '5000', 10);
-const CATEGORY_GAP_DELAY_MS = parseInt(process.env.INGEST_CATEGORY_GAP_DELAY_MS ?? '2000', 10);
+// Rate limiting configuration (tunable via env) - defaults are conservative to avoid 429s
+const MAX_RETRIES = parseInt(process.env.INGEST_MAX_RETRIES ?? '8', 10);
+const INITIAL_RETRY_DELAY_MS = parseInt(process.env.INGEST_INITIAL_RETRY_DELAY_MS ?? '10000', 10);
+const MAX_RETRY_DELAY_MS = parseInt(process.env.INGEST_MAX_RETRY_DELAY_MS ?? '120000', 10);
+const BATCH_SIZE = parseInt(process.env.INGEST_BATCH_SIZE ?? '1', 10);
+const BATCH_DELAY_MS = parseInt(process.env.INGEST_BATCH_DELAY_MS ?? '5000', 10);
+const REQUEST_DELAY_MS = parseInt(process.env.INGEST_REQUEST_DELAY_MS ?? '3000', 10);
+const CATEGORY_PAGE_DELAY_MS = parseInt(process.env.INGEST_CATEGORY_PAGE_DELAY_MS ?? '4000', 10);
+const CATEGORY_RESOLVE_DELAY_MS = parseInt(process.env.INGEST_CATEGORY_RESOLVE_DELAY_MS ?? '8000', 10);
+const CATEGORY_GAP_DELAY_MS = parseInt(process.env.INGEST_CATEGORY_GAP_DELAY_MS ?? '5000', 10);
+const WARMUP_DELAY_MS = parseInt(process.env.INGEST_WARMUP_DELAY_MS ?? '5000', 10);
+const JITTER_FACTOR = parseFloat(process.env.INGEST_JITTER_FACTOR ?? '0.3'); // 30% random jitter
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// Add random jitter to delays to appear more human-like
+function jitteredDelay(baseMs: number): number {
+  const jitter = baseMs * JITTER_FACTOR * (Math.random() * 2 - 1); // +/- JITTER_FACTOR
+  return Math.max(500, Math.round(baseMs + jitter));
+}
+
+// Realistic User-Agent strings to rotate through
+const USER_AGENTS = [
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15',
+  'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+];
+
+function getRandomUserAgent(): string {
+  return USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
+}
+
+// Build realistic browser headers
+function getBrowserHeaders(url: string, isNavigate = true): Record<string, string> {
+  const parsedUrl = new URL(url);
+  return {
+    'User-Agent': getRandomUserAgent(),
+    'Accept': isNavigate 
+      ? 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8'
+      : 'application/json, text/plain, */*',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache',
+    'Connection': 'keep-alive',
+    'Sec-Ch-Ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+    'Sec-Ch-Ua-Mobile': '?0',
+    'Sec-Ch-Ua-Platform': '"Windows"',
+    'Sec-Fetch-Dest': isNavigate ? 'document' : 'empty',
+    'Sec-Fetch-Mode': isNavigate ? 'navigate' : 'cors',
+    'Sec-Fetch-Site': 'same-origin',
+    'Sec-Fetch-User': isNavigate ? '?1' : undefined,
+    'Upgrade-Insecure-Requests': isNavigate ? '1' : undefined,
+    'Referer': `${parsedUrl.origin}/`,
+  } as Record<string, string>;
+}
+
+// Warm-up: visit homepage to establish session before crawling
+let sessionWarmedUp = false;
+async function warmUpSession(): Promise<void> {
+  if (sessionWarmedUp) return;
+  
+  console.log('🔥 Warming up session by visiting homepage...');
+  const initialDelay = jitteredDelay(WARMUP_DELAY_MS);
+  console.log(`   Waiting ${(initialDelay / 1000).toFixed(1)}s before first request...`);
+  await delay(initialDelay);
+  
+  try {
+    const res = await fetch(BASE_URL, {
+      headers: getBrowserHeaders(BASE_URL, true),
+    });
+    if (res.ok) {
+      console.log('✅ Session warm-up successful');
+      // Wait a bit after successful warm-up to seem more human
+      await delay(jitteredDelay(3000));
+    } else {
+      console.log(`⚠️ Session warm-up returned ${res.status}, proceeding anyway...`);
+      // Longer wait if warm-up had issues
+      await delay(jitteredDelay(8000));
+    }
+  } catch (err) {
+    console.log('⚠️ Session warm-up failed, proceeding anyway...', err);
+    await delay(jitteredDelay(10000));
+  }
+  
+  sessionWarmedUp = true;
+}
 
 function categorizeByProductType(productType: string): string {
   const type = productType.toLowerCase();
@@ -47,26 +124,25 @@ function categorizeByProductType(productType: string): string {
 }
 
 async function fetchJson(url: string, retryCount = 0): Promise<any | null> {
+  // Ensure session is warmed up before making requests
+  await warmUpSession();
+  
   try {
     // Add cache-busting query param to ensure fresh content
     const cacheBustUrl = new URL(url);
     cacheBustUrl.searchParams.set('_cb', Date.now().toString());
     
     const res = await fetch(cacheBustUrl.toString(), {
-      headers: {
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        accept: 'application/json,text/plain,*/*',
-        'cache-control': 'no-cache, no-store, must-revalidate',
-        'pragma': 'no-cache',
-      }
+      headers: getBrowserHeaders(url, false),
     });
     
-    if (res.status === 429 || (res.status >= 500 && res.status < 600)) {
+    if (res.status === 429 || res.status === 403 || (res.status >= 500 && res.status < 600)) {
       if (retryCount >= MAX_RETRIES) return null;
-      const backoffDelay = Math.min(
+      const backoffDelay = jitteredDelay(Math.min(
         INITIAL_RETRY_DELAY_MS * Math.pow(2, retryCount),
         MAX_RETRY_DELAY_MS
-      );
+      ));
+      console.log(`    ⏳ HTTP ${res.status}, waiting ${(backoffDelay / 1000).toFixed(1)}s before retry ${retryCount + 1}/${MAX_RETRIES}...`);
       await delay(backoffDelay);
       return fetchJson(url, retryCount + 1);
     }
@@ -75,54 +151,52 @@ async function fetchJson(url: string, retryCount = 0): Promise<any | null> {
     return await res.json();
   } catch {
     if (retryCount >= MAX_RETRIES) return null;
-    const backoffDelay = Math.min(
+    const backoffDelay = jitteredDelay(Math.min(
       INITIAL_RETRY_DELAY_MS * Math.pow(2, retryCount),
       MAX_RETRY_DELAY_MS
-    );
+    ));
     await delay(backoffDelay);
     return fetchJson(url, retryCount + 1);
   }
 }
 
 async function fetchHtml(url: string, retryCount = 0): Promise<string> {
+  // Ensure session is warmed up before making requests
+  await warmUpSession();
+  
   try {
     // Add cache-busting query param to ensure fresh content
     const cacheBustUrl = new URL(url);
     cacheBustUrl.searchParams.set('_cb', Date.now().toString());
     
     const res = await fetch(cacheBustUrl.toString(), {
-      headers: {
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
-        accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-        'cache-control': 'no-cache, no-store, must-revalidate',
-        'pragma': 'no-cache',
-      },
+      headers: getBrowserHeaders(url, true),
     });
     
-    if (res.status === 429) {
-      // Rate limited - apply exponential backoff
+    if (res.status === 429 || res.status === 403) {
+      // Rate limited or forbidden - apply exponential backoff with jitter
       if (retryCount >= MAX_RETRIES) {
-        throw new Error(`Rate limited after ${MAX_RETRIES} retries: ${url}`);
+        throw new Error(`HTTP ${res.status} after ${MAX_RETRIES} retries: ${url}`);
       }
-      const backoffDelay = Math.min(
+      const backoffDelay = jitteredDelay(Math.min(
         INITIAL_RETRY_DELAY_MS * Math.pow(2, retryCount),
         MAX_RETRY_DELAY_MS
-      );
-      console.log(`    ⏳ Rate limited (429), waiting ${backoffDelay / 1000}s before retry ${retryCount + 1}/${MAX_RETRIES}...`);
+      ));
+      console.log(`    ⏳ HTTP ${res.status}, waiting ${(backoffDelay / 1000).toFixed(1)}s before retry ${retryCount + 1}/${MAX_RETRIES}...`);
       await delay(backoffDelay);
       return fetchHtml(url, retryCount + 1);
     }
     
     if (res.status >= 500 && res.status < 600) {
-      // Server error - retry with backoff
+      // Server error - retry with backoff and jitter
       if (retryCount >= MAX_RETRIES) {
         throw new Error(`Server error ${res.status} after ${MAX_RETRIES} retries: ${url}`);
       }
-      const backoffDelay = Math.min(
+      const backoffDelay = jitteredDelay(Math.min(
         INITIAL_RETRY_DELAY_MS * Math.pow(2, retryCount),
         MAX_RETRY_DELAY_MS
-      );
-      console.log(`    ⏳ Server error (${res.status}), waiting ${backoffDelay / 1000}s before retry ${retryCount + 1}/${MAX_RETRIES}...`);
+      ));
+      console.log(`    ⏳ Server error (${res.status}), waiting ${(backoffDelay / 1000).toFixed(1)}s before retry ${retryCount + 1}/${MAX_RETRIES}...`);
       await delay(backoffDelay);
       return fetchHtml(url, retryCount + 1);
     }
@@ -130,16 +204,16 @@ async function fetchHtml(url: string, retryCount = 0): Promise<string> {
     if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
     return res.text();
   } catch (err: any) {
-    // Network errors - retry with backoff
-    if (err.code === 'ECONNRESET' || err.code === 'ETIMEDOUT' || err.code === 'ENOTFOUND') {
+    // Network errors - retry with backoff and jitter
+    if (err.code === 'ECONNRESET' || err.code === 'ETIMEDOUT' || err.code === 'ENOTFOUND' || err.name === 'AbortError') {
       if (retryCount >= MAX_RETRIES) {
         throw new Error(`Network error after ${MAX_RETRIES} retries: ${url} - ${err.message}`);
       }
-      const backoffDelay = Math.min(
+      const backoffDelay = jitteredDelay(Math.min(
         INITIAL_RETRY_DELAY_MS * Math.pow(2, retryCount),
         MAX_RETRY_DELAY_MS
-      );
-      console.log(`    ⏳ Network error, waiting ${backoffDelay / 1000}s before retry ${retryCount + 1}/${MAX_RETRIES}...`);
+      ));
+      console.log(`    ⏳ Network error, waiting ${(backoffDelay / 1000).toFixed(1)}s before retry ${retryCount + 1}/${MAX_RETRIES}...`);
       await delay(backoffDelay);
       return fetchHtml(url, retryCount + 1);
     }
@@ -468,7 +542,7 @@ async function crawlCategoryPage(
         currentPageUrl = buildCategoryPageUrl(entry.normalizedPath, page);
         console.log(`  [${entry.title}] Page ${page} → ${currentPageUrl}`);
         html = await fetchHtml(currentPageUrl);
-        await delay(CATEGORY_PAGE_DELAY_MS); // Be gentle to avoid 500 errors
+        await delay(jitteredDelay(CATEGORY_PAGE_DELAY_MS)); // Be gentle to avoid 500 errors
       }
 
       const $ = load(html);
@@ -872,12 +946,12 @@ async function main() {
       console.log(`\n✅ Added ${newCount} new designs from ${catKey}, updated ${updatedCount} categories (${allDesigns.length} total so far)`);
       
       // Be nice to the server between categories
-      await delay(2000);
+      await delay(jitteredDelay(CATEGORY_GAP_DELAY_MS));
       
     } catch (error) {
       console.error(`\n❌ Error processing category ${catKey}:`, error);
       // Continue with next category even if one fails
-      await delay(5000); // Longer delay after error
+      await delay(jitteredDelay(CATEGORY_GAP_DELAY_MS * 2)); // Longer delay after error
     }
   }
 
@@ -904,7 +978,7 @@ async function main() {
       }
       
       // Add small delay between requests within batch to spread load
-      await delay(batchIndex * REQUEST_DELAY_MS);
+      await delay(jitteredDelay(batchIndex * REQUEST_DELAY_MS));
       
       try {
         const enriched = await enrichDesign(design);
@@ -929,7 +1003,7 @@ async function main() {
     });
     
     // Delay between batches to avoid overwhelming the server
-    await delay(BATCH_DELAY_MS);
+    await delay(jitteredDelay(BATCH_DELAY_MS));
   }
   
   // Retry failed designs one at a time with longer delays
@@ -939,7 +1013,7 @@ async function main() {
     
     for (const { index, design } of failedDesigns) {
       // Wait longer before each retry
-      await delay(3000);
+      await delay(jitteredDelay(BATCH_DELAY_MS * 2));
       
       try {
         console.log(`  ↻ Retrying ${design.slug}...`);
