@@ -1,11 +1,15 @@
 // scripts/ingest-spring.ts
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { gzip } from 'node:zlib';
+import { promisify } from 'node:util';
 import { load } from 'cheerio';
 
 const STORE_SLUG = 'sgt-major-says';
 const BASE_URL = `https://${STORE_SLUG}.creator-spring.com`;
 const OUTPUT_PATH = path.join(process.cwd(), 'data', 'springCatalog.json');
+const OUTPUT_GZ_PATH = `${OUTPUT_PATH}.gz`;
+const gzipAsync = promisify(gzip);
 
 // Rate limiting configuration
 const MAX_RETRIES = 5;
@@ -977,8 +981,12 @@ async function main() {
   };
 
   await fs.mkdir(path.dirname(OUTPUT_PATH), { recursive: true });
-  await fs.writeFile(OUTPUT_PATH, JSON.stringify(payload, null, 2), 'utf8');
+  const payloadJson = JSON.stringify(payload, null, 2);
+  await fs.writeFile(OUTPUT_PATH, payloadJson, 'utf8');
+  const compressed = await gzipAsync(Buffer.from(payloadJson, 'utf8'));
+  await fs.writeFile(OUTPUT_GZ_PATH, compressed);
   console.log(`\n📦 Saved ${expandedProducts.length} product cards to ${OUTPUT_PATH}`);
+  console.log(`💾 Compressed catalog → ${OUTPUT_GZ_PATH} (${(compressed.length / (1024 * 1024)).toFixed(1)} MB)`);
   console.log(`\n📊 Final Summary:`);
   console.log(`   - Designs crawled this run: ${allDesigns.length - preservedCount}`);
   console.log(`   - Newly enriched: ${enrichedCount}`);
