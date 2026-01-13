@@ -24,6 +24,9 @@ const CATEGORY_RESOLVE_DELAY_MS = parseInt(process.env.INGEST_CATEGORY_RESOLVE_D
 const CATEGORY_GAP_DELAY_MS = parseInt(process.env.INGEST_CATEGORY_GAP_DELAY_MS ?? '5000', 10);
 const WARMUP_DELAY_MS = parseInt(process.env.INGEST_WARMUP_DELAY_MS ?? '5000', 10);
 const JITTER_FACTOR = parseFloat(process.env.INGEST_JITTER_FACTOR ?? '0.3'); // 30% random jitter
+const EARLY_STOP_THRESHOLD = parseInt(process.env.INGEST_EARLY_STOP_THRESHOLD ?? '20', 10); // Stop crawling after N consecutive existing items
+const STARTUP_DELAY_MS = parseInt(process.env.INGEST_STARTUP_DELAY_MS ?? '120000', 10); // 2 minute base startup delay
+const STARTUP_JITTER_MS = parseInt(process.env.INGEST_STARTUP_JITTER_MS ?? '60000', 10); // Additional 0-60s random jitter
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -73,8 +76,39 @@ function getBrowserHeaders(url: string, isNavigate = true): Record<string, strin
 
 // Warm-up: visit homepage to establish session before crawling
 let sessionWarmedUp = false;
+let startupDelayCompleted = false;
+
+async function performStartupDelay(): Promise<void> {
+  if (startupDelayCompleted) return;
+  
+  // Add a long random delay before any network activity to avoid rate limit triggers
+  const randomJitter = Math.random() * STARTUP_JITTER_MS;
+  const totalStartupDelay = STARTUP_DELAY_MS + randomJitter;
+  
+  console.log('⏳ Performing startup delay to avoid rate limiting...');
+  console.log(`   Waiting ${(totalStartupDelay / 1000).toFixed(0)}s (${(STARTUP_DELAY_MS / 1000).toFixed(0)}s base + ${(randomJitter / 1000).toFixed(0)}s jitter) before any requests...`);
+  
+  // Show progress every 30 seconds so user knows it's still running
+  const startTime = Date.now();
+  const endTime = startTime + totalStartupDelay;
+  
+  while (Date.now() < endTime) {
+    const remaining = Math.ceil((endTime - Date.now()) / 1000);
+    if (remaining > 0 && remaining % 30 === 0) {
+      console.log(`   ${remaining}s remaining...`);
+    }
+    await delay(Math.min(1000, endTime - Date.now()));
+  }
+  
+  console.log('✅ Startup delay complete, beginning crawl...');
+  startupDelayCompleted = true;
+}
+
 async function warmUpSession(): Promise<void> {
   if (sessionWarmedUp) return;
+  
+  // First, perform the long startup delay
+  await performStartupDelay();
   
   console.log('🔥 Warming up session by visiting homepage...');
   const initialDelay = jitteredDelay(WARMUP_DELAY_MS);
@@ -89,17 +123,23 @@ async function warmUpSession(): Promise<void> {
       console.log('✅ Session warm-up successful');
       // Wait a bit after successful warm-up to seem more human
       await delay(jitteredDelay(3000));
+      sessionWarmedUp = true;
+    } else if (res.status === 429 || res.status === 403) {
+      // Rate limited on warmup - fail fast, don't waste time retrying
+      console.error(`❌ FATAL: Rate limited (${res.status}) on warmup request.`);
+      console.error('   The site is actively blocking requests. Aborting job to avoid wasting time.');
+      console.error('   Try again later or adjust the schedule to reduce request frequency.');
+      process.exit(1);
     } else {
-      console.log(`⚠️ Session warm-up returned ${res.status}, proceeding anyway...`);
-      // Longer wait if warm-up had issues
+      console.log(`⚠️ Session warm-up returned ${res.status}, proceeding with caution...`);
       await delay(jitteredDelay(8000));
+      sessionWarmedUp = true;
     }
   } catch (err) {
-    console.log('⚠️ Session warm-up failed, proceeding anyway...', err);
+    console.log('⚠️ Session warm-up failed (network error), proceeding with caution...', err);
     await delay(jitteredDelay(10000));
+    sessionWarmedUp = true;
   }
-  
-  sessionWarmedUp = true;
 }
 
 function categorizeByProductType(productType: string): string {
@@ -523,15 +563,18 @@ function normalizeTitle(raw: string, fallbackSlug?: string): string {
 async function crawlCategoryPage(
   entry: CategoryEntry,
   seenSlugs: Set<string>,
-  catKey: string
-): Promise<DesignRecord[]> {
+  catKey: string,
+  existingSlugs: Set<string> = new Set()
+): Promise<{ listings: DesignRecord[]; stoppedEarly: boolean }> {
   const listings: DesignRecord[] = [];
   let page = entry.firstPage;
   let consecutiveEmpty = 0;
+  let consecutiveExisting = 0;
   let firstPageConsumed = false;
   let currentPageUrl = entry.firstUrl;
+  let stoppedEarly = false;
 
-  while (page <= MAX_CATEGORY_PAGES && consecutiveEmpty < 2) {
+  while (page <= MAX_CATEGORY_PAGES && consecutiveEmpty < 2 && consecutiveExisting < EARLY_STOP_THRESHOLD) {
     let html: string;
     
     try {
@@ -549,6 +592,9 @@ async function crawlCategoryPage(
       let foundOnPage = 0;
 
       // Look for product links
+      let newOnPage = 0;
+      let existingOnPage = 0;
+      
       $('a[href^="/listing/"]').each((_, el) => {
         const href = $(el).attr('href');
         if (!href) return;
@@ -571,6 +617,13 @@ async function crawlCategoryPage(
         }
         
         if (seenSlugs.has(slug)) return;
+
+        // Check if this item already exists in our catalog
+        if (existingSlugs.has(slug)) {
+          existingOnPage++;
+          seenSlugs.add(slug); // Mark as seen so we don't process again
+          return;
+        }
 
         const title = normalizeTitle(
           $(el).find('h2, h3, .title, .product-title, p').first().text() ||
@@ -596,15 +649,24 @@ async function crawlCategoryPage(
         });
 
         seenSlugs.add(slug);
-        foundOnPage++;
+        newOnPage++;
       });
 
+      foundOnPage = newOnPage + existingOnPage;
+      
       if (foundOnPage === 0) {
         consecutiveEmpty += 1;
         console.log(`  No products found on page ${page}`);
       } else {
-        console.log(`  Found ${foundOnPage} products on page ${page}`);
         consecutiveEmpty = 0;
+        // Track consecutive existing items for early stopping
+        if (newOnPage === 0 && existingOnPage > 0) {
+          consecutiveExisting += existingOnPage;
+          console.log(`  Found ${existingOnPage} existing products on page ${page} (${consecutiveExisting}/${EARLY_STOP_THRESHOLD} toward early stop)`);
+        } else {
+          consecutiveExisting = 0; // Reset if we found new items
+          console.log(`  Found ${newOnPage} new, ${existingOnPage} existing products on page ${page}`);
+        }
       }
     } catch (error) {
       console.error(`  Error processing page ${page}:`, error);
@@ -614,13 +676,19 @@ async function crawlCategoryPage(
     page += 1;
   }
 
-  return listings;
+  if (consecutiveExisting >= EARLY_STOP_THRESHOLD) {
+    stoppedEarly = true;
+    console.log(`  ⏹️ Early stop: Found ${consecutiveExisting} consecutive existing items, assuming we've reached old content`);
+  }
+
+  return { listings, stoppedEarly };
 }
 
-async function crawlCategory(catKey: string): Promise<DesignRecord[]> {
+async function crawlCategory(catKey: string, existingSlugs: Set<string> = new Set()): Promise<DesignRecord[]> {
   const listings: DesignRecord[] = [];
   const seenSlugs = new Set<string>();
   const categoryPath = categories[catKey];
+  let totalStoppedEarly = false;
   
   console.log(`\n=== Starting crawl of category: ${catKey} (${categoryPath}) ===`);
   
@@ -629,6 +697,8 @@ async function crawlCategory(catKey: string): Promise<DesignRecord[]> {
   
   // Process each entry (main category + subcategories)
   for (const entry of mainEntries) {
+    if (totalStoppedEarly) break; // Don't process more entries if we already stopped early
+    
     console.log(`\nProcessing ${entry.isSubcategory ? 'subcategory' : 'category'}: ${entry.title}`);
     
     // If this is a subcategory, we might need to resolve it further
@@ -636,17 +706,20 @@ async function crawlCategory(catKey: string): Promise<DesignRecord[]> {
       const subEntries = await resolveCategoryEntry(entry.normalizedPath, true, entry.title);
       
       for (const subEntry of subEntries) {
-        const subListings = await crawlCategoryPage(subEntry, seenSlugs, catKey);
+        if (totalStoppedEarly) break;
+        const { listings: subListings, stoppedEarly } = await crawlCategoryPage(subEntry, seenSlugs, catKey, existingSlugs);
         listings.push(...subListings);
+        if (stoppedEarly) totalStoppedEarly = true;
       }
     } else {
       // Process the main category or already resolved subcategory
-      const categoryListings = await crawlCategoryPage(entry, seenSlugs, catKey);
+      const { listings: categoryListings, stoppedEarly } = await crawlCategoryPage(entry, seenSlugs, catKey, existingSlugs);
       listings.push(...categoryListings);
+      if (stoppedEarly) totalStoppedEarly = true;
     }
   }
   
-  console.log(`\n=== Finished crawl of ${catKey}: Found ${listings.length} unique products ===`);
+  console.log(`\n=== Finished crawl of ${catKey}: Found ${listings.length} unique products${totalStoppedEarly ? ' (stopped early)' : ''} ===`);
   return listings;
 }
 
@@ -913,6 +986,9 @@ async function main() {
     console.log('📦 No existing catalog found, starting fresh');
   }
   
+  // Create a set of existing slugs for early stop detection during crawling
+  const existingSlugs = new Set(existingDesigns.keys());
+  
   // Process each main category
   for (const catKey of DEFAULT_CATEGORY_ORDER) {
     if (!enabledCategories.has(catKey)) {
@@ -920,7 +996,7 @@ async function main() {
     }
     try {
       console.log(`\n===== PROCESSING CATEGORY: ${catKey.toUpperCase()} =====`);
-      const designs = await crawlCategory(catKey);
+      const designs = await crawlCategory(catKey, existingSlugs);
       
       let newCount = 0;
       let updatedCount = 0;
