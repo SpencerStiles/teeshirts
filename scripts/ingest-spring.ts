@@ -341,6 +341,7 @@ interface VariantRecord {
 
 interface DesignRecord {
   slug: string;
+  baseSlug?: string; // Original slug from crawl (without product type suffix) for deduplication
   title: string;
   category: string;
   heroImage: string;
@@ -641,6 +642,7 @@ async function crawlCategoryPage(
 
         listings.push({
           slug,
+          baseSlug: slug, // Store original crawl slug for deduplication in future runs
           title,
           category: catKey,
           heroImage: new URL(image, BASE_URL).toString(),
@@ -967,6 +969,7 @@ async function main() {
   
   // Load existing catalog to avoid re-fetching items we already have
   const existingDesigns = new Map<string, DesignRecord>();
+  const existingBaseSlugs = new Set<string>(); // Track base slugs for early stop detection
   try {
     const existingPayload = await readExistingCatalogPayload();
     if (!existingPayload) {
@@ -978,16 +981,20 @@ async function main() {
       for (const design of existingCatalog.designs) {
         if (design.slug && design.variants && design.variants.length > 0) {
           existingDesigns.set(design.slug, design);
+          // Track base slugs (original crawl slugs) for early stop detection
+          if (design.baseSlug) {
+            existingBaseSlugs.add(design.baseSlug);
+          }
         }
       }
-      console.log(`📦 Loaded ${existingDesigns.size} existing designs from catalog`);
+      console.log(`📦 Loaded ${existingDesigns.size} existing designs from catalog (${existingBaseSlugs.size} unique base slugs)`);
     }
   } catch (err) {
     console.log('📦 No existing catalog found, starting fresh');
   }
   
-  // Create a set of existing slugs for early stop detection during crawling
-  const existingSlugs = new Set(existingDesigns.keys());
+  // Use base slugs for early stop detection during crawling
+  const existingSlugs = existingBaseSlugs;
   
   // Process each main category
   for (const catKey of DEFAULT_CATEGORY_ORDER) {
@@ -1162,6 +1169,7 @@ async function main() {
       
       expandedProducts.push({
         slug: `${design.slug}-${productType.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+        baseSlug: design.baseSlug || design.slug, // Preserve original crawl slug for deduplication
         title: `${design.title} - ${productType}`,
         category,
         heroImage,
