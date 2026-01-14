@@ -14,14 +14,14 @@ on:
         required: false
         default: ''
   schedule:
-    # Apparel daily at 22:00 UTC (10 PM) - runs first
-    - cron: '0 22 * * *'
+    # Apparel daily at 22:00 UTC (10 PM) - runs last
+    - cron: '0 4 * * *'
     # Accessories daily at 00:00 UTC (midnight)
     - cron: '0 0 * * *'
     # Drinkware daily at 02:00 UTC
     - cron: '0 2 * * *'
-    # Explore/All daily at 04:00 UTC - runs last (largest, most likely to hit limits)
-    - cron: '0 4 * * *'
+    # Explore/All daily at 04:00 UTC - runs first (largest, most likely to hit limits)
+    - cron: '0 22 * * *'
 
 permissions:
   contents: write
@@ -38,7 +38,7 @@ jobs:
     if: >
       (github.event_name == 'workflow_dispatch' &&
         (github.event.inputs.job == 'full-schedule' || github.event.inputs.job == 'all' || github.event.inputs.job == '')) ||
-      (github.event_name == 'schedule' && github.event.schedule == '0 4 * * *')
+      (github.event_name == 'schedule' && github.event.schedule == '0 22 * * *')
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
@@ -87,7 +87,7 @@ jobs:
     if: >
       (github.event_name == 'workflow_dispatch' &&
         (github.event.inputs.job == 'full-schedule' || github.event.inputs.job == 'apparel')) ||
-      (github.event_name == 'schedule' && github.event.schedule == '0 22 * * *')
+      (github.event_name == 'schedule' && github.event.schedule == '0 4 * * *')
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
