@@ -25,6 +25,7 @@ const CATEGORY_GAP_DELAY_MS = parseInt(process.env.INGEST_CATEGORY_GAP_DELAY_MS 
 const WARMUP_DELAY_MS = parseInt(process.env.INGEST_WARMUP_DELAY_MS ?? '5000', 10);
 const JITTER_FACTOR = parseFloat(process.env.INGEST_JITTER_FACTOR ?? '0.3'); // 30% random jitter
 const EARLY_STOP_THRESHOLD = parseInt(process.env.INGEST_EARLY_STOP_THRESHOLD ?? '20', 10); // Stop crawling after N consecutive existing items
+const EARLY_STOP_ENABLED = process.env.INGEST_SKIP_EARLY_STOP === '1' ? false : true; // Allow toggling early stop via env flag
 const STARTUP_DELAY_MS = parseInt(process.env.INGEST_STARTUP_DELAY_MS ?? '120000', 10); // 2 minute base startup delay
 const STARTUP_JITTER_MS = parseInt(process.env.INGEST_STARTUP_JITTER_MS ?? '60000', 10); // Additional 0-60s random jitter
 
@@ -575,7 +576,11 @@ async function crawlCategoryPage(
   let currentPageUrl = entry.firstUrl;
   let stoppedEarly = false;
 
-  while (page <= MAX_CATEGORY_PAGES && consecutiveEmpty < 2 && consecutiveExisting < EARLY_STOP_THRESHOLD) {
+  while (
+    page <= MAX_CATEGORY_PAGES &&
+    consecutiveEmpty < 2 &&
+    (!EARLY_STOP_ENABLED || consecutiveExisting < EARLY_STOP_THRESHOLD)
+  ) {
     let html: string;
     
     try {
@@ -662,9 +667,11 @@ async function crawlCategoryPage(
       } else {
         consecutiveEmpty = 0;
         // Track consecutive existing items for early stopping
-        if (newOnPage === 0 && existingOnPage > 0) {
+        if (EARLY_STOP_ENABLED && newOnPage === 0 && existingOnPage > 0) {
           consecutiveExisting += existingOnPage;
-          console.log(`  Found ${existingOnPage} existing products on page ${page} (${consecutiveExisting}/${EARLY_STOP_THRESHOLD} toward early stop)`);
+          console.log(
+            `  Found ${existingOnPage} existing products on page ${page} (${consecutiveExisting}/${EARLY_STOP_THRESHOLD} toward early stop)`
+          );
         } else {
           consecutiveExisting = 0; // Reset if we found new items
           console.log(`  Found ${newOnPage} new, ${existingOnPage} existing products on page ${page}`);
@@ -678,7 +685,7 @@ async function crawlCategoryPage(
     page += 1;
   }
 
-  if (consecutiveExisting >= EARLY_STOP_THRESHOLD) {
+  if (EARLY_STOP_ENABLED && consecutiveExisting >= EARLY_STOP_THRESHOLD) {
     stoppedEarly = true;
     console.log(`  ⏹️ Early stop: Found ${consecutiveExisting} consecutive existing items, assuming we've reached old content`);
   }
