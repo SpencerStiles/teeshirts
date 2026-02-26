@@ -14,13 +14,13 @@ on:
         required: false
         default: ''
   schedule:
-    # Apparel daily at 22:00 UTC (10 PM) - runs last
+    # Apparel at 04:00 UTC
     - cron: '0 4 * * *'
-    # Accessories daily at 00:00 UTC (midnight)
+    # Accessories at 00:00 UTC (midnight)
     - cron: '0 0 * * *'
-    # Drinkware daily at 02:00 UTC
+    # Drinkware at 02:00 UTC
     - cron: '0 2 * * *'
-    # Explore/All daily at 04:00 UTC - runs first (largest, most likely to hit limits)
+    # Explore/All at 22:00 UTC - runs first (largest, most likely to hit limits)
     - cron: '0 22 * * *'
 
 permissions:
@@ -47,6 +47,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Pull latest changes
+        run: git pull --ff-only origin ${{ github.ref_name }} || true
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -63,7 +66,7 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add data/springCatalog.json.gz
-          git diff --staged --quiet || git commit -m "Update product catalog [skip ci]"
+          git diff --staged --quiet || git commit -m "Update product catalog"
 
       - name: Push changes
         uses: ad-m/github-push-action@master
@@ -84,10 +87,13 @@ jobs:
           echo "Check the logs for details"
 
   ingest_apparel:
+    # Chain after ingest_all so full-schedule runs jobs sequentially (avoids push race conditions)
+    needs: [ingest_all]
     if: >
-      (github.event_name == 'workflow_dispatch' &&
+      !cancelled() &&
+      ((github.event_name == 'workflow_dispatch' &&
         (github.event.inputs.job == 'full-schedule' || github.event.inputs.job == 'apparel')) ||
-      (github.event_name == 'schedule' && github.event.schedule == '0 4 * * *')
+      (github.event_name == 'schedule' && github.event.schedule == '0 4 * * *'))
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
@@ -95,10 +101,12 @@ jobs:
     steps: *ingest_steps
 
   ingest_accessories:
+    needs: [ingest_apparel]
     if: >
-      (github.event_name == 'workflow_dispatch' &&
+      !cancelled() &&
+      ((github.event_name == 'workflow_dispatch' &&
         (github.event.inputs.job == 'full-schedule' || github.event.inputs.job == 'accessories')) ||
-      (github.event_name == 'schedule' && github.event.schedule == '0 0 * * *')
+      (github.event_name == 'schedule' && github.event.schedule == '0 0 * * *'))
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
@@ -106,10 +114,12 @@ jobs:
     steps: *ingest_steps
 
   ingest_drinkware:
+    needs: [ingest_accessories]
     if: >
-      (github.event_name == 'workflow_dispatch' &&
+      !cancelled() &&
+      ((github.event_name == 'workflow_dispatch' &&
         (github.event.inputs.job == 'full-schedule' || github.event.inputs.job == 'drinkware')) ||
-      (github.event_name == 'schedule' && github.event.schedule == '0 2 * * *')
+      (github.event_name == 'schedule' && github.event.schedule == '0 2 * * *'))
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
