@@ -1,10 +1,16 @@
 # Product Ingestion Guide
 
-## Automatic Updates (Weekly)
+## Automatic Updates (Daily)
 
-Your product catalog automatically updates **every Sunday at 2 AM UTC** (8 PM Saturday CST).
+Your product catalog automatically updates **daily** across four staggered runs:
+
+- **Explore/All** at 22:00 UTC (4 PM CST)
+- **Accessories** at 00:00 UTC (6 PM CST)
+- **Drinkware** at 02:00 UTC (8 PM CST)
+- **Apparel** at 04:00 UTC (10 PM CST)
 
 You don't need to do anything! The system will:
+
 1. Fetch new products from Spring
 2. Update the catalog
 3. Push changes to GitHub

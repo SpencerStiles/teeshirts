@@ -24,7 +24,7 @@ const CATEGORY_RESOLVE_DELAY_MS = parseInt(process.env.INGEST_CATEGORY_RESOLVE_D
 const CATEGORY_GAP_DELAY_MS = parseInt(process.env.INGEST_CATEGORY_GAP_DELAY_MS ?? '5000', 10);
 const WARMUP_DELAY_MS = parseInt(process.env.INGEST_WARMUP_DELAY_MS ?? '5000', 10);
 const JITTER_FACTOR = parseFloat(process.env.INGEST_JITTER_FACTOR ?? '0.3'); // 30% random jitter
-const EARLY_STOP_THRESHOLD = parseInt(process.env.INGEST_EARLY_STOP_THRESHOLD ?? '20', 10); // Stop crawling after N consecutive existing items
+const EARLY_STOP_THRESHOLD = parseInt(process.env.INGEST_EARLY_STOP_THRESHOLD ?? '3', 10); // Stop crawling after N consecutive PAGES with only existing items
 const EARLY_STOP_ENABLED = process.env.INGEST_SKIP_EARLY_STOP === '1' ? false : true; // Allow toggling early stop via env flag
 const STARTUP_DELAY_MS = parseInt(process.env.INGEST_STARTUP_DELAY_MS ?? '120000', 10); // 2 minute base startup delay
 const STARTUP_JITTER_MS = parseInt(process.env.INGEST_STARTUP_JITTER_MS ?? '60000', 10); // Additional 0-60s random jitter
@@ -571,7 +571,7 @@ async function crawlCategoryPage(
   const listings: DesignRecord[] = [];
   let page = entry.firstPage;
   let consecutiveEmpty = 0;
-  let consecutiveExisting = 0;
+  let consecutiveExistingPages = 0;
   let firstPageConsumed = false;
   let currentPageUrl = entry.firstUrl;
   let stoppedEarly = false;
@@ -579,7 +579,7 @@ async function crawlCategoryPage(
   while (
     page <= MAX_CATEGORY_PAGES &&
     consecutiveEmpty < 2 &&
-    (!EARLY_STOP_ENABLED || consecutiveExisting < EARLY_STOP_THRESHOLD)
+    (!EARLY_STOP_ENABLED || consecutiveExistingPages < EARLY_STOP_THRESHOLD)
   ) {
     let html: string;
     
@@ -666,14 +666,14 @@ async function crawlCategoryPage(
         console.log(`  No products found on page ${page}`);
       } else {
         consecutiveEmpty = 0;
-        // Track consecutive existing items for early stopping
+        // Track consecutive PAGES with no new items for early stopping
         if (EARLY_STOP_ENABLED && newOnPage === 0 && existingOnPage > 0) {
-          consecutiveExisting += existingOnPage;
+          consecutiveExistingPages++;
           console.log(
-            `  Found ${existingOnPage} existing products on page ${page} (${consecutiveExisting}/${EARLY_STOP_THRESHOLD} toward early stop)`
+            `  Found ${existingOnPage} existing products on page ${page} (${consecutiveExistingPages}/${EARLY_STOP_THRESHOLD} consecutive pages toward early stop)`
           );
         } else {
-          consecutiveExisting = 0; // Reset if we found new items
+          consecutiveExistingPages = 0; // Reset if we found any new items
           console.log(`  Found ${newOnPage} new, ${existingOnPage} existing products on page ${page}`);
         }
       }
@@ -685,9 +685,9 @@ async function crawlCategoryPage(
     page += 1;
   }
 
-  if (EARLY_STOP_ENABLED && consecutiveExisting >= EARLY_STOP_THRESHOLD) {
+  if (EARLY_STOP_ENABLED && consecutiveExistingPages >= EARLY_STOP_THRESHOLD) {
     stoppedEarly = true;
-    console.log(`  ⏹️ Early stop: Found ${consecutiveExisting} consecutive existing items, assuming we've reached old content`);
+    console.log(`  ⏹️ Early stop: ${consecutiveExistingPages} consecutive pages with only existing items, assuming we've reached old content`);
   }
 
   return { listings, stoppedEarly };
@@ -975,26 +975,32 @@ async function main() {
   const seenSlugs = new Set<string>();
   
   // Load existing catalog to avoid re-fetching items we already have
-  const existingDesigns = new Map<string, DesignRecord>();
+  // existingDesignsByBaseSlug: keyed by the CRAWL slug (baseSlug) so enrichment-skip works
+  const existingDesignsByBaseSlug = new Map<string, DesignRecord[]>();
+  const existingExpandedDesigns: DesignRecord[] = []; // Already-expanded designs to preserve as-is
   const existingBaseSlugs = new Set<string>(); // Track base slugs for early stop detection
   try {
     const existingPayload = await readExistingCatalogPayload();
     if (!existingPayload) {
       throw Object.assign(new Error('No catalog snapshot found'), { code: 'ENOENT' });
     }
-    const existingData = existingPayload;
-    const existingCatalog = JSON.parse(existingData);
+    const existingCatalog = JSON.parse(existingPayload);
     if (existingCatalog?.designs && Array.isArray(existingCatalog.designs)) {
       for (const design of existingCatalog.designs) {
         if (design.slug && design.variants && design.variants.length > 0) {
-          existingDesigns.set(design.slug, design);
-          // Track base slugs (original crawl slugs) for early stop detection
+          // Store by baseSlug so we can match against crawl slugs
+          const key = design.baseSlug || design.slug;
+          if (!existingDesignsByBaseSlug.has(key)) {
+            existingDesignsByBaseSlug.set(key, []);
+          }
+          existingDesignsByBaseSlug.get(key)!.push(design);
+          existingExpandedDesigns.push(design);
           if (design.baseSlug) {
             existingBaseSlugs.add(design.baseSlug);
           }
         }
       }
-      console.log(`📦 Loaded ${existingDesigns.size} existing designs from catalog (${existingBaseSlugs.size} unique base slugs)`);
+      console.log(`📦 Loaded ${existingExpandedDesigns.length} existing expanded products from catalog (${existingBaseSlugs.size} unique base slugs)`);
     }
   } catch (err) {
     console.log('📦 No existing catalog found, starting fresh');
@@ -1017,7 +1023,7 @@ async function main() {
       
       for (const design of designs) {
         if (seenSlugs.has(design.slug)) {
-          // Design already exists - update category if this is more specific than "all"
+          // Design already exists in this run - update category if this is more specific than "all"
           if (catKey !== 'all') {
             const existingDesign = allDesigns.find(d => d.slug === design.slug);
             if (existingDesign && existingDesign.category === 'all') {
@@ -1026,7 +1032,7 @@ async function main() {
             }
           }
         } else {
-          // New design - add it
+          // New design found during this crawl - add it
           allDesigns.push(design);
           seenSlugs.add(design.slug);
           newCount++;
@@ -1045,7 +1051,7 @@ async function main() {
     }
   }
 
-  console.log(`Found ${allDesigns.length} designs, enriching…`);
+  console.log(`Found ${allDesigns.length} new designs to process, enriching…`);
   let skippedCount = 0;
   let enrichedCount = 0;
   
@@ -1057,14 +1063,14 @@ async function main() {
     const batchPromises = batch.map(async (design, batchIndex) => {
       const actualIndex = i + batchIndex;
       
-      // Skip enrichment if we already have complete data for this item
-      if (existingDesigns.has(design.slug)) {
-        const existingDesign = existingDesigns.get(design.slug)!;
+      // Skip enrichment if we already have complete data for this crawl slug
+      if (existingDesignsByBaseSlug.has(design.slug)) {
         skippedCount++;
         if (skippedCount % 50 === 0) {
           console.log(`  ⏭️  Skipped ${skippedCount} already-enriched items...`);
         }
-        return { index: actualIndex, design: existingDesign, skipped: true, failed: false };
+        // Return the original crawl design — we'll use the existing expanded data later
+        return { index: actualIndex, design, skipped: true, failed: false };
       }
       
       // Add small delay between requests within batch to spread load
@@ -1114,12 +1120,8 @@ async function main() {
         console.log(`  ✓ Retry succeeded for ${design.slug}`);
       } catch (err) {
         console.warn(`  ⚠️ Retry failed for ${design.slug}:`, err);
-        // Preserve existing data if available, otherwise keep basic design info
-        if (existingDesigns.has(design.slug)) {
-          allDesigns[index] = existingDesigns.get(design.slug)!;
-        } else {
-          allDesigns[index] = design;
-        }
+        // Keep basic design info (will get expanded below)
+        allDesigns[index] = design;
       }
     }
     
@@ -1128,33 +1130,20 @@ async function main() {
   
   console.log(`\n✅ Enriched ${enrichedCount} new items, skipped ${skippedCount} existing items`);
 
-  // Merge in existing designs that weren't found during this crawl
-  // This prevents data loss when Spring returns 500 errors for entire categories
-  let preservedCount = 0;
-  for (const [slug, existingDesign] of existingDesigns.entries()) {
-    if (!seenSlugs.has(slug)) {
-      allDesigns.push(existingDesign);
-      seenSlugs.add(slug);
-      preservedCount++;
-    }
-  }
-  if (preservedCount > 0) {
-    console.log(`📦 Preserved ${preservedCount} existing designs that weren't found during this crawl`);
-  }
-
-  // Filter out any undefined or incomplete designs
-  const validDesigns = allDesigns.filter(d => d && d.slug && d.title);
-  const failedCount = allDesigns.length - validDesigns.length;
+  // Filter out any undefined or incomplete newly-crawled designs
+  const validNewDesigns = allDesigns.filter(d => d && d.slug && d.title);
+  const failedCount = allDesigns.length - validNewDesigns.length;
   if (failedCount > 0) {
     console.log(`⚠️  Filtered out ${failedCount} incomplete designs`);
   }
 
-  // Expand designs into individual products (one per product type)
-  // This allows each product type (t-shirt, hoodie, tank, etc.) to display as a separate card
-  console.log(`\n🔄 Expanding designs into individual product cards...`);
-  const expandedProducts: DesignRecord[] = [];
+  // Expand ONLY newly crawled designs into individual products (one per product type)
+  // Preserved designs from the existing catalog are already expanded — do NOT re-expand them.
+  console.log(`\n🔄 Expanding ${validNewDesigns.length} newly crawled designs into individual product cards...`);
+  const newExpandedProducts: DesignRecord[] = [];
+  const newlyExpandedBaseSlugs = new Set<string>(); // Track which base slugs we expanded this run
   
-  for (const design of validDesigns) {
+  for (const design of validNewDesigns) {
     // Group variants by product type
     const productTypeMap = new Map<string, VariantRecord[]>();
     
@@ -1174,7 +1163,7 @@ async function main() {
       // Categorize based on product type (mug->drinkware, hat->accessories, shirt->apparel)
       const category = categorizeByProductType(productType);
       
-      expandedProducts.push({
+      newExpandedProducts.push({
         slug: `${design.slug}-${productType.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
         baseSlug: design.baseSlug || design.slug, // Preserve original crawl slug for deduplication
         title: `${design.title} - ${productType}`,
@@ -1184,14 +1173,34 @@ async function main() {
         lastIndexed: design.lastIndexed,
       });
     }
+    newlyExpandedBaseSlugs.add(design.baseSlug || design.slug);
   }
 
-  console.log(`✨ Expanded ${validDesigns.length} designs into ${expandedProducts.length} individual product cards`);
+  console.log(`✨ Expanded ${validNewDesigns.length} new designs into ${newExpandedProducts.length} product cards`);
+
+  // Merge in existing expanded designs that weren't re-crawled this run
+  // This prevents data loss when Spring returns 500 errors for entire categories
+  let preservedCount = 0;
+  const preservedProducts: DesignRecord[] = [];
+  for (const existingDesign of existingExpandedDesigns) {
+    const baseSlug = existingDesign.baseSlug || existingDesign.slug;
+    // Only preserve if this base slug wasn't freshly crawled & expanded above
+    if (!newlyExpandedBaseSlugs.has(baseSlug)) {
+      preservedProducts.push(existingDesign);
+      preservedCount++;
+    }
+  }
+  if (preservedCount > 0) {
+    console.log(`📦 Preserved ${preservedCount} existing product cards not found during this crawl`);
+  }
+
+  // Combine: new expanded products + preserved existing products
+  const finalProducts = [...newExpandedProducts, ...preservedProducts];
 
   const payload = {
     generatedAt: new Date().toISOString(),
     store: STORE_SLUG,
-    designs: expandedProducts,
+    designs: finalProducts,
   };
 
   await fs.mkdir(path.dirname(OUTPUT_PATH), { recursive: true });
@@ -1199,15 +1208,15 @@ async function main() {
   await fs.writeFile(OUTPUT_PATH, payloadJson, 'utf8');
   const compressed = await gzipAsync(Buffer.from(payloadJson, 'utf8'));
   await fs.writeFile(OUTPUT_GZ_PATH, compressed);
-  console.log(`\n📦 Saved ${expandedProducts.length} product cards to ${OUTPUT_PATH}`);
+  console.log(`\n📦 Saved ${finalProducts.length} product cards to ${OUTPUT_PATH}`);
   console.log(`💾 Compressed catalog → ${OUTPUT_GZ_PATH} (${(compressed.length / (1024 * 1024)).toFixed(1)} MB)`);
   console.log(`\n📊 Final Summary:`);
-  console.log(`   - Designs crawled this run: ${allDesigns.length - preservedCount}`);
+  console.log(`   - Designs crawled this run: ${validNewDesigns.length}`);
   console.log(`   - Newly enriched: ${enrichedCount}`);
-  console.log(`   - Skipped (already in catalog): ${skippedCount}`);
+  console.log(`   - Skipped enrichment (already in catalog): ${skippedCount}`);
+  console.log(`   - New product cards from expansion: ${newExpandedProducts.length}`);
   console.log(`   - Preserved from previous catalog: ${preservedCount}`);
-  console.log(`   - Total designs before expansion: ${validDesigns.length}`);
-  console.log(`   - Total product cards after expansion: ${expandedProducts.length}`);
+  console.log(`   - Total product cards in output: ${finalProducts.length}`);
 }
 
 main().catch((err) => {
