@@ -2,6 +2,7 @@ import {
   Box,
   Heading,
   HStack,
+  Image,
   Spacer,
   Button,
   useColorMode,
@@ -79,8 +80,20 @@ export default function ShopPage({ items, page, hasNext, totalPages }: Props) {
     .slice(0, 3)
     .map((p) => ({ slug: p.slug, title: p.title, image: p.image }));
 
+  const logoSrc =
+    page === 1
+      ? "/logos/logo-44.png"
+      : page % 2 === 0
+      ? "/logos/logo-15.png"
+      : "/logos/logo-20.png";
+
   return (
     <VStack align="stretch" spacing={10}>
+      {/* Logo — above the hero image */}
+      <Box textAlign="center" pt={2}>
+        <Image src={logoSrc} alt="SGM Says Logo" h="90px" mx="auto" />
+      </Box>
+
       {/* Hero */}
       <Box
         className="distressed-texture"

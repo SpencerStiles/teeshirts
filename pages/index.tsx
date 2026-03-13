@@ -3,6 +3,7 @@ import {
   Button,
   Container,
   Heading,
+  Image,
   Text,
   VStack,
   useColorModeValue,
@@ -16,19 +17,31 @@ export default function WelcomePage() {
   );
 
   return (
-    <Box
-      className="distressed-texture"
-      minH="100vh"
-      bgImage={heroBg}
-      bgSize="cover"
-      bgPos="center"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      color="white"
-      px={4}
-      py={12}
-    >
+    <Box minH="100vh" display="flex" flexDirection="column">
+      {/* Logo bar — above the hero image */}
+      <Box textAlign="center" py={4} bg="black">
+        <Image
+          src="/logos/logo-63.png"
+          alt="SGM Says Logo"
+          h="90px"
+          mx="auto"
+        />
+      </Box>
+
+      {/* Hero */}
+      <Box
+        className="distressed-texture"
+        flex="1"
+        bgImage={heroBg}
+        bgSize="cover"
+        bgPos="center"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        color="white"
+        px={4}
+        py={12}
+      >
       <Container maxW="3xl">
         <VStack spacing={8} textAlign="center">
           <Heading
@@ -109,6 +122,7 @@ export default function WelcomePage() {
           </Button>
         </VStack>
       </Container>
+      </Box>
     </Box>
   );
 }
