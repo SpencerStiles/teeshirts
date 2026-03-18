@@ -2,7 +2,6 @@ import {
   Box,
   Heading,
   HStack,
-  Image,
   Spacer,
   Button,
   useColorMode,
@@ -86,12 +85,7 @@ export default function ShopPage({ items, page, hasNext, totalPages }: Props) {
 
   return (
     <VStack align="stretch" spacing={10}>
-      {/* Logo — above the hero image */}
-      <Box textAlign="center" pt={2}>
-        <Image src={logoSrc} alt="SGM Says Logo" h="120px" mx="auto" />
-      </Box>
-
-      {/* Hero */}
+      {/* Hero — logo as background */}
       <Box
         className="distressed-texture"
         position="relative"
@@ -111,45 +105,50 @@ export default function ShopPage({ items, page, hasNext, totalPages }: Props) {
         alignItems="center"
         justifyContent="center"
       >
-        <VStack zIndex={1} spacing={6}>
-          <Heading
-            textTransform="uppercase"
-            letterSpacing="widest"
-            fontWeight="bold"
-            size={{ base: "2xl", sm: "3xl", lg: "4xl" }}
-            lineHeight="1.1"
-            textShadow="0 2px 8px rgba(0,0,0,0.5)"
-          >
-            Gear Up. Survive.
-          </Heading>
-          <Text
-            maxW="2xl"
-            mx="auto"
-            fontSize="lg"
-            color="gray.300"
-            textShadow="0 1px 3px rgba(0,0,0,0.4)"
-          >
-            Patriotic apparel for everyone - men and women - made for everyday
-            wear. Stand for what you love, comfortably.
-          </Text>
-          <Button
-            as="a"
-            href="#catalog"
-            rounded="full"
-            bg="primary"
-            color="white"
-            px={8}
-            py={3}
-            fontWeight="bold"
-            textTransform="uppercase"
-            letterSpacing="wider"
-            size="md"
-            _hover={{ transform: "scale(1.03)" }}
-            transition="transform 0.15s ease"
-          >
-            Shop Now
-          </Button>
-        </VStack>
+        <Box
+          bg="rgba(0,0,0,0.68)"
+          borderRadius="xl"
+          px={{ base: 6, md: 10 }}
+          py={8}
+        >
+          <VStack zIndex={1} spacing={6}>
+            <Heading
+              textTransform="uppercase"
+              letterSpacing="widest"
+              fontWeight="bold"
+              size={{ base: "2xl", sm: "3xl", lg: "4xl" }}
+              lineHeight="1.1"
+            >
+              Gear Up. Survive.
+            </Heading>
+            <Text
+              maxW="2xl"
+              mx="auto"
+              fontSize="lg"
+              color="gray.300"
+            >
+              Patriotic apparel for everyone - men and women - made for everyday
+              wear. Stand for what you love, comfortably.
+            </Text>
+            <Button
+              as="a"
+              href="#catalog"
+              rounded="full"
+              bg="primary"
+              color="white"
+              px={8}
+              py={3}
+              fontWeight="bold"
+              textTransform="uppercase"
+              letterSpacing="wider"
+              size="md"
+              _hover={{ transform: "scale(1.03)" }}
+              transition="transform 0.15s ease"
+            >
+              Shop Now
+            </Button>
+          </VStack>
+        </Box>
       </Box>
 
       {/* Featured (dynamic) */}
