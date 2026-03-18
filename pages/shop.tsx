@@ -60,11 +60,6 @@ export default function ShopPage({ items, page, hasNext, totalPages }: Props) {
 
   // Deprecated Spring embed controls removed in favor of native grid
 
-  const heroBg = useColorModeValue(
-    `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDJStksEtGhq98yefXs1KCCKD5YIPs74URQXVu9gpiTpC2TA8JPUD61LXn6x76ZrnduNmFwPBGti_76wTZSslBiATJPbh8FbtLZ7awQkA6vo34qpgKVxtyUAlfBSiw6RpstwMJj1MaXxWoczOuBHdTNKWSX-_00ttFzfvxUdQ3WPTXcBW8-gc_4DaH_p_CEEU7muJ0Bj7b17jnAg9zQmipOvUoLq1OLt7C5Np683rmtafvDm_dKXG2tztwREW9sg5ArFH1lUxdqoZ0")`,
-    `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDJStksEtGhq98yefXs1KCCKD5YIPs74URQXVu9gpiTpC2TA8JPUD61LXn6x76ZrnduNmFwPBGti_76wTZSslBiATJPbh8FbtLZ7awQkA6vo34qpgKVxtyUAlfBSiw6RpstwMJj1MaXxWoczOuBHdTNKWSX-_00ttFzfvxUdQ3WPTXcBW8-gc_4DaH_p_CEEU7muJ0Bj7b17jnAg9zQmipOvUoLq1OLt7C5Np683rmtafvDm_dKXG2tztwREW9sg5ArFH1lUxdqoZ0")`
-  );
-
   const cardBg = useColorModeValue("background.light", "blackAlpha.600");
 
   // Filter items by category using the category field from Spring
@@ -87,11 +82,13 @@ export default function ShopPage({ items, page, hasNext, totalPages }: Props) {
       ? "/logos/logo-15.png"
       : "/logos/logo-20.png";
 
+  const heroBg = `url("${logoSrc}")`;
+
   return (
     <VStack align="stretch" spacing={10}>
       {/* Logo — above the hero image */}
       <Box textAlign="center" pt={2}>
-        <Image src={logoSrc} alt="SGM Says Logo" h="90px" mx="auto" />
+        <Image src={logoSrc} alt="SGM Says Logo" h="120px" mx="auto" />
       </Box>
 
       {/* Hero */}
@@ -100,9 +97,11 @@ export default function ShopPage({ items, page, hasNext, totalPages }: Props) {
         position="relative"
         minH={{ base: "60vh" }}
         rounded="xl"
+        bg="black"
         bgImage={heroBg}
-        bgSize="cover"
+        bgSize="contain"
         bgPos="center"
+        bgRepeat="no-repeat"
         color="white"
         textAlign="center"
         px={8}

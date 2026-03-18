@@ -6,15 +6,11 @@ import {
   Image,
   Text,
   VStack,
-  useColorModeValue,
 } from "@chakra-ui/react";
 import Link from "next/link";
 
 export default function WelcomePage() {
-  const heroBg = useColorModeValue(
-    `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.85)), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDJStksEtGhq98yefXs1KCCKD5YIPs74URQXVu9gpiTpC2TA8JPUD61LXn6x76ZrnduNmFwPBGti_76wTZSslBiATJPbh8FbtLZ7awQkA6vo34qpgKVxtyUAlfBSiw6RpstwMJj1MaXxWoczOuBHdTNKWSX-_00ttFzfvxUdQ3WPTXcBW8-gc_4DaH_p_CEEU7muJ0Bj7b17jnAg9zQmipOvUoLq1OLt7C5Np683rmtafvDm_dKXG2tztwREW9sg5ArFH1lUxdqoZ0")`,
-    `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.85)), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDJStksEtGhq98yefXs1KCCKD5YIPs74URQXVu9gpiTpC2TA8JPUD61LXn6x76ZrnduNmFwPBGti_76wTZSslBiATJPbh8FbtLZ7awQkA6vo34qpgKVxtyUAlfBSiw6RpstwMJj1MaXxWoczOuBHdTNKWSX-_00ttFzfvxUdQ3WPTXcBW8-gc_4DaH_p_CEEU7muJ0Bj7b17jnAg9zQmipOvUoLq1OLt7C5Np683rmtafvDm_dKXG2tztwREW9sg5ArFH1lUxdqoZ0")`
-  );
+  const heroBg = `url("/logos/logo-63.png")`;
 
   return (
     <Box minH="100vh" display="flex" flexDirection="column">
@@ -23,7 +19,7 @@ export default function WelcomePage() {
         <Image
           src="/logos/logo-63.png"
           alt="SGM Says Logo"
-          h="90px"
+          h="120px"
           mx="auto"
         />
       </Box>
@@ -32,9 +28,11 @@ export default function WelcomePage() {
       <Box
         className="distressed-texture"
         flex="1"
+        bg="black"
         bgImage={heroBg}
-        bgSize="cover"
+        bgSize="contain"
         bgPos="center"
+        bgRepeat="no-repeat"
         display="flex"
         alignItems="center"
         justifyContent="center"
@@ -67,28 +65,40 @@ export default function WelcomePage() {
               on your face or a holy moly Batman, I remember that!
             </Text>
             <Text>
-              Both men and women can wear all apparel alike, even for kids
-              (parents&#39; discretion of course). In today&#39;s military there
-              are only warriors. Regardless of race, sex, or gender, my
+              Both men and women can wear all American Apparel alike, even for
+              kids (parents&#39; discretion of course). In today&#39;s military
+              there are only warriors. Regardless of race, sex, or gender, my
               collection is based on that. That said this site is for everyone,
               active duty, vets, and civilians. Enjoy!
             </Text>
             <Text>
-              I challenge you to not locate at least two or three gems for
+              Some apparel depicts references to weapons and or combat themes
+              and attitudes. Just to be clear, we are a country coming out of 20
+              years of constant war. Our troops need to rest and heal. So does
+              our country. We all need something to bring us back together. If
+              that is a T-shirt that makes all those that serve bust a gut but
+              offends everyone else&#39;s sensibilities, then so be. We owe them
+              that after the last two decades they have had.
+            </Text>
+            <Text>
+              So, I hope everyone can laugh with us. Some themes are a little
+              dark but then so are your little boys and girls =-). You might not
+              get it, but trust me, they will!
+            </Text>
+            <Text>
+              I challenge you not to locate at least two or three gems for
               yourself or the perfect gift for your difficult-to-shop-for
               friends. FYI, most shirts have something special on the back just
               for you!
-            </Text>
-            <Text>
-              Some apparel depicts references to weapons; it does not imply that
-              I am a proponent of this or anti-that. What it means is that I was
-              a combat soldier!
             </Text>
             <Text>
               In the coming months, my plan is to increase and add more items
               and styles. Please be sure to comment on our direction. Please
               feel free to comment on what you like and what you do not like, or
               what we can do better.
+            </Text>
+            <Text>
+              So put on your big boy pants and come on inside to the real world!
             </Text>
             <Text>
               Try not to be too hard on the things that you do not like.
